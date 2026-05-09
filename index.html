@@ -77,6 +77,8 @@
         
         // สถานะ User ปัจจุบัน
         let currentUser = null; 
+        // การตั้งค่าระบบจาก Sheet Settings
+        let appSettings = {};
     </script>
 
     <!-- Overlay Loading -->
@@ -89,8 +91,8 @@
     <header class="glass-header text-white sticky top-0 z-30 shadow-lg">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center gap-4">
-                <div class="bg-white p-2 rounded-full w-12 h-12 flex items-center justify-center text-brand-dark">
-                    <i class="fas fa-glasses text-2xl"></i>
+                <div id="logoContainer" class="bg-white p-1 rounded-full w-12 h-12 flex items-center justify-center text-brand-dark overflow-hidden shrink-0">
+                    <i class="fas fa-glasses text-2xl"></i> <!-- Icon สำรองระหว่างรอโหลดโลโก้ -->
                 </div>
                 <div>
                     <h1 class="text-xl font-heading font-semibold" id="sysName">โครงการเด็กไทยสายตาดี</h1>
@@ -129,7 +131,7 @@
             </div>
             <div id="actionButtons" class="hidden">
                 <button onclick="toggleForm()" class="bg-brand-light hover:bg-blue-600 text-white px-5 py-2 rounded-lg shadow transition">
-                    <i class="fas fa-plus mr-2"></i>เพิ่มข้อมูลคัดกรอง
+                    <i class="fas fa-plus mr-2"></i>บันทึกข้อมูล
                 </button>
             </div>
         </div>
@@ -273,10 +275,10 @@
         
         <!-- Form Tabs สำหรับสลับแบบฟอร์ม -->
         <div class="bg-gray-100 p-2 flex space-x-1 overflow-x-auto text-sm border-b sticky top-[60px] z-40">
-            <button type="button" onclick="switchFormType('Screening_Data')" id="tab_Screening_Data" class="form-tab px-4 py-2 rounded-md font-semibold bg-white text-brand-dark shadow-sm border border-gray-200 whitespace-nowrap"><i class="fas fa-eye mr-1"></i> 1. คัดกรองสายตา</button>
-            <button type="button" onclick="switchFormType('Satisfaction_Data')" id="tab_Satisfaction_Data" class="form-tab px-4 py-2 rounded-md font-semibold text-gray-600 hover:bg-gray-200 border border-transparent whitespace-nowrap"><i class="fas fa-smile mr-1"></i> 2. ความพึงพอใจ</button>
-            <button type="button" onclick="switchFormType('Pre_Test')" id="tab_Pre_Test" class="form-tab px-4 py-2 rounded-md font-semibold text-gray-600 hover:bg-gray-200 border border-transparent whitespace-nowrap"><i class="fas fa-file-alt mr-1"></i> 3. Pre-Test</button>
-            <button type="button" onclick="switchFormType('Post_Test')" id="tab_Post_Test" class="form-tab px-4 py-2 rounded-md font-semibold text-gray-600 hover:bg-gray-200 border border-transparent whitespace-nowrap"><i class="fas fa-file-signature mr-1"></i> 4. Post-Test</button>
+            <button type="button" onclick="switchFormType('Screening_Data')" id="tab_Screening_Data" class="form-tab px-4 py-2 rounded-md font-semibold bg-white text-brand-dark shadow-sm border border-gray-200 whitespace-nowrap hidden"><i class="fas fa-eye mr-1"></i> 1. คัดกรองสายตา</button>
+            <button type="button" onclick="switchFormType('Satisfaction_Data')" id="tab_Satisfaction_Data" class="form-tab px-4 py-2 rounded-md font-semibold text-gray-600 hover:bg-gray-200 border border-transparent whitespace-nowrap hidden"><i class="fas fa-smile mr-1"></i> 2. ความพึงพอใจ</button>
+            <button type="button" onclick="switchFormType('Pre_Test')" id="tab_Pre_Test" class="form-tab px-4 py-2 rounded-md font-semibold text-gray-600 hover:bg-gray-200 border border-transparent whitespace-nowrap hidden"><i class="fas fa-file-alt mr-1"></i> 3. Pre-Test</button>
+            <button type="button" onclick="switchFormType('Post_Test')" id="tab_Post_Test" class="form-tab px-4 py-2 rounded-md font-semibold text-gray-600 hover:bg-gray-200 border border-transparent whitespace-nowrap hidden"><i class="fas fa-file-signature mr-1"></i> 4. Post-Test</button>
         </div>
 
         <div class="p-6 pb-24">
@@ -284,17 +286,21 @@
             <!-- ============================== -->
             <!-- ฟอร์ม 1: คัดกรองสายตา -->
             <!-- ============================== -->
-            <form id="form_Screening_Data" class="data-form block" onsubmit="submitForm(event, 'Screening_Data')">
+            <form id="form_Screening_Data" class="data-form hidden" onsubmit="submitForm(event, 'Screening_Data')">
+                
+                <!-- Unit = F (Feet) ซ่อนไว้เพื่อส่งเป็นค่า Default -->
+                <input type="hidden" name="unit" value="F">
+
                 <!-- ส่วนที่ 1 -->
                 <div class="bg-blue-50 p-4 rounded-lg border border-blue-100 mb-6">
                     <h3 class="font-bold text-brand-dark border-b border-blue-200 pb-2 mb-4"><i class="fas fa-user mr-2"></i>ส่วนที่ 1 : ข้อมูลผู้รับการตรวจ</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="md:col-span-2">
-                            <label class="block text-sm text-gray-600 mb-1">เลขบัตรประชาชน 13 หลัก <span class="text-red-500">*</span></label>
+                            <label class="block text-sm text-gray-600 mb-1">เลขบัตรประชาชน 13 หลัก (cid) <span class="text-red-500">*</span></label>
                             <input type="text" name="cid" required maxlength="13" class="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-brand-light">
                         </div>
                         <div>
-                            <label class="block text-sm text-gray-600 mb-1">คำนำหน้าชื่อ</label>
+                            <label class="block text-sm text-gray-600 mb-1">คำนำหน้าชื่อ (pname)</label>
                             <select name="pname" class="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-brand-light">
                                 <option value="เด็กชาย">เด็กชาย</option>
                                 <option value="เด็กหญิง">เด็กหญิง</option>
@@ -303,38 +309,67 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm text-gray-600 mb-1">เพศ</label>
+                            <label class="block text-sm text-gray-600 mb-1">เพศ (sex)</label>
                             <select name="sex" class="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-brand-light">
                                 <option value="1">ชาย</option>
                                 <option value="2">หญิง</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm text-gray-600 mb-1">ชื่อ <span class="text-red-500">*</span></label>
+                            <label class="block text-sm text-gray-600 mb-1">ชื่อจริง (fname) <span class="text-red-500">*</span></label>
                             <input type="text" name="fname" required class="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-brand-light">
                         </div>
                         <div>
-                            <label class="block text-sm text-gray-600 mb-1">นามสกุล <span class="text-red-500">*</span></label>
+                            <label class="block text-sm text-gray-600 mb-1">นามสกุล (lname) <span class="text-red-500">*</span></label>
                             <input type="text" name="lname" required class="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-brand-light">
                         </div>
                         <div>
-                            <label class="block text-sm text-gray-600 mb-1">วัน/เดือน/ปีเกิด</label>
+                            <label class="block text-sm text-gray-600 mb-1">วัน/เดือน/ปีเกิด (birthday)</label>
                             <input type="date" name="birthday" class="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-brand-light">
                         </div>
                         <div>
-                            <label class="block text-sm text-gray-600 mb-1">วันที่ตรวจ</label>
+                            <label class="block text-sm text-gray-600 mb-1">วันที่ตรวจ (screen_date)</label>
                             <input type="date" name="screen_date" class="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-brand-light">
                         </div>
-                        <div>
-                            <label class="block text-sm text-gray-600 mb-1">โรงเรียน</label>
-                            <input type="text" name="school_name" class="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-brand-light">
+
+                        <!-- เพิ่มฟิลด์ที่อยู่ตาม Data Dictionary -->
+                        <div class="md:col-span-2 grid grid-cols-3 gap-2 mt-2">
+                            <div>
+                                <label class="block text-sm text-gray-600 mb-1">บ้านเลขที่</label>
+                                <input type="text" name="address" class="w-full border rounded-md px-3 py-2 outline-none text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-600 mb-1">หมู่ที่ (moo)</label>
+                                <input type="text" name="moo" class="w-full border rounded-md px-3 py-2 outline-none text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-600 mb-1">รหัสตำบล (aid)</label>
+                                <input type="text" name="aid" class="w-full border rounded-md px-3 py-2 outline-none text-sm">
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-sm text-gray-600 mb-1">ชั้น/ห้อง (เช่น ป.1/1)</label>
-                            <input type="text" name="school_class" class="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-brand-light">
+
+                        <!-- เพิ่มฟิลด์โรงเรียนตาม Data Dictionary -->
+                        <div class="md:col-span-2 grid grid-cols-2 gap-4 mt-2">
+                            <div>
+                                <label class="block text-sm text-gray-600 mb-1">รหัสโรงเรียน (school_code)</label>
+                                <input type="text" name="school_code" maxlength="10" class="w-full border rounded-md px-3 py-2 outline-none text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-600 mb-1">ชื่อโรงเรียน (school_name)</label>
+                                <input type="text" name="school_name" class="w-full border rounded-md px-3 py-2 outline-none text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-600 mb-1">ชั้นเรียน (level_edu) เช่น ป1</label>
+                                <input type="text" name="level_edu" class="w-full border rounded-md px-3 py-2 outline-none text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-600 mb-1">เลขห้องเรียน (room) เช่น 1</label>
+                                <input type="text" name="room" class="w-full border rounded-md px-3 py-2 outline-none text-sm">
+                            </div>
                         </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-sm text-gray-600 mb-1">ชื่อผู้ตรวจ</label>
+
+                        <div class="md:col-span-2 mt-2">
+                            <label class="block text-sm text-gray-600 mb-1">ชื่อผู้ตรวจ (examiner)</label>
                             <input type="text" name="examiner" class="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-brand-light">
                         </div>
                     </div>
@@ -342,30 +377,30 @@
 
                 <!-- ส่วนที่ 2 -->
                 <div class="bg-white p-4 rounded-lg border border-gray-200 mb-6 shadow-sm">
-                    <h3 class="font-bold text-gray-700 border-b pb-2 mb-4">ส่วนที่ 2 : ประวัติสุขภาพตา</h3>
+                    <h3 class="font-bold text-gray-700 border-b pb-2 mb-4">ส่วนที่ 2 : ประวัติสุขภาพตา (0=ไม่ใช่, 1=ใช่)</h3>
                     <div class="space-y-3">
                         <div class="flex justify-between items-center bg-gray-50 p-2 rounded">
-                            <span class="text-sm">เคยสวมแว่นตาหรือเลนส์สัมผัส (Contact Lens) หรือไม่</span>
+                            <span class="text-sm">เคยสวมแว่นตาหรือเลนส์สัมผัส หรือไม่ (hx_glasses)</span>
                             <select name="hx_glasses" class="border rounded p-1 text-sm bg-white"><option value="0">ไม่ใช่</option><option value="1">ใช่</option></select>
                         </div>
                         <div class="flex justify-between items-center p-2 rounded">
-                            <span class="text-sm">เคยผ่าตัดตา หรือได้รับบาดเจ็บที่ตา</span>
+                            <span class="text-sm">เคยผ่าตัดตา หรือได้รับบาดเจ็บที่ตา (hx_injury)</span>
                             <select name="hx_injury" class="border rounded p-1 text-sm bg-white"><option value="0">ไม่ใช่</option><option value="1">ใช่</option></select>
                         </div>
                         <div class="flex justify-between items-center bg-gray-50 p-2 rounded">
-                            <span class="text-sm">มีอาการตาเจ็บ แสบ คัน มีขี้ตามาก หรือตาแดงเรื้อรัง</span>
+                            <span class="text-sm">ตาเจ็บ แสบ คัน มีขี้ตามาก ตาแดงเรื้อรัง (hx_red_eye)</span>
                             <select name="hx_red_eye" class="border rounded p-1 text-sm bg-white"><option value="0">ไม่ใช่</option><option value="1">ใช่</option></select>
                         </div>
                         <div class="flex justify-between items-center p-2 rounded">
-                            <span class="text-sm">มีอาการปวดศีรษะบ่อย โดยเฉพาะเวลาใช้สายตา</span>
+                            <span class="text-sm">ปวดศีรษะบ่อย โดยเฉพาะเวลาใช้สายตา (hx_headache)</span>
                             <select name="hx_headache" class="border rounded p-1 text-sm bg-white"><option value="0">ไม่ใช่</option><option value="1">ใช่</option></select>
                         </div>
                         <div class="flex justify-between items-center bg-gray-50 p-2 rounded">
-                            <span class="text-sm">มีประวัติตาขี้เกียจ (Amblyopia) หรือตาเหล่</span>
+                            <span class="text-sm">มีประวัติตาขี้เกียจ หรือตาเหล่ (hx_amblyopia)</span>
                             <select name="hx_amblyopia" class="border rounded p-1 text-sm bg-white"><option value="0">ไม่ใช่</option><option value="1">ใช่</option></select>
                         </div>
                         <div class="flex justify-between items-center p-2 rounded">
-                            <span class="text-sm">บิดา มารดา หรือญาติใกล้ชิดสวมแว่นสายตา</span>
+                            <span class="text-sm">บิดา มารดา ญาติใกล้ชิดสวมแว่นสายตา (hx_family)</span>
                             <select name="hx_family" class="border rounded p-1 text-sm bg-white"><option value="0">ไม่ใช่</option><option value="1">ใช่</option></select>
                         </div>
                     </div>
@@ -375,37 +410,38 @@
                 <div class="bg-white p-4 rounded-lg border border-gray-200 mb-6 shadow-sm">
                     <h3 class="font-bold text-gray-700 border-b pb-2 mb-4">ส่วนที่ 3 : ผลการตรวจสายตา (Visual Acuity)</h3>
                     <p class="text-xs text-gray-500 mb-3">* ใช้ Snellen Chart ระยะทดสอบ 6 เมตร (หรือ 20 ฟุต)</p>
-                    <div class="grid grid-cols-2 gap-6">
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        
                         <!-- ไม่ใส่แว่น -->
                         <div class="bg-blue-50 p-3 rounded-lg border border-blue-100">
                             <h4 class="font-semibold text-brand-dark text-sm mb-3 text-center">ตาเปล่า (ไม่ใส่แว่น)</h4>
                             <div class="mb-3">
-                                <label class="block text-xs text-gray-600 mb-1">ตาขวา (OD)</label>
+                                <label class="block text-xs text-gray-600 mb-1">ตาขวา (va_r_naked)</label>
                                 <select name="va_r_naked" class="w-full border rounded-md px-2 py-1 text-sm outline-none">
                                     <option value="">- เลือก -</option>
-                                    <option value="20/20">20/20 (6/6)</option>
-                                    <option value="20/30">20/30 (6/9)</option>
-                                    <option value="20/40">20/40 (6/12)</option>
-                                    <option value="20/50">20/50 (6/18)</option>
-                                    <option value="20/70">20/70 (6/24)</option>
-                                    <option value="20/100">20/100 (6/36)</option>
-                                    <option value="20/200">20/200 (6/60)</option>
+                                    <option value="20/20">20/20</option>
+                                    <option value="20/30">20/30</option>
+                                    <option value="20/40">20/40</option>
+                                    <option value="20/50">20/50</option>
+                                    <option value="20/70">20/70</option>
+                                    <option value="20/100">20/100</option>
+                                    <option value="20/200">20/200</option>
                                     <option value="HM">HM</option>
                                     <option value="PL">PL</option>
                                     <option value="no PL">no PL</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-xs text-gray-600 mb-1">ตาซ้าย (OS)</label>
+                                <label class="block text-xs text-gray-600 mb-1">ตาซ้าย (va_l_naked)</label>
                                 <select name="va_l_naked" class="w-full border rounded-md px-2 py-1 text-sm outline-none">
                                     <option value="">- เลือก -</option>
-                                    <option value="20/20">20/20 (6/6)</option>
-                                    <option value="20/30">20/30 (6/9)</option>
-                                    <option value="20/40">20/40 (6/12)</option>
-                                    <option value="20/50">20/50 (6/18)</option>
-                                    <option value="20/70">20/70 (6/24)</option>
-                                    <option value="20/100">20/100 (6/36)</option>
-                                    <option value="20/200">20/200 (6/60)</option>
+                                    <option value="20/20">20/20</option>
+                                    <option value="20/30">20/30</option>
+                                    <option value="20/40">20/40</option>
+                                    <option value="20/50">20/50</option>
+                                    <option value="20/70">20/70</option>
+                                    <option value="20/100">20/100</option>
+                                    <option value="20/200">20/200</option>
                                     <option value="HM">HM</option>
                                     <option value="PL">PL</option>
                                     <option value="no PL">no PL</option>
@@ -415,31 +451,62 @@
                         
                         <!-- ใส่แว่น -->
                         <div class="bg-green-50 p-3 rounded-lg border border-green-100">
-                            <h4 class="font-semibold text-brand-green text-sm mb-3 text-center">ใส่แว่น / เลนส์ (ถ้ามี)</h4>
+                            <h4 class="font-semibold text-brand-green text-sm mb-3 text-center">ใส่แว่น/เลนส์ (ถ้ามี)</h4>
                             <div class="mb-3">
-                                <label class="block text-xs text-gray-600 mb-1">ตาขวา (OD)</label>
+                                <label class="block text-xs text-gray-600 mb-1">ตาขวา (va_r_glasses)</label>
                                 <select name="va_r_glasses" class="w-full border rounded-md px-2 py-1 text-sm outline-none">
                                     <option value="">- เลือก -</option>
-                                    <option value="20/20">20/20 (6/6)</option>
-                                    <option value="20/30">20/30 (6/9)</option>
-                                    <option value="20/40">20/40 (6/12)</option>
-                                    <option value="20/50">20/50 (6/18)</option>
-                                    <option value="20/70">20/70 (6/24)</option>
-                                    <option value="20/100">20/100 (6/36)</option>
-                                    <option value="20/200">20/200 (6/60)</option>
+                                    <option value="20/20">20/20</option>
+                                    <option value="20/30">20/30</option>
+                                    <option value="20/40">20/40</option>
+                                    <option value="20/50">20/50</option>
+                                    <option value="20/70">20/70</option>
+                                    <option value="20/100">20/100</option>
+                                    <option value="20/200">20/200</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-xs text-gray-600 mb-1">ตาซ้าย (OS)</label>
+                                <label class="block text-xs text-gray-600 mb-1">ตาซ้าย (va_l_glasses)</label>
                                 <select name="va_l_glasses" class="w-full border rounded-md px-2 py-1 text-sm outline-none">
                                     <option value="">- เลือก -</option>
-                                    <option value="20/20">20/20 (6/6)</option>
-                                    <option value="20/30">20/30 (6/9)</option>
-                                    <option value="20/40">20/40 (6/12)</option>
-                                    <option value="20/50">20/50 (6/18)</option>
-                                    <option value="20/70">20/70 (6/24)</option>
-                                    <option value="20/100">20/100 (6/36)</option>
-                                    <option value="20/200">20/200 (6/60)</option>
+                                    <option value="20/20">20/20</option>
+                                    <option value="20/30">20/30</option>
+                                    <option value="20/40">20/40</option>
+                                    <option value="20/50">20/50</option>
+                                    <option value="20/70">20/70</option>
+                                    <option value="20/100">20/100</option>
+                                    <option value="20/200">20/200</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Pin Hole -->
+                        <div class="bg-purple-50 p-3 rounded-lg border border-purple-100">
+                            <h4 class="font-semibold text-purple-700 text-sm mb-3 text-center">ทดสอบรูเข็ม (Pin Hole)</h4>
+                            <div class="mb-3">
+                                <label class="block text-xs text-gray-600 mb-1">ตาขวา (ph_r)</label>
+                                <select name="ph_r" class="w-full border rounded-md px-2 py-1 text-sm outline-none">
+                                    <option value="">- เลือก -</option>
+                                    <option value="20/20">20/20</option>
+                                    <option value="20/30">20/30</option>
+                                    <option value="20/40">20/40</option>
+                                    <option value="20/50">20/50</option>
+                                    <option value="20/70">20/70</option>
+                                    <option value="20/100">20/100</option>
+                                    <option value="20/200">20/200</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-600 mb-1">ตาซ้าย (ph_l)</label>
+                                <select name="ph_l" class="w-full border rounded-md px-2 py-1 text-sm outline-none">
+                                    <option value="">- เลือก -</option>
+                                    <option value="20/20">20/20</option>
+                                    <option value="20/30">20/30</option>
+                                    <option value="20/40">20/40</option>
+                                    <option value="20/50">20/50</option>
+                                    <option value="20/70">20/70</option>
+                                    <option value="20/100">20/100</option>
+                                    <option value="20/200">20/200</option>
                                 </select>
                             </div>
                         </div>
@@ -474,7 +541,7 @@
                     <h3 class="font-bold text-orange-800 border-b border-orange-200 pb-2 mb-4">ส่วนที่ 5 : สรุปผลการตรวจและข้อแนะนำ</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">สรุปผลการตรวจ</label>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">สรุปผลการตรวจ (diagnosis)</label>
                             <select name="diagnosis" class="w-full border rounded-md px-3 py-2 outline-none">
                                 <option value="สายตาปกติ">สายตาปกติ</option>
                                 <option value="สายตาสั้น (Myopia)">สายตาสั้น (Myopia)</option>
@@ -485,7 +552,7 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">ข้อแนะนำ / การส่งต่อ</label>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">ข้อแนะนำ / การส่งต่อ (referral)</label>
                             <select name="referral" class="w-full border rounded-md px-3 py-2 outline-none font-bold text-brand-orange">
                                 <option value="ไม่จำเป็นต้องส่งต่อ">ไม่จำเป็นต้องส่งต่อ</option>
                                 <option value="ควรพบจักษุแพทย์ภายใน 1 เดือน">ควรพบจักษุแพทย์ภายใน 1 เดือน</option>
@@ -511,21 +578,20 @@
             <form id="form_Satisfaction_Data" class="data-form hidden" onsubmit="submitForm(event, 'Satisfaction_Data')">
                 <div class="bg-blue-50 p-4 rounded-lg border border-blue-100 mb-6">
                     <h3 class="font-bold text-brand-dark border-b border-blue-200 pb-2 mb-4">ส่วนที่ 1 : ข้อมูลทั่วไป</h3>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div class="col-span-2 md:col-span-4">
-                            <label class="block text-sm text-gray-600 mb-1">รหัส ปชช. เด็กนักเรียน <span class="text-red-500">*</span></label>
-                            <input type="text" name="cid" required maxlength="13" class="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-brand-light">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-1">เพศ (eval_sex)</label>
+                            <select name="eval_sex" class="w-full border rounded-md px-3 py-2 outline-none">
+                                <option value="1">ชาย</option>
+                                <option value="2">หญิง</option>
+                            </select>
                         </div>
                         <div>
-                            <label class="block text-sm text-gray-600 mb-1">เพศ</label>
-                            <select name="eval_sex" class="w-full border rounded-md px-3 py-2 outline-none"><option value="ชาย">ชาย</option><option value="หญิง">หญิง</option></select>
-                        </div>
-                        <div>
-                            <label class="block text-sm text-gray-600 mb-1">อายุ (ปี)</label>
+                            <label class="block text-sm text-gray-600 mb-1">อายุ (eval_age)</label>
                             <input type="number" name="eval_age" class="w-full border rounded-md px-3 py-2 outline-none">
                         </div>
                         <div class="col-span-2">
-                            <label class="block text-sm text-gray-600 mb-1">ระดับชั้น</label>
+                            <label class="block text-sm text-gray-600 mb-1">ระดับชั้น (eval_class)</label>
                             <input type="text" name="eval_class" class="w-full border rounded-md px-3 py-2 outline-none">
                         </div>
                     </div>
@@ -588,7 +654,7 @@
                         <textarea name="comment_improve" rows="2" class="w-full border rounded-md px-3 py-2 outline-none"></textarea>
                     </div>
                     <div>
-                        <label class="block text-sm text-gray-600 mb-2">ท่านจะแนะนำโครงการนี้ให้ผู้อื่นหรือไม่ ?</label>
+                        <label class="block text-sm text-gray-600 mb-2">ท่านจะแนะนำโครงการนี้ให้ผู้อื่นหรือไม่ ? (recommend_status)</label>
                         <select name="recommend_status" class="w-full border rounded-md px-3 py-2 outline-none bg-blue-50">
                             <option value="แนะนำอย่างยิ่ง">แนะนำอย่างยิ่ง</option>
                             <option value="แนะนำ">แนะนำ</option>
@@ -611,7 +677,7 @@
             <!-- ============================== -->
             <form id="form_Pre_Test" class="data-form hidden" onsubmit="submitForm(event, 'Pre_Test')">
                 <div class="bg-blue-50 p-4 rounded-lg border border-blue-100 mb-6">
-                    <label class="block text-sm text-gray-600 mb-1 font-bold">รหัส ปชช. ผู้เข้าทดสอบ <span class="text-red-500">*</span></label>
+                    <label class="block text-sm text-gray-600 mb-1 font-bold">รหัส ปชช. ผู้เข้าทดสอบ (cid) <span class="text-red-500">*</span></label>
                     <input type="text" name="cid" required maxlength="13" class="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-brand-light" placeholder="เพื่อเชื่อมโยงคะแนนกับผู้รับการอบรม">
                 </div>
                 
@@ -621,43 +687,43 @@
                     <div class="space-y-4">
                         <div>
                             <p class="text-sm font-semibold mb-1">1. แสงที่มองเห็นได้ผ่านเข้าตาบริเวณใดก่อนไปสู่จอประสาทตา ?</p>
-                            <select name="ans_q1" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="ก">ก. กระจกตา → รูม่านตา → เลนส์ตา → จอประสาทตา</option><option value="ข">ข. รูม่านตา → กระจกตา → เลนส์ตา → จอประสาทตา</option><option value="ค">ค. เลนส์ตา → กระจกตา → รูม่านตา → จอประสาทตา</option><option value="ง">ง. กระจกตา → เลนส์ตา → รูม่านตา → จอประสาทตา</option></select>
+                            <select name="ans_q1" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="1">ก. กระจกตา → รูม่านตา → เลนส์ตา → จอประสาทตา</option><option value="2">ข. รูม่านตา → กระจกตา → เลนส์ตา → จอประสาทตา</option><option value="3">ค. เลนส์ตา → กระจกตา → รูม่านตา → จอประสาทตา</option><option value="4">ง. กระจกตา → เลนส์ตา → รูม่านตา → จอประสาทตา</option></select>
                         </div>
                         <div>
                             <p class="text-sm font-semibold mb-1">2. สายตาสั้น (Myopia) หมายถึงข้อใด ?</p>
-                            <select name="ans_q2" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="ก">ก. แสงโฟกัสที่หลังจอประสาทตา</option><option value="ข">ข. แสงโฟกัสที่หน้าจอประสาทตา</option><option value="ค">ค. แสงโฟกัสที่จอประสาทตาพอดี</option><option value="ง">ง. ความโค้งของกระจกตาไม่สม่ำเสมอ</option></select>
+                            <select name="ans_q2" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="1">ก. แสงโฟกัสที่หลังจอประสาทตา</option><option value="2">ข. แสงโฟกัสที่หน้าจอประสาทตา</option><option value="3">ค. แสงโฟกัสที่จอประสาทตาพอดี</option><option value="4">ง. ความโค้งของกระจกตาไม่สม่ำเสมอ</option></select>
                         </div>
                         <div>
                             <p class="text-sm font-semibold mb-1">3. อาการใดที่บ่งชี้ว่าเด็กอาจมีปัญหาสายตา ?</p>
-                            <select name="ans_q3" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="ก">ก. ชอบอ่านหนังสือนาน</option><option value="ข">ข. ขยี้ตาบ่อย มองกระดานไม่ชัด</option><option value="ค">ค. ชอบเล่นกีฬากลางแจ้ง</option><option value="ง">ง. นอนหลับเยอะ</option></select>
+                            <select name="ans_q3" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="1">ก. ชอบอ่านหนังสือนาน</option><option value="2">ข. ขยี้ตาบ่อย มองกระดานไม่ชัด</option><option value="3">ค. ชอบเล่นกีฬากลางแจ้ง</option><option value="4">ง. นอนหลับเยอะ</option></select>
                         </div>
                         <div>
                             <p class="text-sm font-semibold mb-1">4. Snellen Chart ใช้สำหรับตรวจอะไร ?</p>
-                            <select name="ans_q4" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="ก">ก. ตรวจความดันตา</option><option value="ข">ข. ตรวจการมองสี</option><option value="ค">ค. ตรวจความชัดเจนของการมองเห็น</option><option value="ง">ง. ตรวจประสาทตา</option></select>
+                            <select name="ans_q4" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="1">ก. ตรวจความดันตา</option><option value="2">ข. ตรวจการมองสี</option><option value="3">ค. ตรวจความชัดเจนของการมองเห็น</option><option value="4">ง. ตรวจประสาทตา</option></select>
                         </div>
                         <div>
                             <p class="text-sm font-semibold mb-1">5. ค่าสายตาปกติ ในการทดสอบด้วย Snellen Chart คือข้อใด ?</p>
-                            <select name="ans_q5" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="ก">ก. 6/3</option><option value="ข">ข. 6/6 (หรือ 20/20)</option><option value="ค">ค. 6/12</option><option value="ง">ง. 6/60</option></select>
+                            <select name="ans_q5" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="1">ก. 6/3</option><option value="2">ข. 6/6 (หรือ 20/20)</option><option value="3">ค. 6/12</option><option value="4">ง. 6/60</option></select>
                         </div>
                         <div>
                             <p class="text-sm font-semibold mb-1">6. ตาเหล่ (Strabismus) คืออะไร ?</p>
-                            <select name="ans_q6" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="ก">ก. การมองสีผิดปกติ</option><option value="ข">ข. กล้ามเนื้อตาทำงานไม่สมดุล ทำให้ตาไม่เล็งตรง</option><option value="ค">ค. ความดันตาสูงผิดปกติ</option><option value="ง">ง. การสูญเสียการมองเห็นเฉียบพลัน</option></select>
+                            <select name="ans_q6" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="1">ก. การมองสีผิดปกติ</option><option value="2">ข. กล้ามเนื้อตาทำงานไม่สมดุล ทำให้ตาไม่เล็งตรง</option><option value="3">ค. ความดันตาสูงผิดปกติ</option><option value="4">ง. การสูญเสียการมองเห็นเฉียบพลัน</option></select>
                         </div>
                         <div>
                             <p class="text-sm font-semibold mb-1">7. ตาขี้เกียจ (Amblyopia) หากไม่รักษาตั้งแต่เด็ก จะมีผลอย่างไร ?</p>
-                            <select name="ans_q7" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="ก">ก. หายเองเมื่อโตขึ้น</option><option value="ข">ข. การมองเห็นอาจสูญเสียถาวร</option><option value="ค">ค. ตาจะเหล่มากขึ้น</option><option value="ง">ง. เกิดต้อหิน</option></select>
+                            <select name="ans_q7" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="1">ก. หายเองเมื่อโตขึ้น</option><option value="2">ข. การมองเห็นอาจสูญเสียถาวร</option><option value="3">ค. ตาจะเหล่มากขึ้น</option><option value="4">ง. เกิดต้อหิน</option></select>
                         </div>
                         <div>
                             <p class="text-sm font-semibold mb-1">8. ระยะห่างที่เหมาะสมในการอ่านหนังสือหรือใช้อุปกรณ์จอแสดงผล คือเท่าไหร่ ?</p>
-                            <select name="ans_q8" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="ก">ก. 10-20 เซนติเมตร</option><option value="ข">ข. 30-40 เซนติเมตร</option><option value="ค">ค. 50-60 เซนติเมตร</option><option value="ง">ง. 70-80 เซนติเมตร</option></select>
+                            <select name="ans_q8" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="1">ก. 10-20 เซนติเมตร</option><option value="2">ข. 30-40 เซนติเมตร</option><option value="3">ค. 50-60 เซนติเมตร</option><option value="4">ง. 70-80 เซนติเมตร</option></select>
                         </div>
                         <div>
                             <p class="text-sm font-semibold mb-1">9. วิตามินชนิดใดสำคัญต่อสุขภาพดวงตามากที่สุด ?</p>
-                            <select name="ans_q9" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="ก">ก. วิตามิน C</option><option value="ข">ข. วิตามิน A</option><option value="ค">ค. วิตามิน D</option><option value="ง">ง. วิตามิน K</option></select>
+                            <select name="ans_q9" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="1">ก. วิตามิน C</option><option value="2">ข. วิตามิน A</option><option value="3">ค. วิตามิน D</option><option value="4">ง. วิตามิน K</option></select>
                         </div>
                         <div>
                             <p class="text-sm font-semibold mb-1">10. กฎ 20-20-20 สำหรับการดูแลสายตา หมายถึงอะไร ?</p>
-                            <select name="ans_q10" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="ก">ก. ออกกำลังกาย 20 นาที พัก 20 นาที ดื่มน้ำ 20 ml</option><option value="ข">ข. ทุก 20 นาที พักสายตา 20 วินาที มองระยะ 20 ฟุต</option><option value="ค">ค. ใส่แว่น 20 ชั่วโมง พัก 20 นาที ตรวจตาทุก 20 วัน</option><option value="ง">ง. นอน 20 นาที ออกกำลัง 20 นาที อ่านหนังสือ 20 นาที</option></select>
+                            <select name="ans_q10" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="1">ก. ออกกำลังกาย 20 นาที พัก 20 นาที ดื่มน้ำ 20 ml</option><option value="2">ข. ทุก 20 นาที พักสายตา 20 วินาที มองระยะ 20 ฟุต</option><option value="3">ค. ใส่แว่น 20 ชั่วโมง พัก 20 นาที ตรวจตาทุก 20 วัน</option><option value="4">ง. นอน 20 นาที ออกกำลัง 20 นาที อ่านหนังสือ 20 นาที</option></select>
                         </div>
                     </div>
                 </div>
@@ -675,7 +741,7 @@
             <!-- ============================== -->
             <form id="form_Post_Test" class="data-form hidden" onsubmit="submitForm(event, 'Post_Test')">
                 <div class="bg-blue-50 p-4 rounded-lg border border-blue-100 mb-6">
-                    <label class="block text-sm text-gray-600 mb-1 font-bold">รหัส ปชช. ผู้เข้าทดสอบ <span class="text-red-500">*</span></label>
+                    <label class="block text-sm text-gray-600 mb-1 font-bold">รหัส ปชช. ผู้เข้าทดสอบ (cid) <span class="text-red-500">*</span></label>
                     <input type="text" name="cid" required maxlength="13" class="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-brand-light" placeholder="เพื่อเชื่อมโยงคะแนนกับผู้รับการอบรม">
                 </div>
                 
@@ -685,43 +751,43 @@
                     <div class="space-y-4">
                         <div>
                             <p class="text-sm font-semibold mb-1">1. แสงที่มองเห็นได้ผ่านเข้าตาบริเวณใดก่อนไปสู่จอประสาทตา ?</p>
-                            <select name="ans_q1" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="ก">ก. กระจกตา → รูม่านตา → เลนส์ตา → จอประสาทตา</option><option value="ข">ข. รูม่านตา → กระจกตา → เลนส์ตา → จอประสาทตา</option><option value="ค">ค. เลนส์ตา → กระจกตา → รูม่านตา → จอประสาทตา</option><option value="ง">ง. กระจกตา → เลนส์ตา → รูม่านตา → จอประสาทตา</option></select>
+                            <select name="ans_q1" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="1">ก. กระจกตา → รูม่านตา → เลนส์ตา → จอประสาทตา</option><option value="2">ข. รูม่านตา → กระจกตา → เลนส์ตา → จอประสาทตา</option><option value="3">ค. เลนส์ตา → กระจกตา → รูม่านตา → จอประสาทตา</option><option value="4">ง. กระจกตา → เลนส์ตา → รูม่านตา → จอประสาทตา</option></select>
                         </div>
                         <div>
                             <p class="text-sm font-semibold mb-1">2. สายตาสั้น (Myopia) หมายถึงข้อใด ?</p>
-                            <select name="ans_q2" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="ก">ก. แสงโฟกัสที่หลังจอประสาทตา</option><option value="ข">ข. แสงโฟกัสที่หน้าจอประสาทตา</option><option value="ค">ค. แสงโฟกัสที่จอประสาทตาพอดี</option><option value="ง">ง. ความโค้งของกระจกตาไม่สม่ำเสมอ</option></select>
+                            <select name="ans_q2" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="1">ก. แสงโฟกัสที่หลังจอประสาทตา</option><option value="2">ข. แสงโฟกัสที่หน้าจอประสาทตา</option><option value="3">ค. แสงโฟกัสที่จอประสาทตาพอดี</option><option value="4">ง. ความโค้งของกระจกตาไม่สม่ำเสมอ</option></select>
                         </div>
                         <div>
                             <p class="text-sm font-semibold mb-1">3. อาการใดที่บ่งชี้ว่าเด็กอาจมีปัญหาสายตา ?</p>
-                            <select name="ans_q3" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="ก">ก. ชอบอ่านหนังสือนาน</option><option value="ข">ข. ขยี้ตาบ่อย มองกระดานไม่ชัด</option><option value="ค">ค. ชอบเล่นกีฬากลางแจ้ง</option><option value="ง">ง. นอนหลับเยอะ</option></select>
+                            <select name="ans_q3" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="1">ก. ชอบอ่านหนังสือนาน</option><option value="2">ข. ขยี้ตาบ่อย มองกระดานไม่ชัด</option><option value="3">ค. ชอบเล่นกีฬากลางแจ้ง</option><option value="4">ง. นอนหลับเยอะ</option></select>
                         </div>
                         <div>
                             <p class="text-sm font-semibold mb-1">4. Snellen Chart ใช้สำหรับตรวจอะไร ?</p>
-                            <select name="ans_q4" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="ก">ก. ตรวจความดันตา</option><option value="ข">ข. ตรวจการมองสี</option><option value="ค">ค. ตรวจความชัดเจนของการมองเห็น</option><option value="ง">ง. ตรวจประสาทตา</option></select>
+                            <select name="ans_q4" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="1">ก. ตรวจความดันตา</option><option value="2">ข. ตรวจการมองสี</option><option value="3">ค. ตรวจความชัดเจนของการมองเห็น</option><option value="4">ง. ตรวจประสาทตา</option></select>
                         </div>
                         <div>
                             <p class="text-sm font-semibold mb-1">5. ค่าสายตาปกติ ในการทดสอบด้วย Snellen Chart คือข้อใด ?</p>
-                            <select name="ans_q5" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="ก">ก. 6/3</option><option value="ข">ข. 6/6 (หรือ 20/20)</option><option value="ค">ค. 6/12</option><option value="ง">ง. 6/60</option></select>
+                            <select name="ans_q5" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="1">ก. 6/3</option><option value="2">ข. 6/6 (หรือ 20/20)</option><option value="3">ค. 6/12</option><option value="4">ง. 6/60</option></select>
                         </div>
                         <div>
                             <p class="text-sm font-semibold mb-1">6. ตาเหล่ (Strabismus) คืออะไร ?</p>
-                            <select name="ans_q6" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="ก">ก. การมองสีผิดปกติ</option><option value="ข">ข. กล้ามเนื้อตาทำงานไม่สมดุล ทำให้ตาไม่เล็งตรง</option><option value="ค">ค. ความดันตาสูงผิดปกติ</option><option value="ง">ง. การสูญเสียการมองเห็นเฉียบพลัน</option></select>
+                            <select name="ans_q6" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="1">ก. การมองสีผิดปกติ</option><option value="2">ข. กล้ามเนื้อตาทำงานไม่สมดุล ทำให้ตาไม่เล็งตรง</option><option value="3">ค. ความดันตาสูงผิดปกติ</option><option value="4">ง. การสูญเสียการมองเห็นเฉียบพลัน</option></select>
                         </div>
                         <div>
                             <p class="text-sm font-semibold mb-1">7. ตาขี้เกียจ (Amblyopia) หากไม่รักษาตั้งแต่เด็ก จะมีผลอย่างไร ?</p>
-                            <select name="ans_q7" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="ก">ก. หายเองเมื่อโตขึ้น</option><option value="ข">ข. การมองเห็นอาจสูญเสียถาวร</option><option value="ค">ค. ตาจะเหล่มากขึ้น</option><option value="ง">ง. เกิดต้อหิน</option></select>
+                            <select name="ans_q7" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="1">ก. หายเองเมื่อโตขึ้น</option><option value="2">ข. การมองเห็นอาจสูญเสียถาวร</option><option value="3">ค. ตาจะเหล่มากขึ้น</option><option value="4">ง. เกิดต้อหิน</option></select>
                         </div>
                         <div>
                             <p class="text-sm font-semibold mb-1">8. ระยะห่างที่เหมาะสมในการอ่านหนังสือหรือใช้อุปกรณ์จอแสดงผล คือเท่าไหร่ ?</p>
-                            <select name="ans_q8" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="ก">ก. 10-20 เซนติเมตร</option><option value="ข">ข. 30-40 เซนติเมตร</option><option value="ค">ค. 50-60 เซนติเมตร</option><option value="ง">ง. 70-80 เซนติเมตร</option></select>
+                            <select name="ans_q8" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="1">ก. 10-20 เซนติเมตร</option><option value="2">ข. 30-40 เซนติเมตร</option><option value="3">ค. 50-60 เซนติเมตร</option><option value="4">ง. 70-80 เซนติเมตร</option></select>
                         </div>
                         <div>
                             <p class="text-sm font-semibold mb-1">9. วิตามินชนิดใดสำคัญต่อสุขภาพดวงตามากที่สุด ?</p>
-                            <select name="ans_q9" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="ก">ก. วิตามิน C</option><option value="ข">ข. วิตามิน A</option><option value="ค">ค. วิตามิน D</option><option value="ง">ง. วิตามิน K</option></select>
+                            <select name="ans_q9" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="1">ก. วิตามิน C</option><option value="2">ข. วิตามิน A</option><option value="3">ค. วิตามิน D</option><option value="4">ง. วิตามิน K</option></select>
                         </div>
                         <div>
                             <p class="text-sm font-semibold mb-1">10. กฎ 20-20-20 สำหรับการดูแลสายตา หมายถึงอะไร ?</p>
-                            <select name="ans_q10" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="ก">ก. ออกกำลังกาย 20 นาที พัก 20 นาที ดื่มน้ำ 20 ml</option><option value="ข">ข. ทุก 20 นาที พักสายตา 20 วินาที มองระยะ 20 ฟุต</option><option value="ค">ค. ใส่แว่น 20 ชั่วโมง พัก 20 นาที ตรวจตาทุก 20 วัน</option><option value="ง">ง. นอน 20 นาที ออกกำลัง 20 นาที อ่านหนังสือ 20 นาที</option></select>
+                            <select name="ans_q10" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="1">ก. ออกกำลังกาย 20 นาที พัก 20 นาที ดื่มน้ำ 20 ml</option><option value="2">ข. ทุก 20 นาที พักสายตา 20 วินาที มองระยะ 20 ฟุต</option><option value="3">ค. ใส่แว่น 20 ชั่วโมง พัก 20 นาที ตรวจตาทุก 20 วัน</option><option value="4">ง. นอน 20 นาที ออกกำลัง 20 นาที อ่านหนังสือ 20 นาที</option></select>
                         </div>
                     </div>
                 </div>
@@ -776,16 +842,16 @@
 
         // เริ่มต้นการทำงาน
         $(document).ready(function() {
-            // โหลดข้อมูลเบื้องต้น
-            fetchDashboardData();
+            // โหลดการตั้งค่าก่อน แล้วค่อยโหลดข้อมูล Dashboard
+            fetchSettings().then(() => {
+                fetchDashboardData();
+            });
         });
 
         // 📌 ฟังก์ชันสื่อสารกับ GAS API
         async function callGAS(action, payload = {}) {
             payload.action = action;
             try {
-                // ถ้าใช้ใน GAS โดยตรง สามารถเปลี่ยนไปใช้ google.script.run ได้
-                // แต่เขียนแบบ fetch รองรับการทำ GitHub Pages
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // ใช้ text/plain เลี่ยง CORS preflight ได้ในบางกรณี
@@ -795,6 +861,41 @@
             } catch (err) {
                 console.error("API Error:", err);
                 return { status: 'error', message: 'ไม่สามารถเชื่อมต่อฐานข้อมูลได้' };
+            }
+        }
+
+        // 📌 ดึงการตั้งค่าระบบ (Logo, ชื่อ, เมนู)
+        async function fetchSettings() {
+            const res = await callGAS('getSettings');
+            if (res.status === 'success' && res.data) {
+                appSettings = res.data;
+                
+                // 1. อัปเดตหัวเว็บและโลโก้
+                if (appSettings.sys_name) document.getElementById('sysName').innerText = appSettings.sys_name;
+                if (appSettings.org_name) document.getElementById('orgName').innerText = appSettings.org_name;
+                if (appSettings.logo_id) {
+                    const logoUrl = `https://drive.google.com/uc?export=view&id=${appSettings.logo_id}`;
+                    // นำ URL รูปมาใส่แทนที่ Icon สำรอง
+                    document.getElementById('logoContainer').innerHTML = `<img src="${logoUrl}" alt="Logo" class="w-full h-full object-cover rounded-full">`;
+                }
+
+                // 2. จัดการสิทธิ์การมองเห็นเมนู (Tabs) ตามการตั้งค่า
+                toggleTabVisibility('tab_Screening_Data', appSettings.allow_add_Screening_Data);
+                toggleTabVisibility('tab_Satisfaction_Data', appSettings.allow_Satisfaction_Data);
+                toggleTabVisibility('tab_Pre_Test', appSettings.allow_Pre_Test);
+                toggleTabVisibility('tab_Post_Test', appSettings.allow_Post_Test);
+            }
+        }
+
+        // ฟังก์ชันช่วยซ่อน/แสดงแท็บตามค่า TRUE/FALSE ใน Sheet
+        function toggleTabVisibility(tabId, isAllowed) {
+            const tab = document.getElementById(tabId);
+            if(!tab) return;
+            const allowed = String(isAllowed).toUpperCase() === 'TRUE';
+            if(allowed) {
+                tab.classList.remove('hidden');
+            } else {
+                tab.classList.add('hidden');
             }
         }
 
@@ -912,7 +1013,7 @@
             // จัดฟอร์แมตข้อมูลเข้าตาราง (จำลองจากโครงสร้าง Sheet)
             const tableBody = dataArray.map(row => {
                 let statusHtml = '';
-                if(String(row.referral).toLowerCase() == 'yes') {
+                if(String(row.referral).toLowerCase() == 'yes' || row.referral == 1 || String(row.referral).includes('ส่งต่อ')) {
                     statusHtml = '<span class="bg-orange-100 text-orange-800 px-2 py-1 rounded text-xs">ส่งต่อแพทย์</span>';
                 } else if(row.va_r_naked != '20/20' || row.va_l_naked != '20/20') {
                     statusHtml = '<span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs">ผิดปกติ</span>';
@@ -1019,7 +1120,25 @@
             if (form.classList.contains('slide-out')) {
                 form.classList.remove('slide-out');
                 form.classList.add('slide-in');
-                switchFormType('Screening_Data'); // เปิดมาให้แสดงแท็บคัดกรองเป็นค่าเริ่มต้น
+                
+                // หาแท็บแรกที่เปิดใช้งานอยู่ตามที่ Admin ตั้งค่าไว้
+                const tabs = ['Screening_Data', 'Satisfaction_Data', 'Pre_Test', 'Post_Test'];
+                let opened = false;
+                for(let t of tabs) {
+                    const tabEl = document.getElementById('tab_' + t);
+                    if(tabEl && !tabEl.classList.contains('hidden')) {
+                        switchFormType(t);
+                        opened = true;
+                        break;
+                    }
+                }
+                
+                // ถ้าไม่มีแท็บไหนเปิดเลย ให้ซ่อนไปตามเดิม
+                if(!opened) {
+                    Swal.fire('แจ้งเตือน', 'ขณะนี้ระบบปิดการบันทึกข้อมูลทุกประเภท', 'info');
+                    toggleForm();
+                }
+
             } else {
                 form.classList.remove('slide-in');
                 form.classList.add('slide-out');
@@ -1059,6 +1178,29 @@
             
             if(currentUser) {
                 dataObj.hospcode = currentUser.username;
+            }
+
+            // ⚠️ การเตรียมข้อมูลก่อนส่ง (Pre-processing) เพื่อให้ตรงกับโครงสร้างอัตโนมัติใน Data Dictionary
+            if (formType === 'Screening_Data') {
+                // คำนวณชื่อเต็ม
+                dataObj.student_name = `${dataObj.pname}${dataObj.fname} ${dataObj.lname}`;
+                
+                // คำนวณชั้น/ห้อง
+                if(dataObj.level_edu && dataObj.room) {
+                    dataObj.school_class = `${dataObj.level_edu}/${dataObj.room}`;
+                }
+                
+                // คำนวณอายุจากวันเกิดเทียบกับวันที่คัดกรอง
+                if(dataObj.birthday) {
+                    const birthDate = new Date(dataObj.birthday);
+                    const screenDate = dataObj.screen_date ? new Date(dataObj.screen_date) : new Date();
+                    let age = screenDate.getFullYear() - birthDate.getFullYear();
+                    const m = screenDate.getMonth() - birthDate.getMonth();
+                    if (m < 0 || (m === 0 && screenDate.getDate() < birthDate.getDate())) {
+                        age--;
+                    }
+                    dataObj.age_years = age;
+                }
             }
 
             // ⚠️ ส่งข้อมูลไป GAS โดยระบุปลายทาง (sheetName) ผ่าน API payload
