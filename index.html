@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard โครงการเด็กไทยสายตาดี</title>
+
+    <!-- Tailwind CSS (Executive & Health Theme) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            dark: '#1E3A5F',   // น้ำเงินเข้ม (Trust)
+                            light: '#3B82F6',  // ฟ้า (Medical)
+                            green: '#16A34A',  // เขียว (Normal)
+                            yellow: '#EAB308', // เหลือง (Abnormal)
+                            orange: '#F97316', // ส้ม (Refer)
+                            red: '#EF4444'     // แดง (Glasses)
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Sarabun', 'sans-serif'],
+                        heading: ['Prompt', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600&family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome & SweetAlert2 & Chart.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- DataTables สำหรับตารางข้อมูล -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+
+    <style>
+        body { font-family: 'Sarabun', sans-serif; background-color: #F3F4F6; }
+        h1, h2, h3, .font-heading { font-family: 'Prompt', sans-serif; }
+        .glass-header { background: rgba(30, 58, 95, 0.95); backdrop-filter: blur(10px); }
+        /* สไตล์ตาราง DataTable แบบคลีนๆ */
+        table.dataTable thead th { background-color: #1E3A5F; color: white; border-bottom: none; }
+        table.dataTable tbody tr:hover { background-color: #E0F2FE; }
+        .dt-button { border-radius: 6px !important; background: #3B82F6 !important; color: white !important; border: none !important; }
+        
+        /* สไลด์ฟอร์ม */
+        #slideForm { transition: transform 0.4s ease-in-out; }
+        .slide-in { transform: translateX(0%); }
+        .slide-out { transform: translateX(100%); }
+        
+        /* Loading Overlay */
+        #globalLoader { display: flex; }
+    </style>
+</head>
+<body class="text-gray-800 overflow-x-hidden">
+
+    <!-- 🛠 การตั้งค่า API (เปลี่ยน URL นี้เมื่อ Deploy Google Apps Script เสร็จ) -->
+    <script>
+        // URL ของ Web App ที่ได้จากการ Deploy ใน GAS (ลงท้ายด้วย /exec)
+        const API_URL = 'https://script.google.com/macros/s/AKfycbwllnhLYUsyLvA7mutkPBP1XTmYFAwSnv6TToqRWPC6M3qf1xLzs7Ho0HUDCo46q4OUCQ/exec'; 
+        
+        // สถานะ User ปัจจุบัน
+        let currentUser = null; 
+    </script>
+
+    <!-- Overlay Loading -->
+    <div id="globalLoader" class="fixed inset-0 bg-white z-50 items-center justify-center flex-col">
+        <i class="fas fa-eye fa-spin text-6xl text-brand-light mb-4"></i>
+        <h2 class="text-xl font-heading text-brand-dark animate-pulse">กำลังโหลดข้อมูลโครงการเด็กไทยสายตาดี...</h2>
+    </div>
+
+    <!-- Header -->
+    <header class="glass-header text-white sticky top-0 z-30 shadow-lg">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <div class="bg-white p-2 rounded-full w-12 h-12 flex items-center justify-center text-brand-dark">
+                    <i class="fas fa-glasses text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-heading font-semibold" id="sysName">โครงการเด็กไทยสายตาดี</h1>
+                    <p class="text-xs text-blue-200" id="orgName">สำนักงานสาธารณสุขจังหวัด...</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <span class="text-sm hidden md:block"><i class="far fa-calendar-alt mr-2"></i><span id="currentDate"></span></span>
+                <button id="btnLogin" onclick="showLoginModal()" class="bg-white text-brand-dark px-4 py-2 rounded-md font-semibold hover:bg-gray-100 transition shadow-sm text-sm">
+                    <i class="fas fa-sign-in-alt mr-2"></i>เข้าสู่ระบบ รพ.สต.
+                </button>
+                <div id="userInfo" class="hidden flex items-center gap-3">
+                    <span class="text-sm bg-brand-light px-3 py-1 rounded-full"><i class="fas fa-user mr-2"></i><span id="displayUserName"></span></span>
+                    <button onclick="logout()" class="text-red-300 hover:text-red-100 transition"><i class="fas fa-power-off text-lg"></i></button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        
+        <!-- Filter Bar -->
+        <div class="bg-white rounded-xl shadow-sm p-4 mb-6 flex flex-wrap gap-4 items-center justify-between">
+            <div class="flex flex-wrap gap-4 items-center w-full md:w-auto">
+                <span class="font-heading text-gray-600"><i class="fas fa-filter mr-2"></i>ตัวกรอง:</span>
+                <select id="filterAmphoe" class="border rounded-lg px-3 py-2 text-sm focus:ring-brand-light focus:border-brand-light outline-none">
+                    <option value="">-- ทุกอำเภอ --</option>
+                    <option value="เมือง">เมือง</option>
+                    <option value="กระทุ่มแบน">กระทุ่มแบน</option>
+                    <option value="บ้านแพ้ว">บ้านแพ้ว</option>
+                </select>
+                <select id="filterSchool" class="border rounded-lg px-3 py-2 text-sm focus:ring-brand-light outline-none">
+                    <option value="">-- ทุกโรงเรียน --</option>
+                </select>
+            </div>
+            <div id="actionButtons" class="hidden">
+                <button onclick="toggleForm()" class="bg-brand-light hover:bg-blue-600 text-white px-5 py-2 rounded-lg shadow transition">
+                    <i class="fas fa-plus mr-2"></i>เพิ่มข้อมูลคัดกรอง
+                </button>
+            </div>
+        </div>
+
+        <!-- KPI Cards (Traffic Light Concept) -->
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-8">
+            <!-- รวม -->
+            <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-brand-dark transform hover:-translate-y-1 transition duration-300">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm text-gray-500 font-heading">เป้าหมายทั้งหมด</p>
+                        <h3 class="text-3xl font-bold text-gray-800 mt-1" id="kpi-total">0</h3>
+                    </div>
+                    <div class="bg-blue-100 text-brand-dark p-3 rounded-lg"><i class="fas fa-users text-xl"></i></div>
+                </div>
+            </div>
+            
+            <!-- ปกติ (เขียว) -->
+            <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-brand-green transform hover:-translate-y-1 transition duration-300">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm text-gray-500 font-heading">สายตาปกติ</p>
+                        <h3 class="text-3xl font-bold text-brand-green mt-1" id="kpi-normal">0</h3>
+                    </div>
+                    <div class="bg-green-100 text-brand-green p-3 rounded-lg"><i class="fas fa-check-circle text-xl"></i></div>
+                </div>
+            </div>
+
+            <!-- ผิดปกติ (เหลือง) -->
+            <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-brand-yellow transform hover:-translate-y-1 transition duration-300">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm text-gray-500 font-heading">ผิดปกติ (เฝ้าระวัง)</p>
+                        <h3 class="text-3xl font-bold text-brand-yellow mt-1" id="kpi-abnormal">0</h3>
+                    </div>
+                    <div class="bg-yellow-100 text-brand-yellow p-3 rounded-lg"><i class="fas fa-exclamation-triangle text-xl"></i></div>
+                </div>
+            </div>
+
+            <!-- ส่งต่อ (ส้ม) -->
+            <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-brand-orange transform hover:-translate-y-1 transition duration-300">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm text-gray-500 font-heading">ส่งต่อพบแพทย์</p>
+                        <h3 class="text-3xl font-bold text-brand-orange mt-1" id="kpi-refer">0</h3>
+                    </div>
+                    <div class="bg-orange-100 text-brand-orange p-3 rounded-lg"><i class="fas fa-hospital text-xl"></i></div>
+                </div>
+            </div>
+
+            <!-- ตัดแว่น (แดง) -->
+            <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-brand-red transform hover:-translate-y-1 transition duration-300">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm text-gray-500 font-heading">รับแว่นตาแล้ว</p>
+                        <h3 class="text-3xl font-bold text-brand-red mt-1" id="kpi-glasses">0</h3>
+                    </div>
+                    <div class="bg-red-100 text-brand-red p-3 rounded-lg"><i class="fas fa-glasses text-xl"></i></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Education Data Row -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div class="bg-gradient-to-r from-blue-50 to-white rounded-xl shadow-sm p-4 flex items-center justify-between border border-blue-100">
+                <div>
+                    <p class="text-sm text-gray-500">คะแนน Pre-Test เฉลี่ย</p>
+                    <p class="text-2xl font-bold text-brand-dark" id="kpi-pre">0.00</p>
+                </div>
+                <i class="fas fa-file-alt text-gray-300 text-3xl"></i>
+            </div>
+            <div class="bg-gradient-to-r from-blue-50 to-white rounded-xl shadow-sm p-4 flex items-center justify-between border border-blue-100">
+                <div>
+                    <p class="text-sm text-gray-500">คะแนน Post-Test เฉลี่ย</p>
+                    <p class="text-2xl font-bold text-brand-dark" id="kpi-post">0.00</p>
+                </div>
+                <i class="fas fa-file-signature text-gray-300 text-3xl"></i>
+            </div>
+            <div class="bg-gradient-to-r from-green-50 to-white rounded-xl shadow-sm p-4 flex items-center justify-between border border-green-100">
+                <div>
+                    <p class="text-sm text-gray-500">ความก้าวหน้า (Learning Gain)</p>
+                    <p class="text-2xl font-bold text-brand-green" id="kpi-gain">0.00%</p>
+                </div>
+                <i class="fas fa-chart-line text-green-200 text-3xl"></i>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Bar Chart -->
+            <div class="bg-white rounded-xl shadow-sm p-5 lg:col-span-2">
+                <h3 class="font-heading font-semibold text-gray-700 mb-4"><i class="fas fa-chart-bar mr-2 text-brand-light"></i>ผลการคัดกรองแยกตามพื้นที่ รพ.สต.</h3>
+                <div class="relative h-72 w-full">
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+            <!-- Pie Chart -->
+            <div class="bg-white rounded-xl shadow-sm p-5">
+                <h3 class="font-heading font-semibold text-gray-700 mb-4"><i class="fas fa-chart-pie mr-2 text-brand-light"></i>สัดส่วนสถานะทางสายตา</h3>
+                <div class="relative h-64 w-full flex justify-center">
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Table Section (Scrollable) -->
+        <div class="bg-white rounded-xl shadow-sm p-5 overflow-hidden">
+            <h3 class="font-heading font-semibold text-gray-700 mb-4"><i class="fas fa-table mr-2 text-brand-light"></i>ตารางข้อมูลรายบุคคล</h3>
+            <div class="overflow-x-auto">
+                <!-- ตารางจะยึดความกว้าง 100% เลื่อนแนวนอนได้ -->
+                <table id="dataTable" class="display w-full whitespace-nowrap text-sm">
+                    <thead>
+                        <tr>
+                            <th>รหัส รพ.สต.</th>
+                            <th>รหัส ปชช.</th>
+                            <th>ชื่อ-นามสกุล</th>
+                            <th>โรงเรียน</th>
+                            <th>ชั้นเรียน</th>
+                            <th>ตาขวา (VA)</th>
+                            <th>ตาซ้าย (VA)</th>
+                            <th>สถานะ/ส่งต่อ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- ข้อมูลจะถูกแทรกด้วย DataTables -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ========================================== -->
+    <!-- 📌 Slide-Out Form (บันทึกข้อมูลครบวงจร) -->
+    <!-- ========================================== -->
+    <div id="slideForm" class="fixed inset-y-0 right-0 w-full md:w-[700px] bg-white shadow-2xl z-40 slide-out overflow-y-auto">
+        <div class="bg-brand-dark text-white p-4 flex justify-between items-center sticky top-0 z-50 shadow-md">
+            <h2 class="font-heading text-lg"><i class="fas fa-edit mr-2"></i>บันทึกข้อมูลโครงการ</h2>
+            <button onclick="toggleForm()" class="text-gray-300 hover:text-white"><i class="fas fa-times text-xl"></i></button>
+        </div>
+        
+        <!-- Form Tabs สำหรับสลับแบบฟอร์ม -->
+        <div class="bg-gray-100 p-2 flex space-x-1 overflow-x-auto text-sm border-b sticky top-[60px] z-40">
+            <button type="button" onclick="switchFormType('Screening_Data')" id="tab_Screening_Data" class="form-tab px-4 py-2 rounded-md font-semibold bg-white text-brand-dark shadow-sm border border-gray-200 whitespace-nowrap"><i class="fas fa-eye mr-1"></i> 1. คัดกรองสายตา</button>
+            <button type="button" onclick="switchFormType('Satisfaction_Data')" id="tab_Satisfaction_Data" class="form-tab px-4 py-2 rounded-md font-semibold text-gray-600 hover:bg-gray-200 border border-transparent whitespace-nowrap"><i class="fas fa-smile mr-1"></i> 2. ความพึงพอใจ</button>
+            <button type="button" onclick="switchFormType('Pre_Test')" id="tab_Pre_Test" class="form-tab px-4 py-2 rounded-md font-semibold text-gray-600 hover:bg-gray-200 border border-transparent whitespace-nowrap"><i class="fas fa-file-alt mr-1"></i> 3. Pre-Test</button>
+            <button type="button" onclick="switchFormType('Post_Test')" id="tab_Post_Test" class="form-tab px-4 py-2 rounded-md font-semibold text-gray-600 hover:bg-gray-200 border border-transparent whitespace-nowrap"><i class="fas fa-file-signature mr-1"></i> 4. Post-Test</button>
+        </div>
+
+        <div class="p-6 pb-24">
+            
+            <!-- ============================== -->
+            <!-- ฟอร์ม 1: คัดกรองสายตา -->
+            <!-- ============================== -->
+            <form id="form_Screening_Data" class="data-form block" onsubmit="submitForm(event, 'Screening_Data')">
+                <!-- ส่วนที่ 1 -->
+                <div class="bg-blue-50 p-4 rounded-lg border border-blue-100 mb-6">
+                    <h3 class="font-bold text-brand-dark border-b border-blue-200 pb-2 mb-4"><i class="fas fa-user mr-2"></i>ส่วนที่ 1 : ข้อมูลผู้รับการตรวจ</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="md:col-span-2">
+                            <label class="block text-sm text-gray-600 mb-1">เลขบัตรประชาชน 13 หลัก <span class="text-red-500">*</span></label>
+                            <input type="text" name="cid" required maxlength="13" class="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-brand-light">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-1">คำนำหน้าชื่อ</label>
+                            <select name="pname" class="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-brand-light">
+                                <option value="เด็กชาย">เด็กชาย</option>
+                                <option value="เด็กหญิง">เด็กหญิง</option>
+                                <option value="นาย">นาย</option>
+                                <option value="นางสาว">นางสาว</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-1">เพศ</label>
+                            <select name="sex" class="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-brand-light">
+                                <option value="1">ชาย</option>
+                                <option value="2">หญิง</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-1">ชื่อ <span class="text-red-500">*</span></label>
+                            <input type="text" name="fname" required class="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-brand-light">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-1">นามสกุล <span class="text-red-500">*</span></label>
+                            <input type="text" name="lname" required class="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-brand-light">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-1">วัน/เดือน/ปีเกิด</label>
+                            <input type="date" name="birthday" class="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-brand-light">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-1">วันที่ตรวจ</label>
+                            <input type="date" name="screen_date" class="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-brand-light">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-1">โรงเรียน</label>
+                            <input type="text" name="school_name" class="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-brand-light">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-1">ชั้น/ห้อง (เช่น ป.1/1)</label>
+                            <input type="text" name="school_class" class="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-brand-light">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm text-gray-600 mb-1">ชื่อผู้ตรวจ</label>
+                            <input type="text" name="examiner" class="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-brand-light">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ส่วนที่ 2 -->
+                <div class="bg-white p-4 rounded-lg border border-gray-200 mb-6 shadow-sm">
+                    <h3 class="font-bold text-gray-700 border-b pb-2 mb-4">ส่วนที่ 2 : ประวัติสุขภาพตา</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center bg-gray-50 p-2 rounded">
+                            <span class="text-sm">เคยสวมแว่นตาหรือเลนส์สัมผัส (Contact Lens) หรือไม่</span>
+                            <select name="hx_glasses" class="border rounded p-1 text-sm bg-white"><option value="0">ไม่ใช่</option><option value="1">ใช่</option></select>
+                        </div>
+                        <div class="flex justify-between items-center p-2 rounded">
+                            <span class="text-sm">เคยผ่าตัดตา หรือได้รับบาดเจ็บที่ตา</span>
+                            <select name="hx_injury" class="border rounded p-1 text-sm bg-white"><option value="0">ไม่ใช่</option><option value="1">ใช่</option></select>
+                        </div>
+                        <div class="flex justify-between items-center bg-gray-50 p-2 rounded">
+                            <span class="text-sm">มีอาการตาเจ็บ แสบ คัน มีขี้ตามาก หรือตาแดงเรื้อรัง</span>
+                            <select name="hx_red_eye" class="border rounded p-1 text-sm bg-white"><option value="0">ไม่ใช่</option><option value="1">ใช่</option></select>
+                        </div>
+                        <div class="flex justify-between items-center p-2 rounded">
+                            <span class="text-sm">มีอาการปวดศีรษะบ่อย โดยเฉพาะเวลาใช้สายตา</span>
+                            <select name="hx_headache" class="border rounded p-1 text-sm bg-white"><option value="0">ไม่ใช่</option><option value="1">ใช่</option></select>
+                        </div>
+                        <div class="flex justify-between items-center bg-gray-50 p-2 rounded">
+                            <span class="text-sm">มีประวัติตาขี้เกียจ (Amblyopia) หรือตาเหล่</span>
+                            <select name="hx_amblyopia" class="border rounded p-1 text-sm bg-white"><option value="0">ไม่ใช่</option><option value="1">ใช่</option></select>
+                        </div>
+                        <div class="flex justify-between items-center p-2 rounded">
+                            <span class="text-sm">บิดา มารดา หรือญาติใกล้ชิดสวมแว่นสายตา</span>
+                            <select name="hx_family" class="border rounded p-1 text-sm bg-white"><option value="0">ไม่ใช่</option><option value="1">ใช่</option></select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ส่วนที่ 3 -->
+                <div class="bg-white p-4 rounded-lg border border-gray-200 mb-6 shadow-sm">
+                    <h3 class="font-bold text-gray-700 border-b pb-2 mb-4">ส่วนที่ 3 : ผลการตรวจสายตา (Visual Acuity)</h3>
+                    <p class="text-xs text-gray-500 mb-3">* ใช้ Snellen Chart ระยะทดสอบ 6 เมตร (หรือ 20 ฟุต)</p>
+                    <div class="grid grid-cols-2 gap-6">
+                        <!-- ไม่ใส่แว่น -->
+                        <div class="bg-blue-50 p-3 rounded-lg border border-blue-100">
+                            <h4 class="font-semibold text-brand-dark text-sm mb-3 text-center">ตาเปล่า (ไม่ใส่แว่น)</h4>
+                            <div class="mb-3">
+                                <label class="block text-xs text-gray-600 mb-1">ตาขวา (OD)</label>
+                                <select name="va_r_naked" class="w-full border rounded-md px-2 py-1 text-sm outline-none">
+                                    <option value="">- เลือก -</option>
+                                    <option value="20/20">20/20 (6/6)</option>
+                                    <option value="20/30">20/30 (6/9)</option>
+                                    <option value="20/40">20/40 (6/12)</option>
+                                    <option value="20/50">20/50 (6/18)</option>
+                                    <option value="20/70">20/70 (6/24)</option>
+                                    <option value="20/100">20/100 (6/36)</option>
+                                    <option value="20/200">20/200 (6/60)</option>
+                                    <option value="HM">HM</option>
+                                    <option value="PL">PL</option>
+                                    <option value="no PL">no PL</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-600 mb-1">ตาซ้าย (OS)</label>
+                                <select name="va_l_naked" class="w-full border rounded-md px-2 py-1 text-sm outline-none">
+                                    <option value="">- เลือก -</option>
+                                    <option value="20/20">20/20 (6/6)</option>
+                                    <option value="20/30">20/30 (6/9)</option>
+                                    <option value="20/40">20/40 (6/12)</option>
+                                    <option value="20/50">20/50 (6/18)</option>
+                                    <option value="20/70">20/70 (6/24)</option>
+                                    <option value="20/100">20/100 (6/36)</option>
+                                    <option value="20/200">20/200 (6/60)</option>
+                                    <option value="HM">HM</option>
+                                    <option value="PL">PL</option>
+                                    <option value="no PL">no PL</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- ใส่แว่น -->
+                        <div class="bg-green-50 p-3 rounded-lg border border-green-100">
+                            <h4 class="font-semibold text-brand-green text-sm mb-3 text-center">ใส่แว่น / เลนส์ (ถ้ามี)</h4>
+                            <div class="mb-3">
+                                <label class="block text-xs text-gray-600 mb-1">ตาขวา (OD)</label>
+                                <select name="va_r_glasses" class="w-full border rounded-md px-2 py-1 text-sm outline-none">
+                                    <option value="">- เลือก -</option>
+                                    <option value="20/20">20/20 (6/6)</option>
+                                    <option value="20/30">20/30 (6/9)</option>
+                                    <option value="20/40">20/40 (6/12)</option>
+                                    <option value="20/50">20/50 (6/18)</option>
+                                    <option value="20/70">20/70 (6/24)</option>
+                                    <option value="20/100">20/100 (6/36)</option>
+                                    <option value="20/200">20/200 (6/60)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-600 mb-1">ตาซ้าย (OS)</label>
+                                <select name="va_l_glasses" class="w-full border rounded-md px-2 py-1 text-sm outline-none">
+                                    <option value="">- เลือก -</option>
+                                    <option value="20/20">20/20 (6/6)</option>
+                                    <option value="20/30">20/30 (6/9)</option>
+                                    <option value="20/40">20/40 (6/12)</option>
+                                    <option value="20/50">20/50 (6/18)</option>
+                                    <option value="20/70">20/70 (6/24)</option>
+                                    <option value="20/100">20/100 (6/36)</option>
+                                    <option value="20/200">20/200 (6/60)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ส่วนที่ 4 -->
+                <div class="bg-white p-4 rounded-lg border border-gray-200 mb-6 shadow-sm">
+                    <h3 class="font-bold text-gray-700 border-b pb-2 mb-4">ส่วนที่ 4 : การตรวจภาวะตาเหล่ / ตาขี้เกียจ</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="flex justify-between items-center border-b pb-2">
+                            <span class="text-sm">Cover / Uncover Test</span>
+                            <select name="cover_test" class="border rounded p-1 text-sm"><option value="ปกติ">ปกติ</option><option value="ผิดปกติ">ผิดปกติ</option></select>
+                        </div>
+                        <div class="flex justify-between items-center border-b pb-2">
+                            <span class="text-sm">Hirschberg Test</span>
+                            <select name="hirschberg" class="border rounded p-1 text-sm"><option value="ปกติ">ปกติ</option><option value="ผิดปกติ">ผิดปกติ</option></select>
+                        </div>
+                        <div class="flex justify-between items-center border-b pb-2 md:border-b-0">
+                            <span class="text-sm">Color Vision Test</span>
+                            <select name="color_vision" class="border rounded p-1 text-sm"><option value="ปกติ">ปกติ</option><option value="ผิดปกติ">ผิดปกติ</option></select>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm">Stereopsis Test</span>
+                            <select name="stereopsis" class="border rounded p-1 text-sm"><option value="ปกติ">ปกติ</option><option value="ผิดปกติ">ผิดปกติ</option></select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ส่วนที่ 5 -->
+                <div class="bg-orange-50 p-4 rounded-lg border border-orange-200">
+                    <h3 class="font-bold text-orange-800 border-b border-orange-200 pb-2 mb-4">ส่วนที่ 5 : สรุปผลการตรวจและข้อแนะนำ</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">สรุปผลการตรวจ</label>
+                            <select name="diagnosis" class="w-full border rounded-md px-3 py-2 outline-none">
+                                <option value="สายตาปกติ">สายตาปกติ</option>
+                                <option value="สายตาสั้น (Myopia)">สายตาสั้น (Myopia)</option>
+                                <option value="สายตายาว (Hyperopia)">สายตายาว (Hyperopia)</option>
+                                <option value="สายตาเอียง (Astigmatism)">สายตาเอียง (Astigmatism)</option>
+                                <option value="ตาเหล่ / ตาขี้เกียจ">ตาเหล่ / ตาขี้เกียจ</option>
+                                <option value="อื่นๆ">อื่นๆ</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">ข้อแนะนำ / การส่งต่อ</label>
+                            <select name="referral" class="w-full border rounded-md px-3 py-2 outline-none font-bold text-brand-orange">
+                                <option value="ไม่จำเป็นต้องส่งต่อ">ไม่จำเป็นต้องส่งต่อ</option>
+                                <option value="ควรพบจักษุแพทย์ภายใน 1 เดือน">ควรพบจักษุแพทย์ภายใน 1 เดือน</option>
+                                <option value="ควรพบจักษุแพทย์ภายใน 3 เดือน">ควรพบจักษุแพทย์ภายใน 3 เดือน</option>
+                                <option value="ส่งต่อด่วน (ภายใน 1 สัปดาห์)">ส่งต่อด่วน (ภายใน 1 สัปดาห์)</option>
+                                <option value="อื่นๆ">อื่นๆ</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-8 pt-4 border-t flex justify-end gap-3 sticky bottom-0 bg-white p-3 shadow-lg rounded-t-lg">
+                    <button type="button" onclick="toggleForm()" class="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded-md transition border">ยกเลิก</button>
+                    <button type="submit" class="bg-brand-dark text-white px-6 py-2 rounded-md hover:bg-blue-800 transition shadow flex items-center">
+                        <i class="fas fa-save mr-2"></i> บันทึกผลคัดกรอง
+                    </button>
+                </div>
+            </form>
+
+            <!-- ============================== -->
+            <!-- ฟอร์ม 2: ความพึงพอใจ -->
+            <!-- ============================== -->
+            <form id="form_Satisfaction_Data" class="data-form hidden" onsubmit="submitForm(event, 'Satisfaction_Data')">
+                <div class="bg-blue-50 p-4 rounded-lg border border-blue-100 mb-6">
+                    <h3 class="font-bold text-brand-dark border-b border-blue-200 pb-2 mb-4">ส่วนที่ 1 : ข้อมูลทั่วไป</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="col-span-2 md:col-span-4">
+                            <label class="block text-sm text-gray-600 mb-1">รหัส ปชช. เด็กนักเรียน <span class="text-red-500">*</span></label>
+                            <input type="text" name="cid" required maxlength="13" class="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-brand-light">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-1">เพศ</label>
+                            <select name="eval_sex" class="w-full border rounded-md px-3 py-2 outline-none"><option value="ชาย">ชาย</option><option value="หญิง">หญิง</option></select>
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-1">อายุ (ปี)</label>
+                            <input type="number" name="eval_age" class="w-full border rounded-md px-3 py-2 outline-none">
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-sm text-gray-600 mb-1">ระดับชั้น</label>
+                            <input type="text" name="eval_class" class="w-full border rounded-md px-3 py-2 outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-lg border border-gray-200 mb-6 shadow-sm">
+                    <h3 class="font-bold text-gray-700 border-b pb-2 mb-4">ส่วนที่ 2 : ระดับความพึงพอใจ (5=มากสุด 1=น้อยสุด)</h3>
+                    <div class="space-y-4">
+                        <div class="flex flex-col md:flex-row justify-between md:items-center bg-gray-50 p-2 rounded gap-2">
+                            <span class="text-sm flex-1">1. ความเหมาะสมของสถานที่จัดกิจกรรม</span>
+                            <input type="number" name="score_q1" min="1" max="5" class="border rounded px-2 py-1 w-20 text-center" required placeholder="1-5">
+                        </div>
+                        <div class="flex flex-col md:flex-row justify-between md:items-center p-2 rounded gap-2">
+                            <span class="text-sm flex-1">2. ความเพียงพอของอุปกรณ์และสื่อที่ใช้</span>
+                            <input type="number" name="score_q2" min="1" max="5" class="border rounded px-2 py-1 w-20 text-center" required>
+                        </div>
+                        <div class="flex flex-col md:flex-row justify-between md:items-center bg-gray-50 p-2 rounded gap-2">
+                            <span class="text-sm flex-1">3. ความเหมาะสมของระยะเวลาในการดำเนินกิจกรรม</span>
+                            <input type="number" name="score_q3" min="1" max="5" class="border rounded px-2 py-1 w-20 text-center" required>
+                        </div>
+                        <div class="flex flex-col md:flex-row justify-between md:items-center p-2 rounded gap-2">
+                            <span class="text-sm flex-1">4. ความชัดเจนในการถ่ายทอดความรู้ของวิทยากร</span>
+                            <input type="number" name="score_q4" min="1" max="5" class="border rounded px-2 py-1 w-20 text-center" required>
+                        </div>
+                        <div class="flex flex-col md:flex-row justify-between md:items-center bg-gray-50 p-2 rounded gap-2">
+                            <span class="text-sm flex-1">5. ความเหมาะสมของเนื้อหาการบรรยาย</span>
+                            <input type="number" name="score_q5" min="1" max="5" class="border rounded px-2 py-1 w-20 text-center" required>
+                        </div>
+                        <div class="flex flex-col md:flex-row justify-between md:items-center p-2 rounded gap-2">
+                            <span class="text-sm flex-1">6. ความเป็นประโยชน์ของความรู้ที่ได้รับ</span>
+                            <input type="number" name="score_q6" min="1" max="5" class="border rounded px-2 py-1 w-20 text-center" required>
+                        </div>
+                        <div class="flex flex-col md:flex-row justify-between md:items-center bg-gray-50 p-2 rounded gap-2">
+                            <span class="text-sm flex-1">7. ความสามารถในการนำความรู้ไปใช้ประโยชน์ได้จริง</span>
+                            <input type="number" name="score_q7" min="1" max="5" class="border rounded px-2 py-1 w-20 text-center" required>
+                        </div>
+                        <div class="flex flex-col md:flex-row justify-between md:items-center p-2 rounded gap-2">
+                            <span class="text-sm flex-1">8. การให้บริการตรวจสายตาของเจ้าหน้าที่</span>
+                            <input type="number" name="score_q8" min="1" max="5" class="border rounded px-2 py-1 w-20 text-center" required>
+                        </div>
+                        <div class="flex flex-col md:flex-row justify-between md:items-center bg-gray-50 p-2 rounded gap-2">
+                            <span class="text-sm flex-1">9. ความสุภาพและเป็นมิตรของทีมงาน</span>
+                            <input type="number" name="score_q9" min="1" max="5" class="border rounded px-2 py-1 w-20 text-center" required>
+                        </div>
+                        <div class="flex flex-col md:flex-row justify-between md:items-center p-2 rounded gap-2">
+                            <span class="text-sm flex-1 font-bold">10. ความพึงพอใจโดยรวมต่อโครงการ</span>
+                            <input type="number" name="score_q10" min="1" max="5" class="border rounded px-2 py-1 w-20 text-center border-brand-light bg-blue-50 font-bold text-brand-dark" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-lg border border-gray-200 mb-6 shadow-sm">
+                    <h3 class="font-bold text-gray-700 border-b pb-2 mb-4">ส่วนที่ 3 : ความคิดเห็นและข้อเสนอแนะ</h3>
+                    <div class="mb-4">
+                        <label class="block text-sm text-gray-600 mb-1">จุดเด่นของโครงการ / สิ่งที่ชอบ</label>
+                        <textarea name="comment_strengths" rows="2" class="w-full border rounded-md px-3 py-2 outline-none"></textarea>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm text-gray-600 mb-1">ข้อเสนอแนะ / สิ่งที่ควรปรับปรุง</label>
+                        <textarea name="comment_improve" rows="2" class="w-full border rounded-md px-3 py-2 outline-none"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-600 mb-2">ท่านจะแนะนำโครงการนี้ให้ผู้อื่นหรือไม่ ?</label>
+                        <select name="recommend_status" class="w-full border rounded-md px-3 py-2 outline-none bg-blue-50">
+                            <option value="แนะนำอย่างยิ่ง">แนะนำอย่างยิ่ง</option>
+                            <option value="แนะนำ">แนะนำ</option>
+                            <option value="ไม่แน่ใจ">ไม่แน่ใจ</option>
+                            <option value="ไม่แนะนำ">ไม่แนะนำ</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mt-8 pt-4 border-t flex justify-end gap-3 sticky bottom-0 bg-white p-3 shadow-lg rounded-t-lg">
+                    <button type="button" onclick="toggleForm()" class="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded-md transition border">ยกเลิก</button>
+                    <button type="submit" class="bg-brand-dark text-white px-6 py-2 rounded-md hover:bg-blue-800 transition shadow flex items-center">
+                        <i class="fas fa-save mr-2"></i> บันทึกความพึงพอใจ
+                    </button>
+                </div>
+            </form>
+
+            <!-- ============================== -->
+            <!-- ฟอร์ม 3: Pre-Test -->
+            <!-- ============================== -->
+            <form id="form_Pre_Test" class="data-form hidden" onsubmit="submitForm(event, 'Pre_Test')">
+                <div class="bg-blue-50 p-4 rounded-lg border border-blue-100 mb-6">
+                    <label class="block text-sm text-gray-600 mb-1 font-bold">รหัส ปชช. ผู้เข้าทดสอบ <span class="text-red-500">*</span></label>
+                    <input type="text" name="cid" required maxlength="13" class="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-brand-light" placeholder="เพื่อเชื่อมโยงคะแนนกับผู้รับการอบรม">
+                </div>
+                
+                <div class="bg-white p-4 rounded-lg border border-gray-200 mb-6 shadow-sm">
+                    <h3 class="font-bold text-gray-700 border-b pb-2 mb-4">แบบทดสอบก่อนอบรม (เลือกข้อที่ถูกที่สุด)</h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-sm font-semibold mb-1">1. แสงที่มองเห็นได้ผ่านเข้าตาบริเวณใดก่อนไปสู่จอประสาทตา ?</p>
+                            <select name="ans_q1" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="ก">ก. กระจกตา → รูม่านตา → เลนส์ตา → จอประสาทตา</option><option value="ข">ข. รูม่านตา → กระจกตา → เลนส์ตา → จอประสาทตา</option><option value="ค">ค. เลนส์ตา → กระจกตา → รูม่านตา → จอประสาทตา</option><option value="ง">ง. กระจกตา → เลนส์ตา → รูม่านตา → จอประสาทตา</option></select>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold mb-1">2. สายตาสั้น (Myopia) หมายถึงข้อใด ?</p>
+                            <select name="ans_q2" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="ก">ก. แสงโฟกัสที่หลังจอประสาทตา</option><option value="ข">ข. แสงโฟกัสที่หน้าจอประสาทตา</option><option value="ค">ค. แสงโฟกัสที่จอประสาทตาพอดี</option><option value="ง">ง. ความโค้งของกระจกตาไม่สม่ำเสมอ</option></select>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold mb-1">3. อาการใดที่บ่งชี้ว่าเด็กอาจมีปัญหาสายตา ?</p>
+                            <select name="ans_q3" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="ก">ก. ชอบอ่านหนังสือนาน</option><option value="ข">ข. ขยี้ตาบ่อย มองกระดานไม่ชัด</option><option value="ค">ค. ชอบเล่นกีฬากลางแจ้ง</option><option value="ง">ง. นอนหลับเยอะ</option></select>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold mb-1">4. Snellen Chart ใช้สำหรับตรวจอะไร ?</p>
+                            <select name="ans_q4" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="ก">ก. ตรวจความดันตา</option><option value="ข">ข. ตรวจการมองสี</option><option value="ค">ค. ตรวจความชัดเจนของการมองเห็น</option><option value="ง">ง. ตรวจประสาทตา</option></select>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold mb-1">5. ค่าสายตาปกติ ในการทดสอบด้วย Snellen Chart คือข้อใด ?</p>
+                            <select name="ans_q5" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="ก">ก. 6/3</option><option value="ข">ข. 6/6 (หรือ 20/20)</option><option value="ค">ค. 6/12</option><option value="ง">ง. 6/60</option></select>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold mb-1">6. ตาเหล่ (Strabismus) คืออะไร ?</p>
+                            <select name="ans_q6" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="ก">ก. การมองสีผิดปกติ</option><option value="ข">ข. กล้ามเนื้อตาทำงานไม่สมดุล ทำให้ตาไม่เล็งตรง</option><option value="ค">ค. ความดันตาสูงผิดปกติ</option><option value="ง">ง. การสูญเสียการมองเห็นเฉียบพลัน</option></select>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold mb-1">7. ตาขี้เกียจ (Amblyopia) หากไม่รักษาตั้งแต่เด็ก จะมีผลอย่างไร ?</p>
+                            <select name="ans_q7" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="ก">ก. หายเองเมื่อโตขึ้น</option><option value="ข">ข. การมองเห็นอาจสูญเสียถาวร</option><option value="ค">ค. ตาจะเหล่มากขึ้น</option><option value="ง">ง. เกิดต้อหิน</option></select>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold mb-1">8. ระยะห่างที่เหมาะสมในการอ่านหนังสือหรือใช้อุปกรณ์จอแสดงผล คือเท่าไหร่ ?</p>
+                            <select name="ans_q8" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="ก">ก. 10-20 เซนติเมตร</option><option value="ข">ข. 30-40 เซนติเมตร</option><option value="ค">ค. 50-60 เซนติเมตร</option><option value="ง">ง. 70-80 เซนติเมตร</option></select>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold mb-1">9. วิตามินชนิดใดสำคัญต่อสุขภาพดวงตามากที่สุด ?</p>
+                            <select name="ans_q9" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="ก">ก. วิตามิน C</option><option value="ข">ข. วิตามิน A</option><option value="ค">ค. วิตามิน D</option><option value="ง">ง. วิตามิน K</option></select>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold mb-1">10. กฎ 20-20-20 สำหรับการดูแลสายตา หมายถึงอะไร ?</p>
+                            <select name="ans_q10" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="ก">ก. ออกกำลังกาย 20 นาที พัก 20 นาที ดื่มน้ำ 20 ml</option><option value="ข">ข. ทุก 20 นาที พักสายตา 20 วินาที มองระยะ 20 ฟุต</option><option value="ค">ค. ใส่แว่น 20 ชั่วโมง พัก 20 นาที ตรวจตาทุก 20 วัน</option><option value="ง">ง. นอน 20 นาที ออกกำลัง 20 นาที อ่านหนังสือ 20 นาที</option></select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 pt-4 border-t flex justify-end gap-3 sticky bottom-0 bg-white p-3 shadow-lg rounded-t-lg">
+                    <button type="button" onclick="toggleForm()" class="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded-md transition border">ยกเลิก</button>
+                    <button type="submit" class="bg-brand-dark text-white px-6 py-2 rounded-md hover:bg-blue-800 transition shadow flex items-center">
+                        <i class="fas fa-save mr-2"></i> ส่งคำตอบ Pre-Test
+                    </button>
+                </div>
+            </form>
+
+            <!-- ============================== -->
+            <!-- ฟอร์ม 4: Post-Test -->
+            <!-- ============================== -->
+            <form id="form_Post_Test" class="data-form hidden" onsubmit="submitForm(event, 'Post_Test')">
+                <div class="bg-blue-50 p-4 rounded-lg border border-blue-100 mb-6">
+                    <label class="block text-sm text-gray-600 mb-1 font-bold">รหัส ปชช. ผู้เข้าทดสอบ <span class="text-red-500">*</span></label>
+                    <input type="text" name="cid" required maxlength="13" class="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-brand-light" placeholder="เพื่อเชื่อมโยงคะแนนกับผู้รับการอบรม">
+                </div>
+                
+                <div class="bg-white p-4 rounded-lg border border-gray-200 mb-6 shadow-sm">
+                    <h3 class="font-bold text-gray-700 border-b pb-2 mb-4">แบบทดสอบหลังอบรม (เลือกข้อที่ถูกที่สุด)</h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-sm font-semibold mb-1">1. แสงที่มองเห็นได้ผ่านเข้าตาบริเวณใดก่อนไปสู่จอประสาทตา ?</p>
+                            <select name="ans_q1" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="ก">ก. กระจกตา → รูม่านตา → เลนส์ตา → จอประสาทตา</option><option value="ข">ข. รูม่านตา → กระจกตา → เลนส์ตา → จอประสาทตา</option><option value="ค">ค. เลนส์ตา → กระจกตา → รูม่านตา → จอประสาทตา</option><option value="ง">ง. กระจกตา → เลนส์ตา → รูม่านตา → จอประสาทตา</option></select>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold mb-1">2. สายตาสั้น (Myopia) หมายถึงข้อใด ?</p>
+                            <select name="ans_q2" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="ก">ก. แสงโฟกัสที่หลังจอประสาทตา</option><option value="ข">ข. แสงโฟกัสที่หน้าจอประสาทตา</option><option value="ค">ค. แสงโฟกัสที่จอประสาทตาพอดี</option><option value="ง">ง. ความโค้งของกระจกตาไม่สม่ำเสมอ</option></select>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold mb-1">3. อาการใดที่บ่งชี้ว่าเด็กอาจมีปัญหาสายตา ?</p>
+                            <select name="ans_q3" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="ก">ก. ชอบอ่านหนังสือนาน</option><option value="ข">ข. ขยี้ตาบ่อย มองกระดานไม่ชัด</option><option value="ค">ค. ชอบเล่นกีฬากลางแจ้ง</option><option value="ง">ง. นอนหลับเยอะ</option></select>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold mb-1">4. Snellen Chart ใช้สำหรับตรวจอะไร ?</p>
+                            <select name="ans_q4" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="ก">ก. ตรวจความดันตา</option><option value="ข">ข. ตรวจการมองสี</option><option value="ค">ค. ตรวจความชัดเจนของการมองเห็น</option><option value="ง">ง. ตรวจประสาทตา</option></select>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold mb-1">5. ค่าสายตาปกติ ในการทดสอบด้วย Snellen Chart คือข้อใด ?</p>
+                            <select name="ans_q5" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="ก">ก. 6/3</option><option value="ข">ข. 6/6 (หรือ 20/20)</option><option value="ค">ค. 6/12</option><option value="ง">ง. 6/60</option></select>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold mb-1">6. ตาเหล่ (Strabismus) คืออะไร ?</p>
+                            <select name="ans_q6" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="ก">ก. การมองสีผิดปกติ</option><option value="ข">ข. กล้ามเนื้อตาทำงานไม่สมดุล ทำให้ตาไม่เล็งตรง</option><option value="ค">ค. ความดันตาสูงผิดปกติ</option><option value="ง">ง. การสูญเสียการมองเห็นเฉียบพลัน</option></select>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold mb-1">7. ตาขี้เกียจ (Amblyopia) หากไม่รักษาตั้งแต่เด็ก จะมีผลอย่างไร ?</p>
+                            <select name="ans_q7" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="ก">ก. หายเองเมื่อโตขึ้น</option><option value="ข">ข. การมองเห็นอาจสูญเสียถาวร</option><option value="ค">ค. ตาจะเหล่มากขึ้น</option><option value="ง">ง. เกิดต้อหิน</option></select>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold mb-1">8. ระยะห่างที่เหมาะสมในการอ่านหนังสือหรือใช้อุปกรณ์จอแสดงผล คือเท่าไหร่ ?</p>
+                            <select name="ans_q8" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="ก">ก. 10-20 เซนติเมตร</option><option value="ข">ข. 30-40 เซนติเมตร</option><option value="ค">ค. 50-60 เซนติเมตร</option><option value="ง">ง. 70-80 เซนติเมตร</option></select>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold mb-1">9. วิตามินชนิดใดสำคัญต่อสุขภาพดวงตามากที่สุด ?</p>
+                            <select name="ans_q9" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="ก">ก. วิตามิน C</option><option value="ข">ข. วิตามิน A</option><option value="ค">ค. วิตามิน D</option><option value="ง">ง. วิตามิน K</option></select>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold mb-1">10. กฎ 20-20-20 สำหรับการดูแลสายตา หมายถึงอะไร ?</p>
+                            <select name="ans_q10" required class="w-full border rounded p-2 text-sm"><option value="">- เลือกคำตอบ -</option><option value="ก">ก. ออกกำลังกาย 20 นาที พัก 20 นาที ดื่มน้ำ 20 ml</option><option value="ข">ข. ทุก 20 นาที พักสายตา 20 วินาที มองระยะ 20 ฟุต</option><option value="ค">ค. ใส่แว่น 20 ชั่วโมง พัก 20 นาที ตรวจตาทุก 20 วัน</option><option value="ง">ง. นอน 20 นาที ออกกำลัง 20 นาที อ่านหนังสือ 20 นาที</option></select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 pt-4 border-t flex justify-end gap-3 sticky bottom-0 bg-white p-3 shadow-lg rounded-t-lg">
+                    <button type="button" onclick="toggleForm()" class="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded-md transition border">ยกเลิก</button>
+                    <button type="submit" class="bg-brand-dark text-white px-6 py-2 rounded-md hover:bg-blue-800 transition shadow flex items-center">
+                        <i class="fas fa-save mr-2"></i> ส่งคำตอบ Post-Test
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex justify-center items-center backdrop-blur-sm">
+        <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-sm transform scale-95 transition-transform duration-300" id="loginBox">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-brand-light text-white rounded-full flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-hospital-user text-3xl"></i>
+                </div>
+                <h2 class="font-heading text-xl font-bold text-gray-800">เข้าสู่ระบบ</h2>
+                <p class="text-sm text-gray-500">สำหรับเจ้าหน้าที่ รพ.สต.</p>
+            </div>
+            <form onsubmit="handleLogin(event)">
+                <div class="mb-4">
+                    <label class="block text-sm text-gray-600 mb-1">รหัสหน่วยงาน (5 หลัก)</label>
+                    <input type="text" id="loginUser" required maxlength="5" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-light outline-none" placeholder="เช่น 08462">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-sm text-gray-600 mb-1">รหัสผ่าน</label>
+                    <input type="password" id="loginPass" required maxlength="8" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand-light outline-none">
+                </div>
+                <button type="submit" id="btnLoginSubmit" class="w-full bg-brand-dark text-white py-2 rounded-lg font-semibold hover:bg-blue-800 transition">
+                    เข้าสู่ระบบ
+                </button>
+                <button type="button" onclick="hideLoginModal()" class="w-full mt-3 text-sm text-gray-500 hover:text-gray-800 transition">ยกเลิก</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts สำหรับการทำงานทั้งหมด -->
+    <script>
+        // วันที่ปัจจุบัน
+        document.getElementById('currentDate').innerText = new Date().toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
+
+        // Chart Instances (เพื่อให้ destroy ได้เวลากดรีเฟรช)
+        let chartBarInstance = null;
+        let chartPieInstance = null;
+        let dataTableInstance = null;
+
+        // เริ่มต้นการทำงาน
+        $(document).ready(function() {
+            // โหลดข้อมูลเบื้องต้น
+            fetchDashboardData();
+        });
+
+        // 📌 ฟังก์ชันสื่อสารกับ GAS API
+        async function callGAS(action, payload = {}) {
+            payload.action = action;
+            try {
+                // ถ้าใช้ใน GAS โดยตรง สามารถเปลี่ยนไปใช้ google.script.run ได้
+                // แต่เขียนแบบ fetch รองรับการทำ GitHub Pages
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // ใช้ text/plain เลี่ยง CORS preflight ได้ในบางกรณี
+                    body: JSON.stringify(payload)
+                });
+                return await response.json();
+            } catch (err) {
+                console.error("API Error:", err);
+                return { status: 'error', message: 'ไม่สามารถเชื่อมต่อฐานข้อมูลได้' };
+            }
+        }
+
+        // 📌 ดึงข้อมูล Dashboard
+        async function fetchDashboardData() {
+            document.getElementById('globalLoader').style.display = 'flex';
+            
+            const payload = currentUser ? { hospcode: currentUser.username, role: currentUser.role } : {};
+            
+            // เรียกใช้งาน API
+            const res = await callGAS('getDashboard', payload);
+            
+            if(res.status === 'success') {
+                renderKPIs(res.kpi, res.education);
+                renderCharts(res.kpi, res.chartData);
+                renderTable(res.tableData);
+            } else {
+                Swal.fire('ข้อผิดพลาด', res.message || 'โหลดข้อมูลล้มเหลว', 'error');
+            }
+            
+            document.getElementById('globalLoader').style.display = 'none';
+        }
+
+        // 📌 การแสดงผล KPI (ใส่ Animation ตัวเลขวิ่ง)
+        function renderKPIs(kpi, edu) {
+            animateValue("kpi-total", 0, kpi.total, 1000);
+            animateValue("kpi-normal", 0, kpi.normal, 1000);
+            animateValue("kpi-abnormal", 0, kpi.abnormal, 1000);
+            animateValue("kpi-refer", 0, kpi.refer, 1000);
+            animateValue("kpi-glasses", 0, kpi.glasses, 1000);
+            
+            document.getElementById('kpi-pre').innerText = edu.preTestAvg;
+            document.getElementById('kpi-post').innerText = edu.postTestAvg;
+            document.getElementById('kpi-gain').innerText = edu.learningGain + '%';
+        }
+
+        // ฟังก์ชันทำตัวเลขวิ่ง
+        function animateValue(id, start, end, duration) {
+            if (start === end) return;
+            let range = end - start;
+            let current = start;
+            let increment = end > start ? 1 : -1;
+            let stepTime = Math.abs(Math.floor(duration / range));
+            let obj = document.getElementById(id);
+            let timer = setInterval(function() {
+                current += increment;
+                obj.innerHTML = current;
+                if (current == end) {
+                    clearInterval(timer);
+                }
+            }, stepTime);
+        }
+
+        // 📌 การสร้าง Charts
+        function renderCharts(kpi, chartDataByAmphoe) {
+            // ทำลายกราฟเก่าถ้ามี
+            if(chartBarInstance) chartBarInstance.destroy();
+            if(chartPieInstance) chartPieInstance.destroy();
+
+            // 1. กราฟวงกลม สัดส่วนสถานะ
+            const ctxPie = document.getElementById('pieChart').getContext('2d');
+            chartPieInstance = new Chart(ctxPie, {
+                type: 'doughnut',
+                data: {
+                    labels: ['ปกติ', 'ผิดปกติ', 'ส่งต่อ', 'รับแว่น'],
+                    datasets: [{
+                        data: [kpi.normal, kpi.abnormal, kpi.refer, kpi.glasses],
+                        backgroundColor: ['#16A34A', '#EAB308', '#F97316', '#EF4444'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+
+            // 2. กราฟแท่งรายพื้นที่ (จำลองข้อมูลจาก ChartData)
+            const labelsBar = Object.keys(chartDataByAmphoe);
+            const dataBar = Object.values(chartDataByAmphoe);
+            
+            const ctxBar = document.getElementById('barChart').getContext('2d');
+            chartBarInstance = new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: labelsBar.length > 0 ? labelsBar : ['เมือง', 'กระทุ่มแบน', 'บ้านแพ้ว'],
+                    datasets: [{
+                        label: 'จำนวนนักเรียนที่คัดกรอง',
+                        data: dataBar.length > 0 ? dataBar : [120, 80, 60], // ข้อมูลจำลองถ้า API ยังไม่มี
+                        backgroundColor: '#3B82F6',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { borderDash: [5, 5] } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        // 📌 การสร้าง DataTables
+        function renderTable(dataArray) {
+            if (dataTableInstance) {
+                dataTableInstance.destroy();
+            }
+
+            // จัดฟอร์แมตข้อมูลเข้าตาราง (จำลองจากโครงสร้าง Sheet)
+            const tableBody = dataArray.map(row => {
+                let statusHtml = '';
+                if(String(row.referral).toLowerCase() == 'yes') {
+                    statusHtml = '<span class="bg-orange-100 text-orange-800 px-2 py-1 rounded text-xs">ส่งต่อแพทย์</span>';
+                } else if(row.va_r_naked != '20/20' || row.va_l_naked != '20/20') {
+                    statusHtml = '<span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs">ผิดปกติ</span>';
+                } else {
+                    statusHtml = '<span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">ปกติ</span>';
+                }
+
+                return [
+                    row.hospcode || '-',
+                    row.cid || '-',
+                    (row.fname || '') + ' ' + (row.lname || ''),
+                    row.school_name || '-',
+                    row.school_class || '-',
+                    row.va_r_naked || '-',
+                    row.va_l_naked || '-',
+                    statusHtml
+                ];
+            });
+
+            // ถ้าไม่มีข้อมูล ใส่ Mockup ให้ดูสวยงาม
+            const finalData = tableBody.length > 0 ? tableBody : [
+                ['08462', '1749900xxxxxx', 'เด็กชาย สมใจ รักดี', 'ร.ร.บ้านคลอง', 'ป.1', '20/20', '20/20', '<span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">ปกติ</span>'],
+                ['08462', '1749900xxxxxy', 'เด็กหญิง นารี สีสด', 'ร.ร.บ้านคลอง', 'ป.2', '20/40', '20/50', '<span class="bg-orange-100 text-orange-800 px-2 py-1 rounded text-xs">ส่งต่อแพทย์</span>']
+            ];
+
+            dataTableInstance = $('#dataTable').DataTable({
+                data: finalData,
+                dom: 'Bfrtip', // เปิดใช้ปุ่ม Export
+                buttons: ['excelHtml5', 'pdfHtml5', 'print'],
+                pageLength: 10,
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/th.json'
+                },
+                scrollX: true // เลื่อนซ้ายขวาได้หากคอลัมน์เยอะ
+            });
+        }
+
+        // 📌 ระบบ Login
+        function showLoginModal() {
+            document.getElementById('loginModal').classList.remove('hidden');
+            setTimeout(() => document.getElementById('loginBox').classList.remove('scale-95'), 10);
+        }
+        function hideLoginModal() {
+            document.getElementById('loginBox').classList.add('scale-95');
+            setTimeout(() => document.getElementById('loginModal').classList.add('hidden'), 300);
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnLoginSubmit');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังตรวจสอบ...';
+            btn.disabled = true;
+
+            const user = document.getElementById('loginUser').value;
+            const pass = document.getElementById('loginPass').value;
+
+            const res = await callGAS('login', { username: user, password: pass });
+
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+
+            if (res.status === 'success') {
+                currentUser = res.data;
+                hideLoginModal();
+                Swal.fire({ icon: 'success', title: 'เข้าสู่ระบบสำเร็จ', text: `ยินดีต้อนรับ ${currentUser.name}`, timer: 1500, showConfirmButton: false });
+                
+                // สลับ UI
+                document.getElementById('btnLogin').classList.add('hidden');
+                document.getElementById('userInfo').classList.remove('hidden');
+                document.getElementById('displayUserName').innerText = currentUser.username;
+                document.getElementById('actionButtons').classList.remove('hidden');
+
+                // รีเฟรชข้อมูลตามสิทธิ์
+                fetchDashboardData();
+            } else {
+                Swal.fire('ข้อผิดพลาด', res.message, 'error');
+            }
+        }
+
+        function logout() {
+            Swal.fire({
+                title: 'ต้องการออกจากระบบ?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'ออกจากระบบ',
+                cancelButtonText: 'ยกเลิก'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    currentUser = null;
+                    document.getElementById('btnLogin').classList.remove('hidden');
+                    document.getElementById('userInfo').classList.add('hidden');
+                    document.getElementById('actionButtons').classList.add('hidden');
+                    fetchDashboardData(); // รีโหลดข้อมูลภาพรวม
+                }
+            })
+        }
+
+        // 📌 ระบบ Form Slide และ บันทึกข้อมูล (รองรับ LockService UX)
+        function toggleForm() {
+            const form = document.getElementById('slideForm');
+            if (form.classList.contains('slide-out')) {
+                form.classList.remove('slide-out');
+                form.classList.add('slide-in');
+                switchFormType('Screening_Data'); // เปิดมาให้แสดงแท็บคัดกรองเป็นค่าเริ่มต้น
+            } else {
+                form.classList.remove('slide-in');
+                form.classList.add('slide-out');
+                // ล้างข้อมูลทุกฟอร์มเมื่อปิดหน้าต่าง
+                document.querySelectorAll('.data-form').forEach(f => f.reset());
+            }
+        }
+
+        // ฟังก์ชันสลับหน้าต่างแท็บแบบฟอร์ม
+        function switchFormType(type) {
+            // ซ่อนทุกฟอร์ม
+            document.querySelectorAll('.data-form').forEach(el => el.classList.add('hidden'));
+            document.getElementById('form_' + type).classList.remove('hidden');
+            
+            // เปลี่ยนสีสไตล์แท็บ
+            document.querySelectorAll('.form-tab').forEach(el => {
+                el.classList.remove('bg-white', 'text-brand-dark', 'shadow-sm', 'border-gray-200');
+                el.classList.add('text-gray-600', 'hover:bg-gray-200', 'border-transparent');
+            });
+            const activeTab = document.getElementById('tab_' + type);
+            activeTab.classList.remove('text-gray-600', 'hover:bg-gray-200', 'border-transparent');
+            activeTab.classList.add('bg-white', 'text-brand-dark', 'shadow-sm', 'border-gray-200');
+        }
+
+        async function submitForm(e, formType) {
+            e.preventDefault();
+            
+            const form = e.target;
+            const btn = form.querySelector('button[type="submit"]');
+            const originalHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin mr-2"></i> กำลังบันทึกคิว...';
+            btn.classList.replace('bg-brand-dark', 'bg-gray-400');
+
+            const formData = new FormData(form);
+            const dataObj = Object.fromEntries(formData.entries());
+            
+            if(currentUser) {
+                dataObj.hospcode = currentUser.username;
+            }
+
+            // ⚠️ ส่งข้อมูลไป GAS โดยระบุปลายทาง (sheetName) ผ่าน API payload
+            const res = await callGAS('saveData', { sheetName: formType, data: dataObj });
+
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
+            btn.classList.replace('bg-gray-400', 'bg-brand-dark');
+
+            if (res.status === 'success') {
+                toggleForm();
+                Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ', text: res.message, timer: 2000, showConfirmButton: false });
+                fetchDashboardData(); 
+            } else {
+                Swal.fire('ข้อผิดพลาด', res.message || 'ระบบบันทึกขัดข้อง', 'error');
+            }
+        }
+    </script>
+</body>
+</html>
