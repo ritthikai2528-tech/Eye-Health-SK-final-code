@@ -881,6 +881,81 @@ button{cursor:pointer;font-family:inherit} input,select,textarea{font-family:inh
 <div class="toast-wrap" id="toastWrap"></div>
 
 <script>
+  <script>
+// ==============================================================
+// 🚀 GITHUB PAGES MAGIC POLYFILL: แปลงคำสั่งเก่าให้เป็น API อัตโนมัติ
+// ==============================================================
+const CONFIG = {
+  // นำ URL ที่ได้จากการ Deploy GAS แบบใหม่มาวางที่นี่
+  GAS_API_URL: "https://script.google.com/macros/s/AKfycbwllnhLYUsyLvA7mutkPBP1XTmYFAwSnv6TToqRWPC6M3qf1xLzs7Ho0HUDCo46q4OUCQ/exec" 
+};
+
+// ดักจับและสร้าง google.script.run แบบจำลอง
+window.google = window.google || {};
+window.google.script = window.google.script || {};
+
+window.google.script.run = (function() {
+  function createRunner(successHandler, failureHandler) {
+    const handler = {
+      get: function(target, prop) {
+        if (prop === 'withSuccessHandler') return function(cb) { return createRunner(cb, failureHandler); };
+        if (prop === 'withFailureHandler') return function(cb) { return createRunner(successHandler, cb); };
+        
+        // เมื่อระบบเดิมเรียกใช้ฟังก์ชัน (เช่น google.script.run.getInitData())
+        return async function(...args) {
+          try {
+            // จัดเรียงพารามิเตอร์ให้ตรงกับที่ Backend Router ต้องการ
+            let payloadData = args[0] !== undefined ? args[0] : {};
+            
+            // กรณีฟังก์ชันรับหลายพารามิเตอร์แบบแยกตัวแปร
+            if (prop === 'login') payloadData = { user: args[0], pass: args[1] };
+            if (prop === 'changePassword') payloadData = { oldPwd: args[0], newPwd: args[1] };
+            if (prop === 'deleteHospFileLink') payloadData = { hospcode: args[0], urlToRemove: args[1] };
+            if (prop === 'deleteRecord') payloadData = { sheetName: args[0], cid: args[1] };
+            if (prop === 'saveLineSettings') payloadData = { token: args[0], target: args[1] };
+            if (['getScreeningRecord', 'checkTestEligibility', 'checkFollowupEligibility', 'getBehaviorRecord', 'getFollowupRecord', 'deleteBehaviorRecord', 'deleteFollowupRecord'].includes(prop)) payloadData = { cid: args[0] };
+            if (prop === 'deleteLinkData' || prop === 'deleteVideoItem') payloadData = { id: args[0] };
+
+            // ยิง HTTP POST ไปหา Backend
+            const response = await fetch(CONFIG.GAS_API_URL, {
+              method: 'POST',
+              headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+              body: JSON.stringify({ action: prop, data: payloadData })
+            });
+            
+            const result = await response.json();
+            
+            // โค้ดเก่าคุณรับค่ามาแล้วเอาไป JSON.parse() เราจึงต้องแปลงกลับเป็น String ก่อนส่งคืนให้ Success Handler โค้ดเก่าจะได้ไม่ Error
+            if (successHandler) {
+               const stringifiedResult = typeof result === 'object' ? JSON.stringify(result) : result;
+               successHandler(stringifiedResult);
+            }
+          } catch (err) {
+            console.error("API Fetch Error:", err);
+            if (failureHandler) failureHandler(err);
+            else {
+               // Fallback alert ถ้าไม่มี Error Handler
+               const errWrap = document.getElementById('toastWrap');
+               if(errWrap) {
+                  const t = document.createElement('div');
+                  t.className = 'toast t-err'; t.innerHTML = '❌ เชื่อมต่อเซิร์ฟเวอร์ล้มเหลว';
+                  errWrap.appendChild(t); setTimeout(()=>t.remove(), 3000);
+               }
+            }
+          }
+        };
+      }
+    };
+    return new Proxy({}, handler);
+  }
+  return createRunner(null, null);
+})();
+// ==============================================================
+// ⬇️ โค้ดเดิมของคุณทั้งหมด (var G_extraClickIdx = ... ลงไป) ปล่อยไว้เหมือนเดิม 100% เลยครับ ไม่ต้องแก้อะไรแล้ว ⬇️
+// ==============================================================
+
+var G_extraClickIdx = { diag: null, treat: null, behRisk: null, fupWear: null };
+// ... โค้ดเดิมยาวๆ ของคุณ ...
 // === REPLACE: renderExtraDashCharts (v6.5 - Universal Toggle Support) ===
 var G_extraClickIdx = { diag: null, treat: null, behRisk: null, fupWear: null };
 
@@ -3539,126 +3614,6 @@ function toggleAllChk(source) {
         checkboxes[i].checked = source.checked;
       }
     }
-
-// ==========================================
-// 1. นำ URL ที่ได้จาก GAS Web App มาวางตรงนี้ !!
-// ==========================================
-const CONFIG = {
-  GAS_API_URL: "https://script.google.com/macros/s/AKfycbwllnhLYUsyLvA7mutkPBP1XTmYFAwSnv6TToqRWPC6M3qf1xLzs7Ho0HUDCo46q4OUCQ/exec" 
-};
-
-// ==========================================
-// 2. ฟังก์ชันหลักสำหรับคุยกับ Google Apps Script
-// ==========================================
-async function apiCall(actionName, payloadData = {}) {
-  try {
-    const response = await fetch(CONFIG.GAS_API_URL, {
-      method: 'POST',
-      // ใช้ text/plain เพื่อป้องกันเบราว์เซอร์บล็อก CORS Preflight
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action: actionName, data: payloadData })
-    });
-    
-    const result = await response.json();
-    // ถ้าผลลัพธ์เป็น string ให้แปลงเป็น JSON Object
-    return typeof result === 'string' ? JSON.parse(result) : result;
-  } catch (err) {
-    console.error("API Error:", err);
-    return { ok: false, msg: 'การเชื่อมต่อขัดข้อง หรือเซิร์ฟเวอร์ตอบสนองผิดพลาด' };
-  }
-}
-
-// ==========================================
-// 3. ตัวอย่างการแก้โค้ดเดิม ให้ใช้ apiCall แทน google.script.run
-// ==========================================
-
-// ตัวอย่าง 1: การโหลดหน้าเว็บเริ่มต้น (window.onload)
-window.onload = async function () {
-  setDate(); buildSatQ(); buildTestQ('pre'); buildTestQ('post');
-  // ... event listener ต่างๆ คงเดิม ...
-  
-  // ของเดิม: google.script.run.withSuccessHandler(...).getInitData()
-  // ของใหม่:
-  const d = await apiCall('getInitData');
-  if (!d.ok) { toast('โหลดข้อมูลไม่สำเร็จ: ' + d.msg, 'err'); return; }
-  
-  G.settings = d.data.settings || {}; 
-  G.hospList = d.data.hospList || []; 
-  // ... รับค่าตัวแปรอื่นๆ เหมือนเดิม ...
-  
-  applySettings(); 
-  buildDropdowns(); 
-  updateAuthUI(); 
-  loadDashboard({}); 
-  initMap(); 
-  renderLinks(d.data.links || []); 
-  renderVideoPlaylist(G.videos);
-};
-
-// ตัวอย่าง 2: ระบบ Login
-async function doLogin() { 
-  var u = document.getElementById('lgUser').value.trim(); 
-  var p = document.getElementById('lgPass').value.trim(); 
-  if (!u || !p) { document.getElementById('lgErr').textContent = 'กรุณากรอกข้อมูล'; return; } 
-  
-  var btn = document.getElementById('btnLgn'); 
-  btn.disabled = true; btn.innerHTML = '<span class="sp"></span> กำลังตรวจสอบ...'; 
-  
-  // ของเดิมใช้: google.script.run...login(u, p);
-  // ของใหม่:
-  const d = await apiCall('login', { user: u, pass: p });
-  
-  btn.disabled = false; btn.innerHTML = '🔐 เข้าสู่ระบบ'; 
-  if (d.ok) { 
-    G.session = { loggedIn:true, user:d.data.user, role:d.data.role, hospcode:d.data.hospcode }; 
-    closeLogin(); updateAuthUI(); toast('เข้าสู่ระบบสำเร็จ', 'ok'); forceRefresh(); 
-  } else { 
-    document.getElementById('lgErr').textContent = d.msg; 
-  } 
-}
-
-// ตัวอย่าง 3: การโหลด Dashboard
-async function loadDashboard(params) {
-  if (G.session.loggedIn && G.session.hospcode !== 'all') params.userHosp = G.session.hospcode;
-  document.getElementById('tBody').innerHTML = '<tr><td colspan="20" style="text-align:center;padding:24px;color:var(--muted2)">⏳ กำลังโหลด...</td></tr>';
-  
-  // เรียกใช้ apiCall
-  const d = await apiCall('getDashboardData', params);
-  
-  if (!d.ok) { toast('โหลดข้อมูลไม่สำเร็จ', 'err'); return; }
-  G.chartData = { amphoe: d.data.barChartAmphoe, hosp: d.data.barChartHosp, school: d.data.barChartSchool }; 
-  // ... โค้ดเดิมหลังจาก withSuccessHandler เอามาวางต่อตรงนี้ได้เลย ...
-  G.kpi = d.data.kpi; 
-  updateKPIs(G.kpi); 
-  // ...
-}
-
-// ตัวอย่าง 4: การบันทึกข้อมูล (saveScr)
-async function saveScr() {
-  var btn = document.getElementById('btnSScr'); 
-  var cid = document.getElementById('s-cid').value.trim(); 
-  // ... (โค้ดรวมฟิลด์ข้อมูล d เหมือนเดิม) ...
-  var d = { cid: cid, pname: /*...ดึงค่าฟิลด์...*/ };
-  
-  btn.disabled = true; btn.innerHTML = '<span class="sp"></span> กำลังประมวลผล...';
-  
-  if (_editMode) { 
-     const res = await apiCall('updateScreeningData', d);
-     btn.disabled = false; btn.innerHTML = '💾 อัปเดตข้อมูล'; 
-     if (res.ok) { 
-         toast(res.msg, 'ok'); closePanel('scr'); forceRefresh(); 
-     } else { toast(res.msg, 'err'); }
-  } else { 
-     const res = await apiCall('saveScreeningData', d);
-     btn.disabled = false; btn.innerHTML = '💾 บันทึก'; 
-     if (res.ok) { 
-         toast(res.msg, 'ok'); closePanel('scr'); forceRefresh();
-     } else { toast(res.msg, 'err'); }
-  }
-}
-
-// หลักการคือ: นำโค้ดที่อยู่ภายใน withSuccessHandler(function(r) { ... }) เดิม 
-// มาวางไว้ใต้คำสั่ง const res = await apiCall('ชื่อฟังก์ชัน', ข้อมูลที่ส่งไป);
 </script>
 </body>
 </html>
