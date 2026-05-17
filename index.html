@@ -1088,24 +1088,66 @@ function e_(str) { return str === null || str === undefined ? '' : String(str).r
 function toThaiDate(dateStr) { if (!dateStr) return '......../........../............'; var parts = dateStr.split('/'); if (parts.length === 3) { var y = parseInt(parts[2], 10); if (y < 2500) y += 543; return parts[0] + '/' + parts[1] + '/' + y; } return dateStr; }
 function smartParseCSVLine(line, delimiter) { var row = []; var inQuotes = false; var currentVal = ''; for(var j=0; j<line.length; j++) { var c = line[j]; if(c === '"') { inQuotes = !inQuotes; } else if(c === delimiter && !inQuotes) { row.push(currentVal.trim()); currentVal = ''; } else { currentVal += c; } } row.push(currentVal.trim()); return row; }
 function smartProcessRow(cols) {
-    var cleanedCols = cols.map(function(c) { return String(c).replace(/^"|"$/g, '').trim(); }); var out = new Array(46).fill('');
-    if (cleanedCols.length >= 15 && cleanedCols.length <= 25 && cleanedCols[0].toLowerCase().indexOf('ระดับ') === -1) {
-        out[0] = cleanedCols[0]; out[1] = cleanedCols[1]; out[2] = (cleanedCols[2]||'').replace(/\D/g, ''); out[3] = cleanedCols[3]; out[4] = cleanedCols[4]; out[5] = cleanedCols[5]; out[6] = (cleanedCols[3]||'') + (cleanedCols[4]||'') + ' ' + (cleanedCols[5]||'');
-        var bd = cleanedCols[6] || ''; var byear = 0, bmonth = 0, bday = 0;
-        if (bd.indexOf('-') > -1) { var p = bd.split('-'); byear = parseInt(p[0]); bmonth = parseInt(p[1]); bday = parseInt(p[2]); } else if (bd.indexOf('/') > -1) { var p = bd.split('/'); bday = parseInt(p[0]); bmonth = parseInt(p[1]); byear = parseInt(p[2]); } else if (bd.length === 8) { byear = parseInt(bd.substring(0,4)); bmonth = parseInt(bd.substring(4,6)); bday = parseInt(bd.substring(6,8)); }
-        if (byear > 0) { if (byear < 2500) byear += 543; out[7] = String(bday).padStart(2,'0') + '/' + String(bmonth).padStart(2,'0') + '/' + byear; var dobG = new Date(byear - 543, bmonth - 1, bday); var today = new Date(); var age = today.getFullYear() - dobG.getFullYear(); var m = today.getMonth() - dobG.getMonth(); if (m < 0 || (m === 0 && today.getDate() < dobG.getDate())) { age--; } out[8] = age > 0 ? String(age) : ''; }
-        out[9] = (cleanedCols[7] === '1' || cleanedCols[7] === 'ชาย') ? '1' : '2'; out[10] = (cleanedCols[0]||'') + (cleanedCols[1] ? '/' + cleanedCols[1] : ''); 
-        var isTxtFormat = (cleanedCols[11] === 'F' || cleanedCols[11] === 'M' || cleanedCols.length <= 19);
-        if (isTxtFormat) { out[11] = ''; out[12] = cleanedCols[11] || 'F'; out[15] = cleanedCols[8] || ''; out[16] = cleanedCols[9] || ''; out[17] = cleanedCols[10] || ''; out[24] = cleanedCols[12] || ''; out[28] = cleanedCols[13] || ''; out[25] = cleanedCols[14] || ''; out[29] = cleanedCols[15] || ''; var hcRaw = String(cleanedCols[16] || '').trim().replace(/^[="']+|["']+$/g, ''); var sd = cleanedCols[17] || ''; } 
-        else { out[11] = cleanedCols[11] || ''; out[12] = 'F'; out[15] = cleanedCols[8] || ''; out[16] = cleanedCols[9] || ''; out[17] = cleanedCols[10] || ''; out[24] = cleanedCols[12] || ''; out[25] = cleanedCols[13] || ''; out[28] = cleanedCols[14] || ''; out[29] = cleanedCols[15] || ''; var hcRaw = String(cleanedCols[16] || '').trim().replace(/^[="']+|["']+$/g, ''); var sd = cleanedCols[17] || ''; }
-        if (sd.indexOf('-') > -1) { var p = sd.split('-'); var sy = parseInt(p[0]); if(sy < 2500) sy += 543; out[13] = String(p[2]).padStart(2,'0') + '/' + String(p[1]).padStart(2,'0') + '/' + sy; } else if (sd.indexOf('/') > -1) { var p = sd.split('/'); var sy = parseInt(p[2]); if(sy < 2500) sy += 543; out[13] = String(p[0]).padStart(2,'0') + '/' + String(p[1]).padStart(2,'0') + '/' + sy; } else if (sd.length === 8) { var sy = parseInt(sd.substring(0,4)); if(sy < 2500) sy += 543; out[13] = sd.substring(6,8) + '/' + sd.substring(4,6) + '/' + sy; } else { var d = new Date(); out[13] = String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + '/' + (d.getFullYear() + 543); }
-        var hc = hcRaw; if (!hc && G.session && G.session.hospcode !== 'all') hc = G.session.hospcode; if (hc && hc.length > 0 && hc.length < 5) hc = ("00000" + hc).slice(-5); out[14] = hc;
-        out[18] = '0'; out[19] = '0'; out[20] = '0'; out[21] = '0'; out[22] = '0'; out[23] = '0'; 
-        // [v6.3] index ใหม่: cover=32, hirschberg=33, color=34, stereopsis=35, diagnosis=36, referral=37
-        out[32] = 'ปกติ'; out[33] = 'ปกติ'; out[34] = 'ปกติ'; out[35] = 'ปกติ'; out[36] = 'สายตาปกติ'; out[37] = 'ไม่จำเป็นต้องส่งต่อ';
-        // [v6.3] index ใหม่: tambon=41, amphoe=42, province=43
-        if (hc) { var hInfo = G.hospList.find(function(h) { return h.hospcode === hc; }); if (hInfo) { out[41] = hInfo.tambon || ''; out[42] = hInfo.amphoe || ''; out[43] = hInfo.province || 'สมุทรสาคร'; } else { out[43] = 'สมุทรสาคร'; } } else { out[43] = 'สมุทรสาคร'; }
-    } else { for(var i=0; i<46; i++) { var val = cleanedCols[i] || ''; val = val.replace(/^[="']+|["']+$/g, '').trim(); if (i === 2) val = val.replace(/\D/g, ''); if (i === 14 && val.length > 0 && val.length < 5) val = ("00000" + val).slice(-5); out[i] = val; } } return out;
+    var cleanedCols = cols.map(function(c) { return String(c).replace(/^"|"$/g, '').trim(); }); var out = new Array(46).fill('');
+    
+    // ฟังก์ชันย่อยสำหรับแปลงตัวเลข ID เป็นค่าสายตา
+    function mapVa(val) {
+        var v = String(val || '').trim();
+        return (v && G.vaMap && G.vaMap[v]) ? G.vaMap[v] : v;
+    }
+
+    if (cleanedCols.length >= 15 && cleanedCols.length <= 25 && cleanedCols[0].toLowerCase().indexOf('ระดับ') === -1) {
+        out[0] = cleanedCols[0]; out[1] = cleanedCols[1]; out[2] = (cleanedCols[2]||'').replace(/\D/g, ''); out[3] = cleanedCols[3]; out[4] = cleanedCols[4]; out[5] = cleanedCols[5]; out[6] = (cleanedCols[3]||'') + (cleanedCols[4]||'') + ' ' + (cleanedCols[5]||'');
+        var bd = cleanedCols[6] || ''; var byear = 0, bmonth = 0, bday = 0;
+        if (bd.indexOf('-') > -1) { var p = bd.split('-'); byear = parseInt(p[0]); bmonth = parseInt(p[1]); bday = parseInt(p[2]); } else if (bd.indexOf('/') > -1) { var p = bd.split('/'); bday = parseInt(p[0]); bmonth = parseInt(p[1]); byear = parseInt(p[2]); } else if (bd.length === 8) { byear = parseInt(bd.substring(0,4)); bmonth = parseInt(bd.substring(4,6)); bday = parseInt(bd.substring(6,8)); }
+        if (byear > 0) { if (byear < 2500) byear += 543; out[7] = String(bday).padStart(2,'0') + '/' + String(bmonth).padStart(2,'0') + '/' + byear; var dobG = new Date(byear - 543, bmonth - 1, bday); var today = new Date(); var age = today.getFullYear() - dobG.getFullYear(); var m = today.getMonth() - dobG.getMonth(); if (m < 0 || (m === 0 && today.getDate() < dobG.getDate())) { age--; } out[8] = age > 0 ? String(age) : ''; }
+        out[9] = (cleanedCols[7] === '1' || cleanedCols[7] === 'ชาย') ? '1' : '2'; out[10] = (cleanedCols[0]||'') + (cleanedCols[1] ? '/' + cleanedCols[1] : ''); 
+        var isTxtFormat = (cleanedCols[11] === 'F' || cleanedCols[11] === 'M' || cleanedCols.length <= 19);
+        if (isTxtFormat) { 
+            out[11] = ''; 
+            out[12] = cleanedCols[11] || 'F'; 
+            out[15] = cleanedCols[8] || ''; 
+            out[16] = cleanedCols[9] || ''; 
+            out[17] = cleanedCols[10] || ''; 
+            out[24] = mapVa(cleanedCols[12]); // VAขวา_ตาเปล่า
+            out[28] = mapVa(cleanedCols[13]); // PHขวา
+            out[25] = mapVa(cleanedCols[14]); // VAซ้าย_ตาเปล่า
+            out[29] = mapVa(cleanedCols[15]); // PHซ้าย
+            var hcRaw = String(cleanedCols[16] || '').trim().replace(/^[="']+|["']+$/g, ''); 
+            var sd = cleanedCols[17] || ''; 
+        } else { 
+            out[11] = cleanedCols[11] || ''; 
+            out[12] = 'F'; 
+            out[15] = cleanedCols[8] || ''; 
+            out[16] = cleanedCols[9] || ''; 
+            out[17] = cleanedCols[10] || ''; 
+            out[24] = mapVa(cleanedCols[12]); // VAขวา_ตาเปล่า
+            out[25] = mapVa(cleanedCols[13]); // VAซ้าย_ตาเปล่า
+            out[28] = mapVa(cleanedCols[14]); // PHขวา
+            out[29] = mapVa(cleanedCols[15]); // PHซ้าย
+            var hcRaw = String(cleanedCols[16] || '').trim().replace(/^[="']+|["']+$/g, ''); 
+            var sd = cleanedCols[17] || ''; 
+        }
+        if (sd.indexOf('-') > -1) { var p = sd.split('-'); var sy = parseInt(p[0]); if(sy < 2500) sy += 543; out[13] = String(p[2]).padStart(2,'0') + '/' + String(p[1]).padStart(2,'0') + '/' + sy; } else if (sd.indexOf('/') > -1) { var p = sd.split('/'); var sy = parseInt(p[2]); if(sy < 2500) sy += 543; out[13] = String(p[0]).padStart(2,'0') + '/' + String(p[1]).padStart(2,'0') + '/' + sy; } else if (sd.length === 8) { var sy = parseInt(sd.substring(0,4)); if(sy < 2500) sy += 543; out[13] = sd.substring(6,8) + '/' + sd.substring(4,6) + '/' + sy; } else { var d = new Date(); out[13] = String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + '/' + (d.getFullYear() + 543); }
+        var hc = hcRaw; if (!hc && G.session && G.session.hospcode !== 'all') hc = G.session.hospcode; if (hc && hc.length > 0 && hc.length < 5) hc = ("00000" + hc).slice(-5); out[14] = hc;
+        out[18] = '0'; out[19] = '0'; out[20] = '0'; out[21] = '0'; out[22] = '0'; out[23] = '0'; 
+        out[32] = 'ปกติ'; out[33] = 'ปกติ'; out[34] = 'ปกติ'; out[35] = 'ปกติ'; out[36] = 'สายตาปกติ'; out[37] = 'ไม่จำเป็นต้องส่งต่อ';
+        if (hc) { var hInfo = G.hospList.find(function(h) { return h.hospcode === hc; }); if (hInfo) { out[41] = hInfo.tambon || ''; out[42] = hInfo.amphoe || ''; out[43] = hInfo.province || 'สมุทรสาคร'; } else { out[43] = 'สมุทรสาคร'; } } else { out[43] = 'สมุทรสาคร'; }
+    } else { 
+        for(var i=0; i<46; i++) { 
+            var val = cleanedCols[i] || ''; 
+            val = val.replace(/^[="']+|["']+$/g, '').trim(); 
+            if (i === 2) val = val.replace(/\D/g, ''); 
+            if (i === 14 && val.length > 0 && val.length < 5) val = ("00000" + val).slice(-5); 
+            
+            // กรณีเป็นไฟล์ CSV 47 คอลัมน์ แปลงรหัสในคอลัมน์ VA ทั้ง 8 ช่อง
+            if ([24, 25, 26, 27, 28, 29, 30, 31].indexOf(i) > -1) {
+                val = mapVa(val);
+            }
+            out[i] = val; 
+        } 
+    } 
+    return out;
 }
 function toast(msg, type) { var wrap = document.getElementById('toastWrap'); if (!wrap) return; var t = document.createElement('div'); var icon = type === 'ok' ? '✅ ' : type === 'err' ? '❌ ' : 'ℹ️ '; t.className = 'toast t-' + (type || 'inf'); t.innerHTML = icon + msg; wrap.appendChild(t); setTimeout(function() { t.style.opacity = '0'; t.style.transform = 'translateX(100%)'; t.style.transition = 'all 0.3s ease'; setTimeout(function() { t.remove(); }, 300); }, 3000); }
 function applyFilters() {
@@ -1215,7 +1257,8 @@ window.onload = function () {
       G.settings = d.data.settings || {}; 
       G.hospList = d.data.hospList || []; 
       G.schoolList = d.data.schoolList || []; 
-      G.vaList = d.data.vaList || []; 
+      G.vaList = d.data.vaList || [];
+      G.vaMap = d.data.vaMap || {};
       G.session = d.data.session || {loggedIn:false};
       G.videos = d.data.videos || [];
       
@@ -3580,6 +3623,7 @@ function hardReload() {
         G.hospList   = d.data.hospList   || [];
         G.schoolList = d.data.schoolList || [];
         G.vaList     = d.data.vaList     || [];
+        G.vaMap      = d.data.vaMap      || {};
         G.session    = d.data.session    || {loggedIn:false};
         G.videos     = d.data.videos     || [];
 
