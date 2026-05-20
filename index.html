@@ -25,6 +25,34 @@
   --shadow-md:0 4px 6px rgba(0,0,0,.07),0 2px 4px rgba(0,0,0,.05);
   --r:8px; --rl:12px;
 }
+/* Touch device optimization */
+@media (hover: none) and (pointer: coarse) {
+  button, .btn-act, .badge, .kpi, .custom-btn, .btn-form { 
+    -webkit-tap-highlight-color: rgba(59,130,246,0.15);
+    touch-action: manipulation;
+  }
+  .btn-hdr, .btn-form, .btn-p, .btn-sec { min-height: 36px; }
+  .fsel, .fg input, .fg select { min-height: 36px; }
+  .row-chk, input[type="checkbox"], input[type="radio"] { 
+    min-width: 18px; min-height: 18px; 
+  }
+  .kpi:hover { transform: none; }
+  /* Prevent text selection on UI elements */
+  .hdr, .sidebar, .kpi-row, .btn-form { 
+    user-select: none; -webkit-user-select: none; 
+  }
+  /* Smoother scrolling */
+  .content, .tbl-wrap, .pb, .sum-tbl-wrap { 
+    -webkit-overflow-scrolling: touch; 
+  }
+}
+
+/* viewport meta enhancement */
+input, select, textarea { font-size: 16px !important; }
+@media (min-width: 769px) {
+  input, select, textarea { font-size: 12px !important; }
+  .fg input, .fg select, .fg textarea { font-size: 12px !important; }
+}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;font-family:'Sarabun',sans-serif;font-size:14px;color:var(--text);background:var(--bg);overflow:hidden}
 button{cursor:pointer;font-family:inherit} input,select,textarea{font-family:inherit}
@@ -181,17 +209,158 @@ button{cursor:pointer;font-family:inherit} input,select,textarea{font-family:inh
   .print-logo-wrap { text-align:center; margin-bottom:6px; }
   .print-logo-wrap img { height:55px; object-fit:contain; }
 }
-@media (max-width: 768px) {
-  .main { flex-direction: column; overflow-y: auto; }
-  .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border); max-height: 250px; flex-shrink: 0; }
-  .kpi-row { grid-template-columns: repeat(3, 1fr); overflow-x: auto; flex-wrap: wrap; }
-  .charts-row { grid-template-columns: 1fr !important; display: flex; flex-direction: column; }
-  .chart-card { width: 100%; min-width: 100% !important; margin: 0 0 10px 0 !important; }
-  .panel { width: 100%; right: -100%; }
+/* ========== TABLET (iPad, 769px - 1024px) ========== */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .sidebar { width: 130px; padding: 8px 6px; }
+  .kpi-row { grid-template-columns: repeat(5, 1fr); gap: 4px; padding: 6px 8px; }
+  .kpi { padding: 6px 4px; }
+  .kpi-v { font-size: 18px; }
+  .kpi-lbl, .kpi-sub { font-size: 9px; }
+  .charts-row { grid-template-columns: 1fr 1fr !important; }
+  #mapCard, #videoCard { height: 350px !important; }
+  .chart-card { padding: 8px; }
+  .dtbl { font-size: 10px; }
+  .dtbl th { font-size: 9.5px; padding: 4px 6px; }
+  #extraDashCharts { grid-template-columns: repeat(2, 1fr) !important; }
+  .sat-tbl, .va-tbl, .ex-tbl, .beh-tbl { font-size: 10.5px; }
+  .panel { width: 90vw; right: -100vw; }
   .panel.open { right: 0; }
-  .mbox, .del-box { width: 95% !important; padding: 20px 15px; }
-  .sys-name { font-size: 13px; }
-  .date-txt, .btn-hdr { font-size: 10px; padding: 4px 8px; }
+  .beh-panel.open { right: 5vw !important; }
+}
+
+/* ========== MOBILE (≤ 768px) ========== */
+@media (max-width: 768px) {
+  html, body { overflow: auto; height: auto; }
+  #app { height: auto; min-height: 100vh; }
+  
+  /* Header compact */
+  .hdr { padding: 6px 8px; flex-wrap: wrap; gap: 4px; }
+  .hdr-logo { width: 32px; height: 32px; font-size: 16px; }
+  .sys-name { font-size: 11.5px; }
+  .org-name { font-size: 9px; }
+  .date-txt { display: none; }
+  .btn-hdr { padding: 4px 7px; font-size: 10px; }
+  .btn-hdr-manual span, .btn-hdr-refresh { display: none; }
+  .chip-user { font-size: 10px; padding: 3px 7px; }
+  
+  /* KPI horizontal scroll */
+  .kpi-row { 
+    display: flex; flex-wrap: nowrap; overflow-x: auto; 
+    gap: 6px; padding: 6px 8px; scroll-snap-type: x mandatory;
+  }
+  .kpi { 
+    flex: 0 0 110px; scroll-snap-align: start; padding: 6px 4px;
+  }
+  .kpi-v { font-size: 16px; }
+  .kpi-lbl { font-size: 9px; }
+  
+  /* Sidebar → top drawer */
+  .main { flex-direction: column; }
+  .sidebar { 
+    width: 100%; max-height: none; padding: 8px;
+    border-right: none; border-bottom: 1px solid var(--border);
+    display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+  }
+  .sb-title { grid-column: span 2; }
+  .fl { font-size: 9px; }
+  .fsel { font-size: 11px; padding: 5px; }
+  .btn-clr { grid-column: span 2; margin-top: 4px; }
+  .add-sec { grid-column: span 2; }
+  .btn-form { font-size: 10.5px; padding: 5px; }
+  
+  /* Content */
+  .content { overflow: visible; }
+  .charts-row { 
+    grid-template-columns: 1fr !important; 
+    padding: 4px 6px; gap: 6px;
+  }
+  .chart-card { 
+    margin: 0 !important; padding: 6px 8px; 
+    height: auto !important; min-height: 200px;
+  }
+  #mapCard, #videoCard { height: 280px !important; }
+  #videoPlaylist { height: 80px !important; padding-top: 8px !important; }
+  .chart-wrap { height: 180px !important; }
+  
+  /* Charts ที่ scroll แนวนอน */
+  #hospChartContainer, #schoolChartContainer { 
+    min-width: 100% !important; 
+  }
+  .chart-card .chart-wrap[style*="overflow-x"] { 
+    height: 220px !important; 
+  }
+  
+  /* Tables */
+  .sum-tbl-wrap { max-height: 180px; margin: 4px 6px; }
+  .sum-tbl { font-size: 10px; }
+  .sum-tbl th, .sum-tbl td { padding: 4px 5px; }
+  .dtbl { font-size: 9.5px; }
+  .dtbl th, .dtbl td { padding: 3px 5px; }
+  
+  /* Extra dashboard charts */
+  #extraDashCharts { grid-template-columns: 1fr 1fr !important; }
+  
+  /* Panels full-width */
+  .panel { width: 100vw; right: -100vw; }
+  .panel.open, .beh-panel.open { right: 0 !important; }
+  .pb { padding: 10px 12px; }
+  .ph { padding: 10px 12px; }
+  .ph-t { font-size: 13px; }
+  .fr, .fr3, .fr4 { grid-template-columns: 1fr !important; gap: 6px; }
+  .fg label { font-size: 10px; }
+  .fg input, .fg select, .fg textarea { font-size: 13px; padding: 8px 10px; }
+  
+  /* Modals */
+  .mbox, .del-box { width: 92% !important; padding: 18px 14px; }
+  .m-ttl { font-size: 16px; }
+  
+  /* Beh/Fup panels */
+  .beh-filter { grid-template-columns: 1fr 1fr !important; }
+  .beh-kpi { grid-template-columns: repeat(2, 1fr) !important; }
+  .beh-grid.beh-row-2, .beh-grid.beh-row-3, .beh-grid.beh-row-2-1 { 
+    grid-template-columns: 1fr !important; 
+  }
+  
+  /* Link grid */
+  .link-grid { padding: 6px; gap: 5px; }
+  .custom-btn { font-size: 11px; padding: 6px 10px; }
+  .custom-btn img { width: 18px; height: 18px; }
+  
+  /* Image modal */
+  #imgModal { padding: 10px; }
+  #imgModal img { max-width: 95vw; max-height: 75vh; }
+  
+  /* Print area แสดงผลทุกตอน */
+  .pb-always { page-break-after: always; }
+  #btnMobileMenu { display: inline-block !important; }
+  .sidebar { 
+    position: fixed; top: 50px; left: -100%; bottom: 0; 
+    width: 80vw; max-width: 280px; z-index: 100; 
+    transition: left 0.3s; background: #fff; 
+    box-shadow: 4px 0 12px rgba(0,0,0,0.15);
+    overflow-y: auto; max-height: calc(100vh - 50px);
+    display: flex; flex-direction: column;
+    grid-template-columns: none;
+  }
+  .sidebar.mobile-open { left: 0; }
+  .sb-title { grid-column: auto; }
+  .btn-clr, .add-sec { grid-column: auto; }
+}
+
+/* ========== ULTRA SMALL (≤ 380px) iPhone SE ========== */
+@media (max-width: 380px) {
+  .sys-name { font-size: 10.5px; }
+  .btn-hdr { padding: 3px 5px; font-size: 9px; }
+  .kpi { flex: 0 0 100px; }
+  .sidebar { grid-template-columns: 1fr; }
+  .sb-title, .btn-clr, .add-sec { grid-column: span 1; }
+  #extraDashCharts { grid-template-columns: 1fr !important; }
+}
+
+/* iPad Pro landscape - force normal layout */
+@media (min-width: 1025px) and (max-width: 1366px) and (orientation: landscape) {
+  .sidebar { width: 140px; }
+  #mapCard, #videoCard { height: 380px !important; }
 }
 
 /* === Behavior Dashboard === */
@@ -234,13 +403,14 @@ button{cursor:pointer;font-family:inherit} input,select,textarea{font-family:inh
 <body>
 <div id="app">
 <header class="hdr">
+  <button class="btn-hdr btn-hdr-menu" id="btnMobileMenu" onclick="toggleMobileSidebar()" style="display:none; background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.3); color:#fff; padding:5px 10px; font-size:14px;">☰</button>
   <div class="hdr-logo" id="logoWrap">👁</div>
   <div class="hdr-text"><div class="sys-name" id="sysName">โครงการเด็กไทยสายตาดี</div><div class="org-name" id="orgName">องค์การบริหารส่วนจังหวัดสมุทรสาคร</div></div>
   <div class="hdr-right">
     <div class="date-txt" id="dateTxt"></div>
-    <button class="btn-hdr btn-hdr-manual" onclick="openPanel('manual')">📖 คู่มือ</button>
-    <button class="btn-hdr btn-hdr-refresh" onclick="hardReload()" title="ล้างแคชและโหลดระบบใหม่ทั้งหมด">🔄 โหลดใหม่ (Clear Cache)</button>
-    <div id="authArea"><button class="btn-hdr btn-hdr-login" onclick="openLogin()">🔐 เข้าสู่ระบบ</button></div>
+    <button class="btn-hdr btn-hdr-manual" onclick="openPanel('manual')">📖 <span>คู่มือ</span></button>
+    <button class="btn-hdr btn-hdr-refresh" onclick="hardReload()" title="ล้างแคชและโหลดระบบใหม่">🔄 <span>โหลดใหม่</span></button>
+    <div id="authArea"><button class="btn-hdr btn-hdr-login" onclick="openLogin()">🔐 <span>เข้าสู่ระบบ</span></button></div>
   </div>
 </header>
 
@@ -313,11 +483,11 @@ button{cursor:pointer;font-family:inherit} input,select,textarea{font-family:inh
     </div>
 
     <div class="charts-row" style="grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 7px; padding-bottom: 0; border: none;">
-      <div class="chart-card" id="mapCard" style="margin: 0; display: flex; flex-direction: column; height: 420px; min-width: 0;">
+      <div class="chart-card" id="mapCard" style="margin: 0; display: flex; flex-direction: column; height: clamp(280px, 50vh, 420px); min-width: 0;">
           <div class="chart-ttl">🗺️ แผนที่แสดงพิกัด รพ.สต. (สีเขียว) และโรงเรียน (สีน้ำเงิน)</div>
           <div id="mainMap" style="flex: 1; width: 100%; border-radius: 6px; z-index: 1;"></div>
       </div>
-      <div class="chart-card" id="videoCard" style="margin: 0; display: flex; flex-direction: column; height: 420px; min-width: 0;">
+      <div class="chart-card" id="videoCard" style="margin: 0; display: flex; flex-direction: column; height: clamp(280px, 50vh, 420px); min-width: 0;">
           <div class="chart-ttl">📺 วิดีโอสื่อให้ความรู้โครงการ <span style="font-weight:400;color:var(--muted2);font-size:9.5px;margin-left:auto;">— เลือกวิดีโอด้านล่างเพื่อเล่น</span></div>
           <div class="chart-wrap" id="videoWrap" style="flex: 1; display: flex; align-items: center; justify-content: center; background: #f8faff; border-radius: 6px; overflow: hidden; min-height: 0;">
               <span style="color:var(--muted2)">กำลังโหลดวิดีโอ...</span>
@@ -391,24 +561,28 @@ button{cursor:pointer;font-family:inherit} input,select,textarea{font-family:inh
             <div id="schoolChartContainer" style="height: 100%; width: 100%;"><canvas id="schoolChart"></canvas></div>
         </div>
     </div>
-    <div class="charts-row" style="grid-template-columns: repeat(4, 1fr);" id="extraDashCharts">
+    <div class="charts-row" style="grid-template-columns: repeat(5, 1fr);" id="extraDashCharts">
   <div class="chart-card">
-    <div class="chart-ttl">👁️ ระดับความรุนแรง (Severity)</div>
+    <div class="chart-ttl">👁️ ระดับความรุนแรง</div>
     <div class="chart-wrap" style="height:200px;"><canvas id="diagSeverityDashChart"></canvas></div>
   </div>
-      <div class="chart-card">
-        <div class="chart-ttl">💳 สัดส่วนสิทธิการรักษา <span style="font-weight:400;color:var(--muted2);font-size:9.5px;margin-left:auto;">— กดเพื่อดูรายละเอียด</span></div>
-        <div class="chart-wrap" style="height:200px;"><canvas id="treatDashChart"></canvas></div>
-      </div>
-      <div class="chart-card">
-        <div class="chart-ttl">📱 ความเสี่ยงพฤติกรรมหน้าจอ</div>
-        <div class="chart-wrap" style="height:200px;"><canvas id="behRiskDashChart"></canvas></div>
-      </div>
-      <div class="chart-card">
-        <div class="chart-ttl">👓 การติดตามแว่นตา (ความถี่การใส่)</div>
-        <div class="chart-wrap" style="height:200px;"><canvas id="fupStatusDashChart"></canvas></div>
-      </div>
-    </div>
+  <div class="chart-card">
+    <div class="chart-ttl">💳 สิทธิการรักษา</div>
+    <div class="chart-wrap" style="height:200px;"><canvas id="treatDashChart"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-ttl">📱 ความเสี่ยงพฤติกรรม</div>
+    <div class="chart-wrap" style="height:200px;"><canvas id="behRiskDashChart"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-ttl">👓 ติดตามแว่นตา</div>
+    <div class="chart-wrap" style="height:200px;"><canvas id="fupStatusDashChart"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-ttl">🌏 สัญชาติ <span style="font-weight:400;color:var(--muted2);font-size:9px;margin-left:auto;">— กดแท่งเพื่อกรอง</span></div>
+    <div class="chart-wrap" style="height:200px;"><canvas id="natDashChart"></canvas></div>
+  </div>
+</div>
 
     <div class="tbl-sec" id="indvTableSec" style="display:none">
       <div class="tbl-ctrl"><input class="srch" id="srchBox" placeholder="🔍 ค้นหาชื่อ / เลขบัตร / รพ.สต. / โรงเรียน ..." oninput="applyFilters()"><button class="btn-exp btn-print-doc" onclick="openPrintModal()">🖨 พิมพ์แบบฟอร์ม</button><button class="btn-exp" onclick="doExportCSV()">📥 Export CSV</button></div>
@@ -771,6 +945,8 @@ button{cursor:pointer;font-family:inherit} input,select,textarea{font-family:inh
     <div id="fupGuestMsg" style="text-align:center; padding:30px; color:var(--muted); display:none;">
       <p>🔒 กรุณาเข้าสู่ระบบ เพื่อดูตารางรายละเอียดผู้ตอบแบบสอบถามรายบุคคล</p>
     </div>
+  </div>  <!-- ⬅️ ปิด .pb -->
+</div>  <!-- ⬅️ ปิด .panel -->
 
 <div class="ov" id="ov-behdash" onclick="closePanel('behdash')"></div>
 <div class="panel beh-panel" id="panel-behdash">
@@ -867,7 +1043,167 @@ button{cursor:pointer;font-family:inherit} input,select,textarea{font-family:inh
   </div>
 </div>
 <div class="ov" id="ov-manual" onclick="closePanel('manual')"></div><div class="panel" id="panel-manual"><div class="ph" style="background:var(--primary)"><span class="ph-t">📖 คู่มือการใช้งานระบบ</span><button class="ph-x" onclick="closePanel('manual')">✕</button></div><div class="pb" style="line-height:1.7; color:var(--text); font-size:13px;"><h3 style="color:var(--accent); margin-bottom:8px; border-bottom:1px solid #dbeafe; padding-bottom:5px;">1. การค้นหาและการกรองข้อมูล (Instant Filter)</h3><p style="margin-bottom:10px;">ท่านสามารถใช้เมนู <b>"กรองข้อมูล"</b> ด้านซ้ายมือ หรือคลิกที่แท่งกราฟเพื่อทำการกรองข้อมูล ข้อมูลในตารางและตัวเลขสรุปจะ <b>อัปเดตทันที (Instant)</b> โดยไม่ต้องรอโหลดหน้าจอใหม่ หากต้องการยกเลิกให้กด "ล้างตัวกรอง"</p><h3 style="color:var(--teal); margin-bottom:8px; border-bottom:1px solid #ccfbf1; padding-bottom:5px;">2. การนำเข้าและแปลงไฟล์ข้อมูล (Smart Parser)</h3><ul style="margin-bottom:10px; padding-left:20px;"><li>กดปุ่ม <b>"🛠 แปลง & นำเข้าไฟล์"</b> ระบบจะสามารถอ่านไฟล์ดิบ 18 คอลัมน์ (.txt) หรือ CSV 47 คอลัมน์ ได้ทันที โดยแยกคอลัมน์ให้อัตโนมัติและจัดเรียงให้ใหม่</li><li>ปัญหา <b>เลขบัตรประชาชนกลายเป็น E+12 ใน Excel</b> ถูกแก้ไขแล้ว! หากคุณกด <b>"🔄 แปลงเป็น Template ใหม่"</b> ระบบจะใส่สูตรป้องกันให้เลขบัตรคงอยู่ครบ 13 หลักเมื่อเปิดใน Excel</li><li>หลังจากกรอกข้อมูลเสร็จแล้ว ให้นำไฟล์มาอัปโหลดและกดปุ่ม <b style="color:#0d9488;">"⬇️ นำเข้าข้อมูล (Import)"</b> ระบบจะลบสูตรออกและจัด 47 คอลัมน์ลงฐานข้อมูลให้อัตโนมัติ</li></ul><h3 style="color:var(--purple); margin-bottom:8px; border-bottom:1px solid #ede9fe; padding-bottom:5px;">3. การทำแบบประเมินความพึงพอใจรายบุคคล</h3><p style="margin-bottom:10px;">ผู้ใช้งานสามารถเลือก <b>"ประเภทผู้ประเมิน"</b> ได้แล้ว หากเป็นนักเรียน (ผู้รับการตรวจ) ระบบจะให้ค้นหาด้วยเลขบัตรประชาชนเพื่อให้ข้อมูลเชื่อมโยงกันรายบุคคลอย่างสมบูรณ์แบบ (เวลา Print จะโชว์คะแนนของคนนั้นๆ) แต่หากเป็น <b>ผู้ปกครอง, ครู หรือ เจ้าหน้าที่</b> สามารถเลือกประเภทและประเมินได้ทันทีโดยไม่ต้องใช้เลขบัตรประชาชนครับ!</p><h3 style="color:var(--orange); margin-bottom:8px; border-bottom:1px solid #ffedd5; padding-bottom:5px;">4. ระบบช่วยสรุปผลวินิจฉัย (Auto-Diagnose)</h3><p style="margin-bottom:10px;">ในหน้าบันทึกผลการคัดกรอง เมื่อผู้ตรวจกรอกข้อมูลประวัติสุขภาพตา (ส่วนที่ 2), การตรวจ VA (ส่วนที่ 3) และการตรวจตาเหล่ (ส่วนที่ 4) ระบบจะ <b>คำนวณและสรุปผลวินิจฉัยรวมถึงการส่งต่อให้ในส่วนที่ 5 อัตโนมัติ</b> เพื่อเป็นข้อเสนอแนะในการทำงาน (ผู้ตรวจสามารถแก้ไขผลลัพธ์นั้นได้ตามวิจารณญาณ)</p><h3 style="color:#6366f1; margin-bottom:8px; border-bottom:1px solid #e0e7ff; padding-bottom:5px;">5. ระบบจัดการปุ่มลิ้งก์และวิดีโอ (Admin)</h3><p style="margin-bottom:10px;">Admin สามารถเพิ่ม แก้ไข ลบปุ่มลิ้งก์ด่วน หรือ <b>จัดการเพลย์ลิสต์วิดีโอ</b> บน Dashboard ได้เองผ่านเมนูลัด เพื่อให้ผู้ใช้งานท่านอื่นเลือกดูสื่อวิดีโอที่กำหนดไว้ได้อย่างรวดเร็ว</p></div><div class="pf"><button class="btn-sec" style="width:100%; text-align:center;" onclick="closePanel('manual')">ปิดหน้าต่าง</button></div></div>
-<div class="ov" id="ov-scr" onclick="closePanel('scr')"></div><div class="panel" id="panel-scr"><div class="ph" style="background:var(--primary)"><span class="ph-t" id="scrPanelTitle">📋 แบบตรวจ/ประเมินสายตา — Vision Screening</span><button class="ph-x" onclick="closePanel('scr')">✕</button></div><div class="pb" id="scrBody"><div class="fs"><div class="fs-t">ส่วนที่ 1 — ข้อมูลผู้รับการตรวจ</div><div class="fr"><div class="fg"><label>เลขบัตรประชาชน 13 หลัก *</label><input type="text" id="s-cid" maxlength="13" placeholder="13 หลัก" oninput="onCidInput(this.value)"></div><div class="fg"><label>คำนำหน้า</label><select id="s-pname" onchange="autoSelectSex(this.value)"><option>เด็กชาย</option><option>เด็กหญิง</option><option>นาย</option><option>นางสาว</option><option>นาง</option></select></div></div><div class="fr"><div class="fg"><label>ชื่อจริง *</label><input type="text" id="s-fname" placeholder="ไม่ต้องมีคำนำหน้า"></div><div class="fg"><label>นามสกุล *</label><input type="text" id="s-lname" placeholder="นามสกุล"></div></div><div class="fr fr3"><div class="fg"><label>วันเกิด</label><input type="text" class="datepicker" id="s-bd" placeholder="วว/ดด/ปปปป" onchange="calcAge()"></div><div class="fg"><label>อายุ (ปี)</label><input type="number" id="s-age" readonly></div><div class="fg"><label>เพศ</label><select id="s-sex"><option value="1">ชาย</option><option value="2">หญิง</option></select></div></div><div class="fr"><div class="fg"><label>ระดับชั้น</label><select id="s-lev"><option>อ.1</option><option>อ.2</option><option>อ.3</option><option>ป.1</option><option>ป.2</option><option selected>ป.3</option><option>ป.4</option><option>ป.5</option><option>ป.6</option><option>ม.1</option><option>ม.2</option><option>ม.3</option><option>ม.4</option><option>ม.5</option><option>ม.6</option></select></div><div class="fg"><label>ห้อง</label><input type="text" id="s-cls" placeholder="เช่น /1"></div></div><div class="fr fr4"><div class="fg" style="grid-column:span 2;"><label>ที่อยู่บ้านเลขที่</label><input type="text" id="s-addr"></div><div class="fg"><label>หมู่ที่ (moo)</label><input type="text" id="s-moo"></div><div class="fg"><label>รหัสปกครอง(aid)</label><input type="text" id="s-aid"></div></div><div class="fr"><div class="fg"><label>รพ.สต. ที่ตรวจ *</label><select id="s-hc" onchange="onHcChange()"><option value="">— เลือก รพ.สต. —</option></select></div><div class="fg"><label>วันที่ตรวจ *</label><input type="text" class="datepicker" id="s-dt" placeholder="วว/ดด/ปปปป"></div></div><div class="fr"><div class="fg" style="grid-column:span 2;"><label>สิทธิในการรักษา</label><select id="s-treat"><option value="">— ระบุสิทธิ์ —</option><option>สิทธิบัตรทอง (30 บาท)</option><option>สิทธิประกันสังคม</option><option>สิทธิข้าราชการ(กรมบัญชีกลาง)</option><option>สิทธิข้าราชการ(ท้องถิ่น)</option><option>สิทธิข้าราชการ(กทม.)</option><option>สวัสดิการรักษาพยาบาลข้าราชการ สำหรับบุคคลในครอบครัว</option><option>สิทธิประกันสุขภาพเอกชน</option><option>สิทธิรักษาของรัฐวิสาหกิจ</option><option>กองทุนทดแทนกรณีอุบัติเหตุจากการทำงาน</option><option>สิทธิ์สำหรับทหาร ตำรวจ หรือองค์กรเฉพาะ</option><option>ไม่มีสิทธิการรักษา(ต่างด้าว)</option></select></div></div><div class="fr fr3"><div class="fg"><label>ตำบล</label><input type="text" id="s-tambon"></div><div class="fg"><label>อำเภอ</label><input type="text" id="s-amphoe"></div><div class="fg"><label>จังหวัด</label><input type="text" id="s-prov" value="สมุทรสาคร"></div></div><div class="fr fr1"><div class="fg"><label>โรงเรียน (ค้นหาหรือพิมพ์ใหม่)</label><input type="text" list="dl-school" id="s-sch" placeholder="เลือกหรือพิมพ์ชื่อโรงเรียน" onchange="fillSchoolCoords()"><datalist id="dl-school"></datalist></div></div><div class="fr"><div class="fg"><label>พิกัดโรงเรียน (Lat)</label><input type="text" id="s-schl-lat"></div><div class="fg"><label>พิกัดโรงเรียน (Lon)</label><div style="display:flex;gap:4px"><input type="text" id="s-schl-lon" style="flex:1"><button class="btn-geo" onclick="getGeo('s-schl-lat','s-schl-lon')">📍</button></div></div></div><div class="fr"><div class="fg"><label>ชื่อผู้ตรวจ / ผู้บันทึก</label><input type="text" id="s-exam"></div><div class="fg"><label>ตำแหน่งผู้ตรวจ</label><input type="text" id="s-pos"></div></div></div><div class="fs"><div class="fs-t">ส่วนที่ 2 — ประวัติสุขภาพตา</div><div class="cb-group"><label class="cbi"><input type="checkbox" id="hx-g"> เคยสวมแว่น/เลนส์</label><label class="cbi"><input type="checkbox" id="hx-i"> เคยผ่าตัดตา/บาดเจ็บ</label><label class="cbi"><input type="checkbox" id="hx-r"> อาการตาแดงเรื้อรัง</label><label class="cbi"><input type="checkbox" id="hx-h"> ปวดศีรษะบ่อยครั้ง</label><label class="cbi"><input type="checkbox" id="hx-a"> ตาขี้เกียจ/ตาเหล่</label><label class="cbi"><input type="checkbox" id="hx-f"> ครอบครัวสวมแว่น</label></div></div><div class="fs"><div class="fs-t">ส่วนที่ 3 — ผลการตรวจสายตา (VA Snellen)</div><div class="fr fr1" style="margin-bottom:8px"><div class="fg"><label>หน่วยวัดสายตา (Unit)</label><select id="s-unit"><option value="F">F (ฟุต)</option><option value="M">M (เมตร)</option></select></div></div><table class="va-tbl"><thead><tr><th style="text-align:left">การทดสอบ</th><th>ตาขวา (OD)</th><th>ตาซ้าย (OS)</th><th>สองตา (OU)</th></tr></thead><tbody><tr><td>ไม่ใส่แว่น / เลนส์</td><td><select id="vr-n"></select></td><td><select id="vl-n"></select></td><td><select id="vou-naked" title="ผลรวมสองตา (ไม่ใส่แว่น)"></select></td></tr><tr><td>ใส่แว่น / คอนแทคเลนส์</td><td><select id="vr-g"></select></td><td><select id="vl-g"></select></td><td><select id="vou-glasses" title="ผลรวมสองตา (ใส่แว่น)"></select></td></tr><tr><td>Pin Hole Test</td><td><select id="vr-p"></select></td><td><select id="vl-p"></select></td><td></td></tr></tbody></table></div><div class="fs"><div class="fs-t">ส่วนที่ 4 — ตรวจภาวะตาเหล่ / ตาขี้เกียจ</div><table class="ex-tbl"><thead><tr><th>รายการตรวจ</th><th>ปกติ</th><th>ผิดปกติ</th></tr></thead><tbody><tr><td>Cover Test</td><td><input type="radio" name="ex-cov" value="ปกติ" checked></td><td><input type="radio" name="ex-cov" value="ผิดปกติ"></td></tr><tr><td>Hirschberg</td><td><input type="radio" name="ex-hir" value="ปกติ" checked></td><td><input type="radio" name="ex-hir" value="ผิดปกติ"></td></tr><tr><td>Color Vision</td><td><input type="radio" name="ex-col" value="ปกติ" checked></td><td><input type="radio" name="ex-col" value="ผิดปกติ"></td></tr><tr><td>Stereopsis</td><td><input type="radio" name="ex-ste" value="ปกติ" checked></td><td><input type="radio" name="ex-ste" value="ผิดปกติ"></td></tr></tbody></table></div><div class="fs"><div class="fs-t">ส่วนที่ 5 — สรุปผลและข้อแนะนำ</div><div class="fr fr1" style="margin-bottom:7px"><div class="fg"><label>วินิจฉัย (Diagnosis)</label><select id="s-diag"><option>สายตาปกติ</option><option>เริ่มเฝ้าระวังสายตาผิดปกติ</option><option>สงสัยสายตาผิดปกติ</option><option>สงสัยตาขี้เกียจ/สายตาผิดปกติรุนแรง</option><option>ความผิดปกติรุนแรงของการมองเห็น</option><option>อื่นๆ</option></select></div></div><div class="fr fr1"><div class="fg"><label>การส่งต่อ (Referral)</label><div class="fg"><label><select id="s-ref"><option>ไม่จำเป็นต้องส่งต่อ</option><option>ควรพบจักษุแพทย์ภายใน 3 เดือน</option><option>ควรพบจักษุแพทย์ภายใน 1 เดือน</option><option>ส่งต่อด่วน (ภายใน 1 สัปดาห์)</option><option>อื่นๆ</option></select></div></div><div class="fr fr1" style="margin-top:7px"><div class="fg"><label>หมายเหตุ</label><input type="text" id="s-remark" placeholder="ระบุข้อมูลเพิ่มเติม (ถ้ามี)"></div></div></div></div><div class="pf" style="justify-content:space-between"><div style="display:flex;gap:6px"><button class="btn-p" id="btnSScr" onclick="saveScr()">💾 บันทึก</button><button class="btn-sec" onclick="closePanel('scr')">ยกเลิก</button></div><button class="btn-sec" onclick="dlTemplate()" style="color:var(--accent);font-weight:600;">📥 โหลด Template Excel</button></div></div>
+<div class="ov" id="ov-scr" onclick="closePanel('scr')"></div>
+<div class="panel" id="panel-scr">
+  <div class="ph" style="background:var(--primary)">
+    <span class="ph-t" id="scrPanelTitle">📋 แบบตรวจ/ประเมินสายตา — Vision Screening</span>
+    <button class="ph-x" onclick="closePanel('scr')">✕</button>
+  </div>
+  
+  <div class="pb" id="scrBody">
+    
+    <div class="fs">
+      <div class="fs-t">ส่วนที่ 1 — ข้อมูลผู้รับการตรวจ</div>
+      
+      <div class="fr">
+        <div class="fg"><label>เลขบัตรประชาชน 13 หลัก *</label><input type="text" id="s-cid" maxlength="13" placeholder="13 หลัก" oninput="onCidInput(this.value)"></div>
+        <div class="fg"><label>คำนำหน้า</label><select id="s-pname" onchange="autoSelectSex(this.value)"><option>เด็กชาย</option><option>เด็กหญิง</option><option>นาย</option><option>นางสาว</option><option>นาง</option></select></div>
+      </div>
+      <div class="fr">
+        <div class="fg"><label>ชื่อจริง *</label><input type="text" id="s-fname" placeholder="ไม่ต้องมีคำนำหน้า"></div>
+        <div class="fg"><label>นามสกุล *</label><input type="text" id="s-lname" placeholder="นามสกุล"></div>
+      </div>
+      <div class="fr fr3">
+        <div class="fg"><label>วันเกิด</label><input type="text" class="datepicker" id="s-bd" placeholder="วว/ดด/ปปปป" onchange="calcAge()"></div>
+        <div class="fg"><label>อายุ (ปี)</label><input type="number" id="s-age" readonly></div>
+        <div class="fg"><label>เพศ</label><select id="s-sex"><option value="1">ชาย</option><option value="2">หญิง</option></select></div>
+      </div>
+      <div class="fr">
+        <div class="fg"><label>ระดับชั้น</label>
+          <select id="s-lev">
+            <option>อ.1</option><option>อ.2</option><option>อ.3</option>
+            <option>ป.1</option><option>ป.2</option><option selected>ป.3</option><option>ป.4</option><option>ป.5</option><option>ป.6</option>
+            <option>ม.1</option><option>ม.2</option><option>ม.3</option><option>ม.4</option><option>ม.5</option><option>ม.6</option>
+          </select>
+        </div>
+        <div class="fg"><label>ห้อง</label><input type="text" id="s-cls" placeholder="เช่น /1"></div>
+      </div>
+      <div class="fr fr4">
+        <div class="fg" style="grid-column:span 2;"><label>ที่อยู่บ้านเลขที่</label><input type="text" id="s-addr"></div>
+        <div class="fg"><label>หมู่ที่ (moo)</label><input type="text" id="s-moo"></div>
+        <div class="fg"><label>รหัสปกครอง(aid)</label><input type="text" id="s-aid"></div>
+      </div>
+      <div class="fr">
+        <div class="fg"><label>รพ.สต. ที่ตรวจ *</label><select id="s-hc" onchange="onHcChange()"><option value="">— เลือก รพ.สต. —</option></select></div>
+        <div class="fg"><label>วันที่ตรวจ *</label><input type="text" class="datepicker" id="s-dt" placeholder="วว/ดด/ปปปป"></div>
+      </div>
+      <div class="fr">
+        <div class="fg" style="grid-column:span 2;"><label>สิทธิในการรักษา</label>
+          <select id="s-treat">
+            <option value="">— ระบุสิทธิ์ —</option>
+            <option>สิทธิบัตรทอง (30 บาท)</option>
+            <option>สิทธิประกันสังคม</option>
+            <option>สิทธิข้าราชการ(กรมบัญชีกลาง)</option>
+            <option>สิทธิข้าราชการ(ท้องถิ่น)</option>
+            <option>สิทธิข้าราชการ(กทม.)</option>
+            <option>สวัสดิการรักษาพยาบาลข้าราชการ สำหรับบุคคลในครอบครัว</option>
+            <option>สิทธิประกันสุขภาพเอกชน</option>
+            <option>สิทธิรักษาของรัฐวิสาหกิจ</option>
+            <option>กองทุนทดแทนกรณีอุบัติเหตุจากการทำงาน</option>
+            <option>สิทธิ์สำหรับทหาร ตำรวจ หรือองค์กรเฉพาะ</option>
+            <option>ไม่มีสิทธิการรักษา(ต่างด้าว)</option>
+          </select>
+        </div>
+        <div class="fg" style="grid-column:span 1;"><label>สัญชาติ</label>
+          <select id="s-nat"><option value="ไทย">ไทย</option></select>
+        </div>
+      </div>
+      <div class="fr fr3">
+        <div class="fg"><label>ตำบล</label><input type="text" id="s-tambon"></div>
+        <div class="fg"><label>อำเภอ</label><input type="text" id="s-amphoe"></div>
+        <div class="fg"><label>จังหวัด</label><input type="text" id="s-prov" value="สมุทรสาคร"></div>
+      </div>
+      <div class="fr fr1">
+        <div class="fg"><label>โรงเรียน (ค้นหาหรือพิมพ์ใหม่)</label><input type="text" list="dl-school" id="s-sch" placeholder="เลือกหรือพิมพ์ชื่อโรงเรียน" onchange="fillSchoolCoords()"><datalist id="dl-school"></datalist></div>
+      </div>
+      <div class="fr">
+        <div class="fg"><label>พิกัดโรงเรียน (Lat)</label><input type="text" id="s-schl-lat"></div>
+        <div class="fg"><label>พิกัดโรงเรียน (Lon)</label><div style="display:flex;gap:4px"><input type="text" id="s-schl-lon" style="flex:1"><button class="btn-geo" onclick="getGeo('s-schl-lat','s-schl-lon')">📍</button></div></div>
+      </div>
+      <div class="fr">
+        <div class="fg"><label>ชื่อผู้ตรวจ / ผู้บันทึก</label><input type="text" id="s-exam"></div>
+        <div class="fg"><label>ตำแหน่งผู้ตรวจ</label><input type="text" id="s-pos"></div>
+      </div>
+    </div> <div class="fs">
+      <div class="fs-t">ส่วนที่ 2 — ประวัติสุขภาพตา</div>
+      <div class="cb-group">
+        <label class="cbi"><input type="checkbox" id="hx-g"> เคยสวมแว่น/เลนส์</label>
+        <label class="cbi"><input type="checkbox" id="hx-i"> เคยผ่าตัดตา/บาดเจ็บ</label>
+        <label class="cbi"><input type="checkbox" id="hx-r"> อาการตาแดงเรื้อรัง</label>
+        <label class="cbi"><input type="checkbox" id="hx-h"> ปวดศีรษะบ่อยครั้ง</label>
+        <label class="cbi"><input type="checkbox" id="hx-a"> ตาขี้เกียจ/ตาเหล่</label>
+        <label class="cbi"><input type="checkbox" id="hx-f"> ครอบครัวสวมแว่น</label>
+      </div>
+    </div>
+
+    <div class="fs">
+      <div class="fs-t">ส่วนที่ 3 — ผลการตรวจสายตา (VA Snellen)</div>
+      <div class="fr fr1" style="margin-bottom:8px">
+        <div class="fg"><label>หน่วยวัดสายตา (Unit)</label><select id="s-unit"><option value="F">F (ฟุต)</option><option value="M">M (เมตร)</option></select></div>
+      </div>
+      <table class="va-tbl">
+        <thead><tr><th style="text-align:left">การทดสอบ</th><th>ตาขวา (OD)</th><th>ตาซ้าย (OS)</th><th>สองตา (OU)</th></tr></thead>
+        <tbody>
+          <tr><td>ไม่ใส่แว่น / เลนส์</td><td><select id="vr-n"></select></td><td><select id="vl-n"></select></td><td><select id="vou-naked" title="ผลรวมสองตา (ไม่ใส่แว่น)"></select></td></tr>
+          <tr><td>ใส่แว่น / คอนแทคเลนส์</td><td><select id="vr-g"></select></td><td><select id="vl-g"></select></td><td><select id="vou-glasses" title="ผลรวมสองตา (ใส่แว่น)"></select></td></tr>
+          <tr><td>Pin Hole Test</td><td><select id="vr-p"></select></td><td><select id="vl-p"></select></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="fs">
+      <div class="fs-t">ส่วนที่ 4 — ตรวจภาวะตาเหล่ / ตาขี้เกียจ</div>
+      <table class="ex-tbl">
+        <thead><tr><th>รายการตรวจ</th><th>ปกติ</th><th>ผิดปกติ</th></tr></thead>
+        <tbody>
+          <tr><td>Cover Test</td><td><input type="radio" name="ex-cov" value="ปกติ" checked></td><td><input type="radio" name="ex-cov" value="ผิดปกติ"></td></tr>
+          <tr><td>Hirschberg</td><td><input type="radio" name="ex-hir" value="ปกติ" checked></td><td><input type="radio" name="ex-hir" value="ผิดปกติ"></td></tr>
+          <tr><td>Color Vision</td><td><input type="radio" name="ex-col" value="ปกติ" checked></td><td><input type="radio" name="ex-col" value="ผิดปกติ"></td></tr>
+          <tr><td>Stereopsis</td><td><input type="radio" name="ex-ste" value="ปกติ" checked></td><td><input type="radio" name="ex-ste" value="ผิดปกติ"></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="fs">
+      <div class="fs-t">ส่วนที่ 5 — สรุปผลและข้อแนะนำ</div>
+      <div class="fr fr1" style="margin-bottom:7px">
+        <div class="fg">
+          <label>วินิจฉัย (Diagnosis)</label>
+          <select id="s-diag">
+            <option>สายตาปกติ</option>
+            <option>เริ่มเฝ้าระวังสายตาผิดปกติ</option>
+            <option>สงสัยสายตาผิดปกติ</option>
+            <option>สงสัยตาขี้เกียจ/สายตาผิดปกติรุนแรง</option>
+            <option>ความผิดปกติรุนแรงของการมองเห็น</option>
+            <option>อื่นๆ</option>
+          </select>
+        </div>
+      </div>
+      <div class="fr fr1">
+        <div class="fg">
+          <label>การส่งต่อ (Referral)</label>
+          <select id="s-ref">
+            <option>ไม่จำเป็นต้องส่งต่อ</option>
+            <option>ควรพบจักษุแพทย์ภายใน 3 เดือน</option>
+            <option>ควรพบจักษุแพทย์ภายใน 1 เดือน</option>
+            <option>ส่งต่อด่วน (ภายใน 1 สัปดาห์)</option>
+            <option>อื่นๆ</option>
+          </select>
+        </div>
+      </div>
+      <div class="fr fr1" style="margin-top:7px">
+        <div class="fg"><label>หมายเหตุ</label><input type="text" id="s-remark" placeholder="ระบุข้อมูลเพิ่มเติม (ถ้ามี)"></div>
+      </div>
+    </div>
+
+  </div> <div class="pf" style="justify-content:space-between">
+    <div style="display:flex;gap:6px">
+      <button class="btn-p" id="btnSScr" onclick="saveScr()">💾 บันทึก</button>
+      <button class="btn-sec" onclick="closePanel('scr')">ยกเลิก</button>
+    </div>
+    <button class="btn-sec" onclick="dlTemplate()" style="color:var(--accent);font-weight:600;">📥 โหลด Template Excel</button>
+  </div>
+</div>
 <div class="ov" id="ov-sat" onclick="closePanel('sat')"></div><div class="panel" id="panel-sat"><div class="ph" style="background:var(--purple)"><span class="ph-t">😊 แบบประเมินความพึงพอใจ</span><button class="ph-x" onclick="closePanel('sat')">✕</button></div><div class="pb"><div class="fs" id="sat-type-sec"><div class="fs-t" style="color:var(--purple);">ส่วนที่ 1 — ข้อมูลผู้ประเมิน</div><div class="fr"><div class="fg"><label>รพ.สต. ที่ต้องการประเมิน *</label><select id="sat-hc"><option value="">— เลือกรพ.สต. —</option></select></div><div class="fg"><label>ประเภทผู้ประเมิน</label><select id="sat-type" onchange="onSatTypeChange()"><option value="นักเรียน">นักเรียน (ผู้รับการตรวจ)</option><option value="ผู้ปกครอง">ผู้ปกครอง</option><option value="ครู/อาจารย์">ครู / อาจารย์</option><option value="เจ้าหน้าที่">เจ้าหน้าที่สาธารณสุข</option><option value="อื่นๆ">ประชาชนทั่วไป / อื่นๆ</option></select></div></div></div><div class="fs" id="sat-search-sec"><div class="fs-t" style="color:var(--purple); border-color:#e9d5ff;">🔍 ตรวจสอบสิทธิ์ผู้เข้าร่วม (สำหรับนักเรียน)</div><div class="fr"><div class="fg"><label>ค้นหาด้วยเลขบัตรประชาชน</label><input type="text" id="sat-search-cid" placeholder="กรอกเลข 13 หลัก" maxlength="13" oninput="searchSatUser(this.value)"></div><div class="fg"><label>ชื่อ-สกุล (พบอัตโนมัติ)</label><input type="text" id="sat-search-name" readonly style="background:#f1f5f9;"></div></div><div id="sat-search-err" style="color:var(--red); font-size:11px; margin-top:4px; font-weight:600;"></div></div><div class="fs" id="sat-form-sec" style="opacity:0.5; pointer-events:none;"><div class="fr"><div class="fg" style="grid-column: span 2;"><label>โรงเรียน / สถานศึกษา</label><input type="text" list="dl-school" id="sat-sch" placeholder="พิมพ์ชื่อโรงเรียน"></div></div><div class="fr"><div class="fg"><label>เพศ</label><select id="sat-sex"><option value="1">ชาย</option><option value="2">หญิง</option></select></div><div class="fg"><label>อายุ (ปี)</label><input type="number" id="sat-age" min="5" max="99"></div></div><div class="fr"><div class="fg"><label>ระดับชั้น / ตำแหน่ง</label><input type="text" id="sat-cls" placeholder="เช่น ป.3, ครูประจำชั้น"></div></div></div><div class="fs" id="sat-q-sec" style="pointer-events:none; opacity:0.5;"><div class="fs-t">ส่วนที่ 2 — ระดับความพึงพอใจ</div><table class="sat-tbl"><thead><tr><th>รายการ</th><th>5</th><th>4</th><th>3</th><th>2</th><th>1</th></tr></thead><tbody id="satQBody"></tbody></table></div><div class="fs" id="sat-c-sec" style="pointer-events:none; opacity:0.5;"><div class="fs-t">ส่วนที่ 3 — ข้อเสนอแนะ</div><div class="fg" style="margin-bottom:7px"><label>จุดเด่น / สิ่งที่ชอบ</label><textarea id="sat-str" rows="2"></textarea></div><div class="fg" style="margin-bottom:8px"><label>ข้อเสนอแนะ / สิ่งที่ควรปรับปรุง</label><textarea id="sat-imp" rows="2"></textarea></div><div class="fg"><label>ท่านจะแนะนำโครงการนี้แก่ผู้อื่นหรือไม่?</label><div class="rg" style="margin-top:4px"><label class="ri"><input type="radio" name="satrec" value="แนะนำอย่างยิ่ง"> แนะนำอย่างยิ่ง</label><label class="ri"><input type="radio" name="satrec" value="แนะนำ" checked> แนะนำ</label><label class="ri"><input type="radio" name="satrec" value="ไม่แน่ใจ"> ไม่แน่ใจ</label><label class="ri"><input type="radio" name="satrec" value="ไม่แนะนำ"> ไม่แนะนำ</label></div></div></div></div><div class="pf"><button class="btn-p" id="btnSSat" onclick="saveSat()" disabled>💾 บันทึกแบบประเมิน</button><button class="btn-sec" onclick="closePanel('sat')">ยกเลิก</button></div></div>
 <div class="ov" id="ov-pre" onclick="closePanel('pre')"></div><div class="panel" id="panel-pre"><div class="ph" style="background:var(--teal)"><span class="ph-t">📝 แบบทดสอบก่อนอบรม — Pre-test</span><button class="ph-x" onclick="closePanel('pre')">✕</button></div><div class="pb"><div class="fs"><div class="fs-t">ข้อมูลผู้ทดสอบ</div><div class="fr"><div class="fg"><label>เลขบัตรประชาชน 13 หลัก *</label><input type="text" id="pre-cid" maxlength="13" placeholder="ตรวจสอบสิทธิ์" oninput="checkEligible('pre',this.value)"></div><div class="fg"><label>ชื่อ-สกุล (อ้างอิง)</label><input type="text" id="pre-name" readonly style="background:#f1f5f9"></div></div><div id="pre-err" style="color:var(--red);font-size:11px;margin-top:4px;font-weight:600;"></div></div><div class="fs" id="pre-q-sec" style="opacity:0.5;pointer-events:none;"><div class="fs-t" style="color:var(--teal)">คำชี้แจง — เลือกคำตอบที่ถูกต้องที่สุด เพียง 1 ข้อ (10 ข้อ)</div><div id="preQBody"></div><div class="score-card" id="preSC" style="display:none"><div class="score-big" id="preSN">0</div><div class="score-label">คะแนนที่ได้ จาก 10 คะแนน</div></div></div></div><div class="pf"><button class="btn-p" id="btnSPre" onclick="savePre()" disabled>💾 บันทึก Pre-test</button><button class="btn-sec" onclick="closePanel('pre')">ยกเลิก</button></div></div>
 <div class="ov" id="ov-post" onclick="closePanel('post')"></div><div class="panel" id="panel-post"><div class="ph" style="background:#0891b2"><span class="ph-t">📝 แบบทดสอบหลังอบรม — Post-test</span><button class="ph-x" onclick="closePanel('post')">✕</button></div><div class="pb"><div class="fs"><div class="fs-t">ข้อมูลผู้ทดสอบ</div><div class="fr"><div class="fg"><label>เลขบัตรประชาชน 13 หลัก *</label><input type="text" id="post-cid" maxlength="13" placeholder="ตรวจสอบสิทธิ์" oninput="checkEligible('post',this.value)"></div><div class="fg"><label>ชื่อ-สกุล (อ้างอิง)</label><input type="text" id="post-name" readonly style="background:#f1f5f9"></div></div><div id="post-err" style="color:var(--red);font-size:11px;margin-top:4px;font-weight:600;"></div></div><div class="fs" id="post-q-sec" style="opacity:0.5;pointer-events:none;"><div class="fs-t" style="color:#0891b2">คำชี้แจง — เลือกคำตอบที่ถูกต้องที่สุด เพียง 1 ข้อ (10 ข้อ)</div><div id="postQBody"></div><div class="score-card" id="postSC" style="display:none"><div class="score-big" id="postSN">0</div><div class="score-label">คะแนนที่ได้ จาก 10 คะแนน</div></div></div></div><div class="pf"><button class="btn-p" id="btnSPost" onclick="savePost()" disabled>💾 บันทึก Post-test</button><button class="btn-sec" onclick="closePanel('post')">ยกเลิก</button></div></div>
@@ -882,14 +1218,115 @@ button{cursor:pointer;font-family:inherit} input,select,textarea{font-family:inh
 
 <script>
 // ==============================================================
-// 🚀 GITHUB PAGES MAGIC POLYFILL: แปลงคำสั่งเก่าให้เป็น API อัตโนมัติ
+// 🚀 GITHUB PAGES POLYFILL v6.2 
+// ✨ Features: Auto-Retry + Double-Click Guard + Loading Indicator
 // ==============================================================
 const CONFIG = {
-  // นำ URL ที่ได้จากการ Deploy GAS แบบใหม่มาวางที่นี่
-  GAS_API_URL: "https://script.google.com/macros/s/AKfycbxn0lQO65d_4tGUvOrz-Ae2Oqv291AIFOyUstEk7ZjPKBkvoAVqMjHEB7i0ZAyHmXDzrQ/exec" 
+  GAS_API_URL: "https://script.google.com/macros/s/AKfycbwllnhLYUsyLvA7mutkPBP1XTmYFAwSnv6TToqRWPC6M3qf1xLzs7Ho0HUDCo46q4OUCQ/exec",
+  MAX_RETRY: 5,           // จำนวนครั้งสูงสุดที่จะลองใหม่
+  RETRY_BASE_MS: 3000     // หน่วงเวลาฐาน: 2s → 4s → 6s + jitter
 };
 
-// ดักจับและสร้าง google.script.run แบบจำลอง
+// 📝 รายการ action ที่เป็น "การเขียนข้อมูล" — ต้อง Retry + ป้องกันกดซ้ำ
+const WRITE_ACTIONS = new Set([
+  'saveScreeningData', 'updateScreeningData', 'importScreeningData',
+  'saveSatisfactionData', 'savePreTest', 'savePostTest',
+  'saveFollowupData', 'saveBehaviorData',
+  'deleteRecord', 'deleteBehaviorRecord', 'deleteFollowupRecord',
+  'deleteLinkData', 'deleteVideoItem', 'deleteHospFileLink',
+  'updateHospLocation', 'saveLinkData', 'saveVideoItem',
+  'saveLineSettings', 'changePassword'
+]);
+
+// 🛡 Map เก็บ request ที่กำลังทำงาน (key = action + payload hash)
+const _inFlight = new Map();
+
+// ─── Helper: แสดง toast (ถ้าฟังก์ชัน toast พร้อมใช้งาน) ───
+function _polyfillToast(msg, type) {
+  if (typeof toast === 'function') {
+    try { toast(msg, type || 'inf'); } catch(e) {}
+  }
+}
+
+// ─── Helper: หน่วงเวลาแบบ Exponential Backoff + jitter ───
+function _sleep(ms) {
+  const jitter = Math.random() * 500;
+  return new Promise(r => setTimeout(r, ms + jitter));
+}
+
+async function _callApiWithRetry(action, payloadData) {
+  let lastError = null;
+  let lastBody = null;
+  
+  for (let attempt = 1; attempt <= CONFIG.MAX_RETRY; attempt++) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
+      
+      const response = await fetch(CONFIG.GAS_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: action, data: payloadData }),
+        signal: controller.signal,
+        redirect: 'follow'
+      });
+      clearTimeout(timeoutId);
+      
+      if (!response.ok) {
+        lastBody = await response.text().catch(()=>'');
+        throw new Error('HTTP ' + response.status + (lastBody ? ' — ' + lastBody.substring(0,100) : ''));
+      }
+      
+      const rawText = await response.text();
+      let result;
+      try { 
+        result = JSON.parse(rawText); 
+      } catch(e) {
+        // GAS อาจส่ง HTML error page กลับมาแทน JSON
+        if(rawText.indexOf('<HTML') > -1 || rawText.indexOf('<html') > -1) {
+          throw new Error('GAS ส่ง HTML กลับมา (อาจ deploy ไม่ถูก หรือ URL หมดอายุ)');
+        }
+        throw new Error('คำตอบจากเซิร์ฟเวอร์ไม่ใช่ JSON: ' + rawText.substring(0,80));
+      }
+      
+      const isBusy = result && result.ok === false && result.msg && 
+                     (result.msg.indexOf('ระบบกำลังประมวลผล') > -1 || 
+                      result.msg.indexOf('ระบบกำลังยุ่ง') > -1 ||
+                      result.msg.indexOf('ระบบประมวลผลอยู่') > -1);
+      
+      if (isBusy && WRITE_ACTIONS.has(action) && attempt < CONFIG.MAX_RETRY) {
+        const waitMs = CONFIG.RETRY_BASE_MS * attempt;
+        _polyfillToast('⏳ ระบบกำลังยุ่ง กำลังลองใหม่ (' + (attempt + 1) + '/' + CONFIG.MAX_RETRY + ')...', 'inf');
+        await _sleep(waitMs);
+        continue;
+      }
+      return result;
+      
+    } catch (err) {
+      lastError = err;
+      console.error('[API attempt ' + attempt + '] ' + action + ':', err.message);
+      
+      // AbortError = timeout, NetworkError = no connection
+      const isRetryable = WRITE_ACTIONS.has(action) || 
+                          err.name === 'AbortError' || 
+                          err.message.indexOf('NetworkError') > -1 ||
+                          err.message.indexOf('Failed to fetch') > -1;
+      
+      if (isRetryable && attempt < CONFIG.MAX_RETRY) {
+        const waitMs = CONFIG.RETRY_BASE_MS * attempt;
+        _polyfillToast('📡 การเชื่อมต่อขัดข้อง กำลังลองใหม่ (' + (attempt + 1) + '/' + CONFIG.MAX_RETRY + ')...', 'inf');
+        await _sleep(waitMs);
+        continue;
+      }
+      throw err;
+    }
+  }
+  
+  if (lastError) throw lastError;
+  return { ok: false, msg: 'ระบบไม่ว่าง กรุณาลองใหม่ภายหลัง (ครบ ' + CONFIG.MAX_RETRY + ' ครั้งแล้ว)' };
+}
+
+// ─── สร้าง google.script.run แบบจำลอง ───
 window.google = window.google || {};
 window.google.script = window.google.script || {};
 
@@ -900,47 +1337,58 @@ window.google.script.run = (function() {
         if (prop === 'withSuccessHandler') return function(cb) { return createRunner(cb, failureHandler); };
         if (prop === 'withFailureHandler') return function(cb) { return createRunner(successHandler, cb); };
         
-        // เมื่อระบบเดิมเรียกใช้ฟังก์ชัน (เช่น google.script.run.getInitData())
         return async function(...args) {
+          // จัดเรียงพารามิเตอร์ตามชนิดของฟังก์ชัน
+          let payloadData = args[0] !== undefined ? args[0] : {};
+          
+          if (prop === 'login') payloadData = { user: args[0], pass: args[1] };
+          if (prop === 'changePassword') payloadData = { oldPwd: args[0], newPwd: args[1] };
+          if (prop === 'deleteHospFileLink') payloadData = { hospcode: args[0], urlToRemove: args[1] };
+          if (prop === 'deleteRecord') payloadData = { sheetName: args[0], cid: args[1] };
+          if (prop === 'saveLineSettings') payloadData = { token: args[0], target: args[1] };
+          if (['getScreeningRecord', 'checkTestEligibility', 'checkFollowupEligibility', 
+               'getBehaviorRecord', 'getFollowupRecord', 
+               'deleteBehaviorRecord', 'deleteFollowupRecord'].includes(prop)) {
+            payloadData = { cid: args[0] };
+          }
+          if (prop === 'deleteLinkData' || prop === 'deleteVideoItem') payloadData = { id: args[0] };
+          
+          // 🛡 Double-Click Guard: ป้องกันการกดปุ่มซ้ำ (เฉพาะ Write Action)
+          let inFlightKey = null;
+          if (WRITE_ACTIONS.has(prop)) {
+            try {
+              inFlightKey = prop + ':' + JSON.stringify(payloadData);
+            } catch(e) { 
+              inFlightKey = prop + ':' + Date.now(); 
+            }
+            
+            if (_inFlight.has(inFlightKey)) {
+              _polyfillToast('⚠️ กำลังบันทึกข้อมูลชุดนี้อยู่แล้ว กรุณารอผลลัพธ์...', 'inf');
+              if (failureHandler) failureHandler(new Error('Duplicate request blocked'));
+              return;
+            }
+          }
+          
+          // สร้าง Promise แล้วเก็บใน in-flight Map
+          const apiPromise = _callApiWithRetry(prop, payloadData);
+          if (inFlightKey) _inFlight.set(inFlightKey, apiPromise);
+          
           try {
-            // จัดเรียงพารามิเตอร์ให้ตรงกับที่ Backend Router ต้องการ
-            let payloadData = args[0] !== undefined ? args[0] : {};
-            
-            // กรณีฟังก์ชันรับหลายพารามิเตอร์แบบแยกตัวแปร
-            if (prop === 'login') payloadData = { user: args[0], pass: args[1] };
-            if (prop === 'changePassword') payloadData = { oldPwd: args[0], newPwd: args[1] };
-            if (prop === 'deleteHospFileLink') payloadData = { hospcode: args[0], urlToRemove: args[1] };
-            if (prop === 'deleteRecord') payloadData = { sheetName: args[0], cid: args[1] };
-            if (prop === 'saveLineSettings') payloadData = { token: args[0], target: args[1] };
-            if (['getScreeningRecord', 'checkTestEligibility', 'checkFollowupEligibility', 'getBehaviorRecord', 'getFollowupRecord', 'deleteBehaviorRecord', 'deleteFollowupRecord'].includes(prop)) payloadData = { cid: args[0] };
-            if (prop === 'deleteLinkData' || prop === 'deleteVideoItem') payloadData = { id: args[0] };
-
-            // ยิง HTTP POST ไปหา Backend
-            const response = await fetch(CONFIG.GAS_API_URL, {
-              method: 'POST',
-              headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-              body: JSON.stringify({ action: prop, data: payloadData })
-            });
-            
-            const result = await response.json();
-            
-            // โค้ดเก่าคุณรับค่ามาแล้วเอาไป JSON.parse() เราจึงต้องแปลงกลับเป็น String ก่อนส่งคืนให้ Success Handler โค้ดเก่าจะได้ไม่ Error
+            const result = await apiPromise;
             if (successHandler) {
-               const stringifiedResult = typeof result === 'object' ? JSON.stringify(result) : result;
-               successHandler(stringifiedResult);
+              const stringifiedResult = typeof result === 'object' ? JSON.stringify(result) : result;
+              successHandler(stringifiedResult);
             }
           } catch (err) {
-            console.error("API Fetch Error:", err);
-            if (failureHandler) failureHandler(err);
-            else {
-               // Fallback alert ถ้าไม่มี Error Handler
-               const errWrap = document.getElementById('toastWrap');
-               if(errWrap) {
-                  const t = document.createElement('div');
-                  t.className = 'toast t-err'; t.innerHTML = '❌ เชื่อมต่อเซิร์ฟเวอร์ล้มเหลว';
-                  errWrap.appendChild(t); setTimeout(()=>t.remove(), 3000);
-               }
+            console.error('API Error [' + prop + ']:', err);
+            if (failureHandler) {
+              failureHandler(err);
+            } else {
+              _polyfillToast('❌ เชื่อมต่อเซิร์ฟเวอร์ล้มเหลว: ' + (err.message || 'Unknown'), 'err');
             }
+          } finally {
+            // ล้าง in-flight Map เมื่อเสร็จสิ้น (สำเร็จ/ล้มเหลว ก็ต้องล้าง)
+            if (inFlightKey) _inFlight.delete(inFlightKey);
           }
         };
       }
@@ -950,42 +1398,33 @@ window.google.script.run = (function() {
   return createRunner(null, null);
 })();
 // ==============================================================
-// ⬇️ โค้ดเดิมของคุณทั้งหมด (var G_extraClickIdx = ... ลงไป) ปล่อยไว้เหมือนเดิม 100% เลยครับ ไม่ต้องแก้อะไรแล้ว ⬇️
+// ⬇️ โค้ดเดิมของคุณทั้งหมด (var G_extraClickIdx = ... ลงไป) ปล่อยไว้เหมือนเดิม ⬇️
 // ==============================================================
+// === ประกาศตัวแปร global ครั้งเดียว ===
+var G_extraClickIdx = { diag: null, treat: null, behRisk: null, fupWear: null, nat: null };
 
-var G_extraClickIdx = { diag: null, treat: null, behRisk: null, fupWear: null };
-// ... โค้ดเดิมยาวๆ ของคุณ ...
-// === REPLACE: renderExtraDashCharts (v6.5 - Universal Toggle Support) ===
-var G_extraClickIdx = { diag: null, treat: null, behRisk: null, fupWear: null };
-
-// 🔧 Helper สำหรับ toggle highlight บนกราฟ doughnut/pie ทุกตัว
+// === Helper สำหรับ toggle ===
 function makeChartToggle(stateKey) {
   return function(evt, elements) {
     var chart = this;
     var ds = chart.data.datasets[0];
-    
-    // เก็บสีต้นฉบับครั้งแรก
     if (!chart._origColors) chart._origColors = ds.backgroundColor.slice();
     var orig = chart._origColors;
     
     if (!elements.length) {
-      // คลิกที่ว่าง → คืนค่า
       ds.backgroundColor = orig.slice();
       G_extraClickIdx[stateKey] = null;
       chart.update();
       return;
     }
-    
     var idx = elements[0].index;
     if (G_extraClickIdx[stateKey] === idx) {
-      // คลิกซ้ำ → คืนค่าเดิม
       ds.backgroundColor = orig.slice();
       G_extraClickIdx[stateKey] = null;
     } else {
-      // คลิกใหม่ → highlight เฉพาะอันที่กด, อันอื่นจาง
       G_extraClickIdx[stateKey] = idx;
       ds.backgroundColor = orig.map(function(c, i) {
-        return i === idx ? c : c + '33'; // เพิ่ม alpha = 20%
+        return i === idx ? c : c + '33';
       });
     }
     chart.update();
@@ -996,7 +1435,7 @@ function renderExtraDashCharts(extraStats) {
   if(!extraStats) return;
   
   // รีเซ็ตสถานะคลิกทุกครั้งที่ render ใหม่
-  G_extraClickIdx = { diag: null, treat: null, behRisk: null, fupWear: null };
+  G_extraClickIdx = { diag: null, treat: null, behRisk: null, fupWear: null, nat: null };
   
   // ─── 1. ระดับความรุนแรง (Severity) ──────────────
   if(extraStats.diagSeverityTally) {
@@ -1021,7 +1460,7 @@ function renderExtraDashCharts(extraStats) {
   if(extraStats.treatTally) {
       var tKeys = Object.keys(extraStats.treatTally).sort(function(a,b){ return extraStats.treatTally[b]-extraStats.treatTally[a]; });
       var tVals = tKeys.map(function(k){ return extraStats.treatTally[k]; });
-      if(window.G_treatInst) window.G_treatInst.destroy(); // ✅ แก้ไขตรงนี้
+      if(window.G_treatInst) window.G_treatInst.destroy(); 
       window.G_treatInst = new Chart(document.getElementById('treatDashChart').getContext('2d'), {
         type: 'doughnut',
         data: { labels: tKeys, datasets:[{ data: tVals, backgroundColor: ['#3b82f6','#10b981','#f59e0b','#8b5cf6','#ec4899','#64748b','#f43f5e'] }] },
@@ -1039,7 +1478,7 @@ function renderExtraDashCharts(extraStats) {
 
   // ─── 3. ความเสี่ยงพฤติกรรมหน้าจอ ──────────────────
   if(extraStats.behRiskTally) {
-      if(window.G_behDashInst) window.G_behDashInst.destroy(); // ✅ แก้ไขตรงนี้
+      if(window.G_behDashInst) window.G_behDashInst.destroy(); 
       window.G_behDashInst = new Chart(document.getElementById('behRiskDashChart').getContext('2d'), {
         type: 'pie',
         data: { labels: ['เสี่ยงน้อย (0-3)', 'ปานกลาง (4-7)', 'เสี่ยงสูง (≥8)'], 
@@ -1060,7 +1499,7 @@ function renderExtraDashCharts(extraStats) {
   if(extraStats.fupWearTally) {
       var fKeys = Object.keys(extraStats.fupWearTally);
       var fVals = fKeys.map(function(k){ return extraStats.fupWearTally[k]; });
-      if(window.G_fupDashInst) window.G_fupDashInst.destroy(); // ✅ แก้ไขตรงนี้
+      if(window.G_fupDashInst) window.G_fupDashInst.destroy(); 
       window.G_fupDashInst = new Chart(document.getElementById('fupStatusDashChart').getContext('2d'), {
         type: 'doughnut',
         data: { labels: fKeys.length ? fKeys : ['ยังไม่มีข้อมูล'], 
@@ -1076,19 +1515,95 @@ function renderExtraDashCharts(extraStats) {
         }, plugins: [ChartDataLabels]
       });
   }
-}
+
+  // ─── 5. สัญชาติ — Horizontal Bar Interactive ───────────
+  if(extraStats.natTally) {
+      var nKeys = Object.keys(extraStats.natTally).sort(function(a,b){ 
+        return extraStats.natTally[b]-extraStats.natTally[a]; 
+      });
+      var nVals = nKeys.map(function(k){ return extraStats.natTally[k]; });
+      var nTotal = nVals.reduce(function(a,b){return a+b;}, 0) || 1;
+      var nColors = ['#3b82f6','#10b981','#f59e0b','#ec4899','#8b5cf6','#64748b','#ef4444'];
+      
+      if(window.G_natInst) window.G_natInst.destroy();
+      var can = document.getElementById('natDashChart');
+      if(!can) return;
+      
+      window.G_natInst = new Chart(can.getContext('2d'), {
+        type: 'bar',
+        data: { 
+          labels: nKeys, 
+          datasets:[{ 
+            data: nVals, 
+            backgroundColor: nKeys.map(function(_,i){ return nColors[i%nColors.length]; }),
+            borderRadius: 4,
+            barThickness: 'flex',
+            maxBarThickness: 28
+          }] 
+        },
+        options: { 
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          onClick: function(evt, elements) {
+            if (!elements.length) return;
+            var nat = nKeys[elements[0].index];
+            // กรองตารางตามสัญชาติ (ใช้ srchBox เพราะไม่มี filter เฉพาะ)
+            var sb = document.getElementById('srchBox');
+            if (sb.value === nat) { sb.value = ''; } else { sb.value = nat; }
+            applyFilters();
+          },
+          plugins: { 
+            legend: { display: false },
+            datalabels: { 
+              color: '#fff', anchor: 'center', align: 'center',
+              font: { weight: 'bold', size: 11, family: 'Sarabun' }, 
+              textStrokeColor: 'rgba(0,0,0,0.5)', textStrokeWidth: 2,
+              formatter: function(v) { 
+                if (v === 0) return '';
+                var pct = Math.round(v/nTotal*100);
+                return v + ' (' + pct + '%)'; 
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: function(ctx) {
+                  var pct = Math.round(ctx.raw/nTotal*100);
+                  return ctx.raw + ' คน (' + pct + '%)';
+                }
+              }
+            }
+          },
+          scales: {
+            x: { beginAtZero: true, ticks: { font:{family:'Sarabun', size:10} } },
+            y: { ticks: { font:{family:'Sarabun', size:10, weight:'bold'} } }
+          }
+        }, 
+        plugins: [ChartDataLabels]
+      });
+  }
+} // <- ปิดฟังก์ชัน renderExtraDashCharts ตรงนี้ที่เดียวครับ
 
 var G = {
-  session:{loggedIn:false,user:'',role:'',hospcode:''}, settings:{}, hospList:[], schoolList:[], vaList:[], vaMap: {}, links:[], videos: [], allRows:[], dispRows:[], chartData: { amphoe: [], hosp: [], school: [] }, satCharts: {}, kpi: {}, hospSummaryData: [],
+  session:{loggedIn:false,user:'',role:'',hospcode:''}, settings:{}, hospList:[], schoolList:[], vaList:[], vaMap: {}, natList:[], links:[], videos: [], allRows:[], dispRows:[], chartData: { amphoe: [], hosp: [], school: [] }, satCharts: {}, kpi: {}, hospSummaryData: [],
   barInst:null, pieInst:null, lineInst:null, hospInst:null, schoolInst:null, satBreakdownInst:null, satTypePieInst:null, delTarget:{cid:'',sheet:''}
 };
 var myMap = null; var hospLayer = null; var schoolLayer = null; var _satClickIdx = null; var _editMode = false;
 
-function e_(str) { return str === null || str === undefined ? '' : String(str).replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/"/g, '"'); }
+function e_(str) { 
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
 function toThaiDate(dateStr) { if (!dateStr) return '......../........../............'; var parts = dateStr.split('/'); if (parts.length === 3) { var y = parseInt(parts[2], 10); if (y < 2500) y += 543; return parts[0] + '/' + parts[1] + '/' + y; } return dateStr; }
 function smartParseCSVLine(line, delimiter) { var row = []; var inQuotes = false; var currentVal = ''; for(var j=0; j<line.length; j++) { var c = line[j]; if(c === '"') { inQuotes = !inQuotes; } else if(c === delimiter && !inQuotes) { row.push(currentVal.trim()); currentVal = ''; } else { currentVal += c; } } row.push(currentVal.trim()); return row; }
 function smartProcessRow(cols) {
-    var cleanedCols = cols.map(function(c) { return String(c).replace(/^"|"$/g, '').trim(); }); var out = new Array(46).fill('');
+    var cleanedCols = cols.map(function(c) { return String(c).replace(/^"|"$/g, '').trim(); }); 
+    var out = new Array(47).fill('');  // ⬅️ เปลี่ยนจาก 46 เป็น 47
     
     // ฟังก์ชันย่อยสำหรับแปลงตัวเลข ID เป็นค่าสายตา
     function mapVa(val) {
@@ -1125,6 +1640,8 @@ function smartProcessRow(cols) {
             out[25] = mapVa(cleanedCols[13]); // VAซ้าย_ตาเปล่า
             out[28] = mapVa(cleanedCols[14]); // PHขวา
             out[29] = mapVa(cleanedCols[15]); // PHซ้าย
+            // ไม่มี out[30], out[31] (VA OU)
+            out[32] = 'ปกติ'; // Cover_Test
             var hcRaw = String(cleanedCols[16] || '').trim().replace(/^[="']+|["']+$/g, ''); 
             var sd = cleanedCols[17] || ''; 
         }
@@ -1146,7 +1663,8 @@ function smartProcessRow(cols) {
             }
             out[i] = val; 
         } 
-    } 
+    }
+    if (!out[46]) out[46] = 'ไทย';  // ⬅️ เพิ่มก่อน return 
     return out;
 }
 function toast(msg, type) { var wrap = document.getElementById('toastWrap'); if (!wrap) return; var t = document.createElement('div'); var icon = type === 'ok' ? '✅ ' : type === 'err' ? '❌ ' : 'ℹ️ '; t.className = 'toast t-' + (type || 'inf'); t.innerHTML = icon + msg; wrap.appendChild(t); setTimeout(function() { t.style.opacity = '0'; t.style.transform = 'translateX(100%)'; t.style.transition = 'all 0.3s ease'; setTimeout(function() { t.remove(); }, 300); }, 3000); }
@@ -1182,28 +1700,142 @@ function applyFilters() {
 }
 function clearFilters() { ['fAmp','fHosp','fSch','fStat','fSex'].forEach(function(id){ document.getElementById(id).value = ''; }); document.getElementById('srchBox').value = ''; onAmpChange(); applyFilters(); }
 function forceRefresh() { clearFilters(); loadDashboard({}); toast('กำลังรีเฟรชข้อมูลล่าสุด...', 'inf'); }
-function convertFile() {
-  var fileInput = document.getElementById('convFile'); if (!fileInput.files.length) { toast('กรุณาเลือกไฟล์ .txt หรือ .csv ก่อนครับ', 'err'); return; }
-  var file = fileInput.files[0]; var reader = new FileReader(); var encoding = document.getElementById('fileEncoding') ? document.getElementById('fileEncoding').value : 'UTF-8';
-  reader.onload = function(e) {
-    var text = e.target.result; var lines = text.split(/\r\n|\n|\r/); var headers = [ "ระดับชั้น", "ห้อง", "เลขบัตรประชาชน_13หลัก", "คำนำหน้า", "ชื่อ", "นามสกุล", "ชื่อ-สกุลเต็ม", "วันเกิด_dd/mm/yyyy", "อายุ_ปี", "เพศ_1ชาย_2หญิง", "ชั้นเรียน", "ชื่อโรงเรียน", "หน่วยวัด_F_M", "วันที่ตรวจ_dd/mm/yyyy", "รหัสรพสต", "บ้านเลขที่", "หมู่", "รหัสพื้นที่_aid", "ประวัติสวมแว่น", "ประวัติบาดเจ็บตา", "ตาแดงเรื้อรัง", "ปวดศีรษะบ่อย", "ตาเหล่_ตาขี้เกียจ", "ครอบครัวสวมแว่น", "VAขวา_ตาเปล่า", "VAซ้าย_ตาเปล่า", "VAขวา_ใส่แว่น", "VAซ้าย_ใส่แว่น", "PHขวา", "PHซ้าย", "VA_OU_ตาเปล่า", "VA_OU_ใส่แว่น", "Cover_Test", "Hirschberg", "Color_Vision", "Stereopsis", "วินิจฉัย", "การส่งต่อ", "ผู้ตรวจ", "ตำแหน่ง", "รหัสโรงเรียน", "ตำบล", "อำเภอ", "จังหวัด", "หมายเหตุ", "สิทธิการรักษา" ]; var csvContent = "\uFEFF" + headers.join(',') + "\n"; 
-    for (var i = 0; i < lines.length; i++) { var line = lines[i].trim(); if (!line) continue; var lowerLine = line.toLowerCase(); if (lowerLine.indexOf('ระดับชั้น') > -1 || lowerLine.indexOf('lavel_edu') > -1 || lowerLine.indexOf('cid') > -1) continue; var delimiter = ','; if (line.indexOf('\t') !== -1) delimiter = '\t'; else if (line.indexOf('|') !== -1) delimiter = '|'; else if (line.indexOf(';') !== -1) delimiter = ';'; var cols = smartParseCSVLine(line, delimiter); var mapped = smartProcessRow(cols); if (mapped) { var csvRow = mapped.map(function(val, idx) { if (idx === 2 && val) return '="'+val+'"'; if (idx === 14 && val) return '="'+val+'"'; return '"' + String(val).replace(/"/g, '""') + '"'; }); csvContent += csvRow.join(',') + "\n"; } }
-    var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' }); var url = URL.createObjectURL(blob); var a = document.createElement('a'); a.href = url; a.download = 'Converted_' + file.name.replace(/\.txt$/i, '.csv'); document.body.appendChild(a); a.click(); document.body.removeChild(a); toast('แปลงไฟล์ จัดเรียงคอลัมน์ใหม่ และใส่เกราะป้องกันเลขบัตรสำเร็จ', 'ok');
-  }; reader.readAsText(file, encoding);
+function mapCsvToRowDynamic(headers, cols) {
+    // อัปเดต Dictionary ให้รู้จักทั้งหัวคอลัมน์ "ภาษาไทย" และ "ภาษาอังกฤษ (ตาม Database จริง)"
+    var HEADER_MAP = {
+        "level_edu": 0, "ระดับชั้น": 0,
+        "room": 1, "ห้อง": 1,
+        "cid": 2, "เลขบัตรประชาชน": 2, "เลขบัตรประชาชน_13หลัก": 2,
+        "pname": 3, "คำนำหน้า": 3,
+        "fname": 4, "ชื่อ": 4,
+        "lname": 5, "นามสกุล": 5,
+        "student_name": 6, "ชื่อ-สกุลเต็ม": 6,
+        "birthday": 7, "วันเกิด": 7, "วันเกิด_dd/mm/yyyy": 7,
+        "age_years": 8, "อายุ": 8, "อายุ_ปี": 8,
+        "sex": 9, "เพศ": 9, "เพศ_1ชาย_2หญิง": 9,
+        "school_class": 10, "ชั้นเรียน": 10,
+        "school_name": 11, "โรงเรียน": 11, "ชื่อโรงเรียน": 11,
+        "unit": 12, "หน่วยวัด": 12, "หน่วยวัด_f_m": 12,
+        "screen_date": 13, "วันที่ตรวจ": 13, "วันที่ตรวจ_dd/mm/yyyy": 13,
+        "hospcode": 14, "รหัสรพสต": 14,
+        "address": 15, "บ้านเลขที่": 15,
+        "moo": 16, "หมู่": 16,
+        "aid": 17, "รหัสพื้นที่": 17, "รหัสพื้นที่_aid": 17,
+        "hx_glasses": 18, "ประวัติสวมแว่น": 18,
+        "hx_injury": 19, "ประวัติบาดเจ็บตา": 19,
+        "hx_red_eye": 20, "ตาแดงเรื้อรัง": 20,
+        "hx_headache": 21, "ปวดศีรษะบ่อย": 21,
+        "hx_amblyopia": 22, "ตาเหล่": 22, "ตาเหล่_ตาขี้เกียจ": 22,
+        "hx_family": 23, "ครอบครัวสวมแว่น": 23,
+        "va_r_naked": 24, "vaขวา_ตาเปล่า": 24,
+        "va_l_naked": 25, "vaซ้าย_ตาเปล่า": 25,
+        "va_r_glasses": 26, "vaขวา_ใส่แว่น": 26,
+        "va_l_glasses": 27, "vaซ้าย_ใส่แว่น": 27,
+        "ph_r": 28, "phขวา": 28,
+        "ph_l": 29, "phซ้าย": 29,
+        "va_naked_ou": 30, "va_ou_ตาเปล่า": 30,
+        "va_glasses_ou": 31, "va_ou_ใส่แว่น": 31,
+        "cover_test": 32,
+        "hirschberg": 33,
+        "color_vision": 34,
+        "stereopsis": 35,
+        "diagnosis": 36, "วินิจฉัย": 36,
+        "referral": 37, "การส่งต่อ": 37,
+        "examiner": 38, "ผู้ตรวจ": 38,
+        "position": 39, "ตำแหน่ง": 39,
+        "school_code": 40, "รหัสโรงเรียน": 40,
+        "tambon": 41, "ตำบล": 41,
+        "amphoe": 42, "อำเภอ": 42,
+        "province": 43, "จังหวัด": 43,
+        "remark": 44, "remarks": 44, "หมายเหตุ": 44,
+        "treatment": 45, "สิทธิการรักษา": 45,
+        "nationality": 46, "สัญชาติ": 46
+    };
+    
+    var out = new Array(47).fill(''); // สร้างแถวว่าง 47 ช่อง
+    for(var j=0; j<headers.length; j++) {
+        // ทำความสะอาดชื่อคอลัมน์เพื่อนำไปเทียบ
+        var hName = String(headers[j]).toLowerCase().replace(/[\n\r"']/g, '').trim();
+        var val = String(cols[j] || '').replace(/^[="']+|["']+$/g, '').trim();
+        
+        // ค้นหาใน Dictionary ว่าตรงกับ Index ไหน
+        var matchedIndex = -1;
+        for (var key in HEADER_MAP) {
+            if (hName === key || hName.indexOf(key) > -1) { matchedIndex = HEADER_MAP[key]; break; }
+        }
+        
+        // หากเจอตรงกัน ให้นำไปใส่ใน index นั้น
+        if (matchedIndex > -1) {
+            // Mapping พิเศษสำหรับค่าสายตา (ให้แปลงรหัสเป็นค่าจริง)
+            if ([24, 25, 26, 27, 28, 29, 30, 31].indexOf(matchedIndex) > -1) {
+               val = (val && G.vaMap && G.vaMap[val]) ? G.vaMap[val] : val;
+            }
+            // บังคับทำความสะอาดรูปแบบตัวเลข
+            if (matchedIndex === 2) val = val.replace(/\D/g, ''); // เลขบัตรให้เหลือแต่ตัวเลข
+            if (matchedIndex === 14 && val.length > 0 && val.length < 5) val = ("00000" + val).slice(-5); // รหัสรพ.สต. 5 หลัก
+            
+            out[matchedIndex] = val;
+        }
+    }
+    
+    // Fallback: หากระบบหาคอลัมน์ "เลขบัตรประชาชน" ไม่เจอ แสดงว่าไฟล์อาจไม่มี Header ที่รู้จัก ให้ใช้ระบบเดิมสำรอง
+    if(out[2] === '') { return smartProcessRow(cols); }
+    return out;
 }
+
 function importCSV() {
     var fileInput = document.getElementById('convFile'); if (!fileInput.files.length) { toast('กรุณาเลือกไฟล์ก่อนครับ', 'err'); return; }
     var file = fileInput.files[0]; var reader = new FileReader(); var encoding = document.getElementById('fileEncoding') ? document.getElementById('fileEncoding').value : 'UTF-8';
     reader.onload = function(e) {
         var text = e.target.result; var lines = text.split(/\r\n|\n|\r/); var processedRows = [];
-        for (var i = 0; i < lines.length; i++) { var line = lines[i].trim(); if (!line) continue; var lowerLine = line.toLowerCase(); if (lowerLine.indexOf('ระดับชั้น') > -1 || lowerLine.indexOf('lavel_edu') > -1 || lowerLine.indexOf('cid') > -1) continue; var delimiter = ','; if (line.indexOf('\t') !== -1) delimiter = '\t'; else if (line.indexOf('|') !== -1) delimiter = '|'; else if (line.indexOf(';') !== -1) delimiter = ';'; var cols = smartParseCSVLine(line, delimiter); var mapped = smartProcessRow(cols); if (mapped) processedRows.push(mapped); }
-        if(processedRows.length === 0) { toast('ไม่พบข้อมูลในไฟล์ หรือข้อมูลไม่ถูกต้อง', 'err'); return; } var btn = document.getElementById('btnImport'); btn.disabled = true; btn.innerHTML = '⏳ กำลังนำเข้า...';
-        google.script.run.withSuccessHandler(function(res) { btn.disabled = false; btn.innerHTML = '⬇️ นำเข้าข้อมูล (Import)'; var r = JSON.parse(res); if(r.ok) { toast(r.msg, 'ok'); closePanel('conv'); fileInput.value = ''; forceRefresh(); } else { toast(r.msg, 'err'); } }).withFailureHandler(function(err){ btn.disabled = false; btn.innerHTML = '⬇️ นำเข้าข้อมูล (Import)'; toast('Error: ' + err.message, 'err'); }).importScreeningData(processedRows);
-    }; reader.readAsText(file, encoding);
+        var headers = [];
+        
+        for (var i = 0; i < lines.length; i++) { 
+            var line = lines[i].trim(); if (!line) continue; 
+            var delimiter = ','; if (line.indexOf('\t') !== -1) delimiter = '\t'; else if (line.indexOf('|') !== -1) delimiter = '|'; else if (line.indexOf(';') !== -1) delimiter = ';'; 
+            var cols = smartParseCSVLine(line, delimiter); 
+            
+            // อ่านหัวคอลัมน์ในบรรทัดแรก
+            if(i === 0 || line.indexOf('ระดับชั้น') > -1 || line.indexOf('cid') > -1 || line.indexOf('เลขบัตร') > -1) {
+                headers = cols; continue; 
+            }
+            
+            var mapped = (headers.length > 0) ? mapCsvToRowDynamic(headers, cols) : smartProcessRow(cols); 
+            if (mapped) processedRows.push(mapped); 
+        }
+        
+        if(processedRows.length === 0) { toast('ไม่พบข้อมูลในไฟล์ หรือข้อมูลไม่ถูกต้อง', 'err'); return; } 
+        var btn = document.getElementById('btnImport'); btn.disabled = true; btn.innerHTML = '⏳ กำลังนำเข้า...';
+        google.script.run.withSuccessHandler(function(res) { 
+           btn.disabled = false; btn.innerHTML = '⬇️ นำเข้าข้อมูล (Import)'; var r = JSON.parse(res); 
+           if(r.ok) { toast(r.msg, 'ok'); closePanel('conv'); fileInput.value = ''; forceRefresh(); } else { toast(r.msg, 'err'); } 
+        }).withFailureHandler(function(err){ 
+           btn.disabled = false; btn.innerHTML = '⬇️ นำเข้าข้อมูล (Import)'; toast('Error: ' + err.message, 'err'); 
+        }).importScreeningData(processedRows);
+    }; 
+    reader.readAsText(file, encoding);
 }
 function dlTemplate() {
-  var headers = [ "ระดับชั้น", "ห้อง", "เลขบัตรประชาชน_13หลัก", "คำนำหน้า", "ชื่อ", "นามสกุล", "ชื่อ-สกุลเต็ม", "วันเกิด_dd/mm/yyyy", "อายุ_ปี", "เพศ_1ชาย_2หญิง", "ชั้นเรียน", "ชื่อโรงเรียน", "หน่วยวัด_F_M", "วันที่ตรวจ_dd/mm/yyyy", "รหัสรพสต", "บ้านเลขที่", "หมู่", "รหัสพื้นที่_aid", "ประวัติสวมแว่น", "ประวัติบาดเจ็บตา", "ตาแดงเรื้อรัง", "ปวดศีรษะบ่อย", "ตาเหล่_ตาขี้เกียจ", "ครอบครัวสวมแว่น", "VAขวา_ตาเปล่า", "VAซ้าย_ตาเปล่า", "VAขวา_ใส่แว่น", "VAซ้าย_ใส่แว่น", "PHขวา", "PHซ้าย", "VA_OU_ตาเปล่า", "VA_OU_ใส่แว่น", "Cover_Test", "Hirschberg", "Color_Vision", "Stereopsis", "วินิจฉัย", "การส่งต่อ", "ผู้ตรวจ", "ตำแหน่ง", "รหัสโรงเรียน", "ตำบล", "อำเภอ", "จังหวัด", "หมายเหตุ", "สิทธิการรักษา" ]; var csv = "\uFEFF" + headers.join(',') + "\n";
-  var dummyData = [ "ป.3", "/1", "1749900000000", "เด็กชาย", "รักดี", "มีสุข", "เด็กชายรักดี มีสุข", "15/08/2560", "8", "1", "ป.3/1", "โรงเรียนทดสอบ", "F", "11/05/2565", "08498", "123/4", "1", "740201", "0", "0", "0", "0", "0", "0", "20/20", "20/20", "", "", "", "", "", "", "ปกติ", "ปกติ", "ปกติ", "ปกติ", "สายตาปกติ", "ไม่จำเป็นต้องส่งต่อ", "ผู้ตรวจทดสอบ", "นักวิชาการสาธารณสุข", "1074000001", "หนองสองห้อง", "บ้านแพ้ว", "สมุทรสาคร", "", "สิทธิบัตรทอง (30 บาท)" ];
+  var headers = [ 
+    "ระดับชั้น", "ห้อง", "เลขบัตรประชาชน_13หลัก", "คำนำหน้า", "ชื่อ", "นามสกุล", 
+    "ชื่อ-สกุลเต็ม", "วันเกิด_dd/mm/yyyy", "อายุ_ปี", "เพศ_1ชาย_2หญิง", "ชั้นเรียน", 
+    "ชื่อโรงเรียน", "หน่วยวัด_F_M", "วันที่ตรวจ_dd/mm/yyyy", "รหัสรพสต", "บ้านเลขที่", 
+    "หมู่", "รหัสพื้นที่_aid", "ประวัติสวมแว่น", "ประวัติบาดเจ็บตา", "ตาแดงเรื้อรัง", 
+    "ปวดศีรษะบ่อย", "ตาเหล่_ตาขี้เกียจ", "ครอบครัวสวมแว่น", "VAขวา_ตาเปล่า", 
+    "VAซ้าย_ตาเปล่า", "VAขวา_ใส่แว่น", "VAซ้าย_ใส่แว่น", "PHขวา", "PHซ้าย", 
+    "VA_OU_ตาเปล่า", "VA_OU_ใส่แว่น", "Cover_Test", "Hirschberg", "Color_Vision", 
+    "Stereopsis", "วินิจฉัย", "การส่งต่อ", "ผู้ตรวจ", "ตำแหน่ง", "รหัสโรงเรียน", 
+    "ตำบล", "อำเภอ", "จังหวัด", "หมายเหตุ", "สิทธิการรักษา", "สัญชาติ"  // ⬅️ เพิ่ม
+  ];
+  var csv = "\uFEFF" + headers.join(',') + "\n";
+  var dummyData = [ 
+    "ป.3", "/1", "1749900000000", "เด็กชาย", "รักดี", "มีสุข", "เด็กชายรักดี มีสุข", 
+    "15/08/2560", "8", "1", "ป.3/1", "โรงเรียนทดสอบ", "F", "11/05/2565", "08498", 
+    "123/4", "1", "740201", "0", "0", "0", "0", "0", "0", "20/20", "20/20", "", "", 
+    "", "", "", "", "ปกติ", "ปกติ", "ปกติ", "ปกติ", "สายตาปกติ", "ไม่จำเป็นต้องส่งต่อ", 
+    "ผู้ตรวจทดสอบ", "นักวิชาการสาธารณสุข", "1074000001", "หนองสองห้อง", "บ้านแพ้ว", 
+    "สมุทรสาคร", "", "สิทธิบัตรทอง (30 บาท)", "ไทย"  // ⬅️ เพิ่ม
+  ];
   var formattedDummy = dummyData.map(function(c, i){ if (i===2) return '="'+c+'"'; if (i===14) return '="'+c+'"'; return '"'+c+'"'; }).join(','); csv += formattedDummy + "\n";
   var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' }); var url = URL.createObjectURL(blob); var a = document.createElement('a'); a.href = url; a.download = 'Template_Screening_Import_v6.3.csv'; document.body.appendChild(a); a.click(); document.body.removeChild(a); toast('ดาวน์โหลด Template เรียบร้อยครับ', 'ok');
 }
@@ -1261,6 +1893,7 @@ window.onload = function () {
       G.vaMap = d.data.vaMap || {};
       G.session = d.data.session || {loggedIn:false};
       G.videos = d.data.videos || [];
+      G.natList = d.data.natList || ['ไทย', 'พม่า', 'กัมพูชา', 'ลาว', 'อื่นๆ'];
       
       applySettings(); 
       buildDropdowns(); 
@@ -1636,6 +2269,13 @@ function buildDropdowns() {
   document.getElementById('fHosp').innerHTML = hcHtml; document.getElementById('s-hc').innerHTML = formHcHtml; document.getElementById('sat-hc').innerHTML = formHcHtml; document.getElementById('loc-hc').innerHTML = formHcHtml;
   var schHtml = ''; G.schoolList.forEach(function(s) { document.getElementById('fSch').innerHTML += '<option value="' + s.name + '">' + s.name + '</option>'; schHtml += '<option value="' + e_(s.name) + '">'; });
   document.getElementById('dl-school').innerHTML = schHtml; document.getElementById('s-dt').value = (new Date()).toLocaleDateString('en-GB');
+  var natOpts = '';
+  if(G.natList && G.natList.length > 0) {
+      G.natList.forEach(function(n) { natOpts += '<option value="'+n+'">'+n+'</option>'; });
+  } else {
+      natOpts = '<option value="ไทย">ไทย</option><option value="พม่า">พม่า</option><option value="กัมพูชา">กัมพูชา</option>';
+  }
+  if(document.getElementById('s-nat')) document.getElementById('s-nat').innerHTML = natOpts;
 }
 
 function onHcChange() {
@@ -1775,7 +2415,7 @@ function renderHeatmap() {
 
 function loadDashboard(params) {
   if (G.session.loggedIn && G.session.hospcode !== 'all') params.userHosp = G.session.hospcode;
-  document.getElementById('tBody').innerHTML = '<tr><td colspan="20" style="text-align:center;padding:24px;color:var(--muted2)">⏳ กำลังโหลด...</td></tr>';
+  document.getElementById('tBody').innerHTML = '<tr><td colspan="26" style="text-align:center;padding:24px;color:var(--muted2)">⏳ กำลังโหลด...</td></tr>';
   document.getElementById('hospSumBody').innerHTML = '<tr><td colspan="12" style="text-align:center;padding:12px;">⏳ กำลังโหลด...</td></tr>';
 
   google.script.run.withSuccessHandler(function(r) {
@@ -1901,7 +2541,7 @@ function renderBarChart() {
   // ขยายความกว้างกล่อง เพื่อไม่ให้กราฟ 4 แท่งเบียดกัน (แท่งละ 50px รวม 200px ต่อ 1 รพ.สต.)
   var hospContainer = document.getElementById('hospChartContainer');
   if(hospContainer) {
-      var calcWidthHosp = hLabels.length * 200; 
+      var calcWidthHosp = hLabels.length * 100; 
       if (calcWidthHosp < hospContainer.parentElement.clientWidth) calcWidthHosp = hospContainer.parentElement.clientWidth;
       hospContainer.style.width = calcWidthHosp + 'px';
   }
@@ -1922,11 +2562,13 @@ function renderBarChart() {
         x: { 
           stacked: false, 
           ticks: { 
-            font: { family: 'Sarabun', size: 9 }, // แก้ไขตรงนี้: ลดขนาดจาก 11 เป็น 9 เพื่อให้ชื่อแสดงครบ
-            maxRotation: 45, 
-            minRotation: 45 
-          } 
-        }, 
+          font: { family: 'Sarabun', size: 8.5 },
+          maxRotation: 90, minRotation: 60,
+          autoSkip: false, callback: function(val) {
+          var label = this.getLabelForValue(val);
+          return label.length > 14 ? label.substring(0,13) + '…' : label;
+        }
+      }, 
         y: { stacked: false, beginAtZero: true } 
       } 
     }, plugins: [ChartDataLabels] 
@@ -1948,7 +2590,7 @@ function renderBarChart() {
   // ขยายความกว้างกล่อง เพื่อไม่ให้กราฟเบียด (200px ต่อ 1 โรงเรียน)
   var schoolContainer = document.getElementById('schoolChartContainer');
   if(schoolContainer) {
-      var calcWidthSchool = sLabels.length * 200; 
+      var calcWidthSchool = sLabels.length * 100; 
       if (calcWidthSchool < schoolContainer.parentElement.clientWidth) calcWidthSchool = schoolContainer.parentElement.clientWidth;
       schoolContainer.style.width = calcWidthSchool + 'px';
   }
@@ -1968,10 +2610,12 @@ function renderBarChart() {
         x: { 
           stacked: false, 
           ticks: { 
-            font: { family: 'Sarabun', size: 9 }, // แก้ไขตรงนี้: ลดขนาดจาก 11 เป็น 9 เพื่อให้ชื่อแสดงครบ
-            maxRotation: 45, 
-            minRotation: 45 
-          } 
+          font: { family: 'Sarabun', size: 8.5 },
+          maxRotation: 90, minRotation: 60,
+          autoSkip: false, callback: function(val) {
+          var label = this.getLabelForValue(val);
+          return label.length > 14 ? label.substring(0,13) + '…' : label;
+          }
         }, 
         y: { stacked: false, beginAtZero: true } 
       } 
@@ -2160,7 +2804,8 @@ function setRad(name, val) { var els = document.querySelectorAll('input[name="'+
 function saveScr() {
   var btn = document.getElementById('btnSScr'); var cid = document.getElementById('s-cid').value.trim(); if (!/^\d{13}$/.test(cid)) { toast('เลขบัตรประชาชน 13 หลักไม่ถูกต้อง', 'err'); return; } var hcVal = document.getElementById('s-hc').value; if (!hcVal) { toast('กรุณาเลือก รพ.สต.', 'err'); return; }
   // เพิ่มการบันทึก treatment
-  var d = { cid: cid, pname: document.getElementById('s-pname').value, fname: document.getElementById('s-fname').value.trim(), lname: document.getElementById('s-lname').value.trim(), birthday: document.getElementById('s-bd').value, age_years: document.getElementById('s-age').value, sex: document.getElementById('s-sex').value, level_edu: document.getElementById('s-lev').value, room: document.getElementById('s-cls').value, school_name: document.getElementById('s-sch').value, hospcode: hcVal, screen_date: document.getElementById('s-dt').value, examiner: document.getElementById('s-exam').value, position: document.getElementById('s-pos').value, address: document.getElementById('s-addr').value, moo: document.getElementById('s-moo').value, aid: document.getElementById('s-aid').value, unit: document.getElementById('s-unit').value, lat_s: document.getElementById('s-schl-lat').value, lon_s: document.getElementById('s-schl-lon').value, tambon: document.getElementById('s-tambon').value, amphoe: document.getElementById('s-amphoe').value, province: document.getElementById('s-prov').value, remarks: document.getElementById('s-remark').value, hx_glasses: document.getElementById('hx-g').checked, hx_injury: document.getElementById('hx-i').checked, hx_red_eye: document.getElementById('hx-r').checked, hx_headache: document.getElementById('hx-h').checked, hx_amblyopia: document.getElementById('hx-a').checked, hx_family: document.getElementById('hx-f').checked, va_r_naked: document.getElementById('vr-n').value, va_l_naked: document.getElementById('vl-n').value, va_r_glasses: document.getElementById('vr-g').value, va_l_glasses: document.getElementById('vl-g').value, ph_r: document.getElementById('vr-p').value, ph_l: document.getElementById('vl-p').value, va_naked_OU: document.getElementById('vou-naked').value, va_glasses_OU: document.getElementById('vou-glasses').value, cover_test: getRad('ex-cov'), hirschberg: getRad('ex-hir'), color_vision: getRad('ex-col'), stereopsis: getRad('ex-ste'), diagnosis: document.getElementById('s-diag').value, referral: document.getElementById('s-ref').value, treatment: document.getElementById('s-treat').value };
+  var d = { cid: cid, pname: document.getElementById('s-pname').value, fname: document.getElementById('s-fname').value.trim(), lname: document.getElementById('s-lname').value.trim(), birthday: document.getElementById('s-bd').value, age_years: document.getElementById('s-age').value, sex: document.getElementById('s-sex').value, level_edu: document.getElementById('s-lev').value, room: document.getElementById('s-cls').value, school_name: document.getElementById('s-sch').value, hospcode: hcVal, screen_date: document.getElementById('s-dt').value, examiner: document.getElementById('s-exam').value, position: document.getElementById('s-pos').value, address: document.getElementById('s-addr').value, moo: document.getElementById('s-moo').value, aid: document.getElementById('s-aid').value, unit: document.getElementById('s-unit').value, lat_s: document.getElementById('s-schl-lat').value, lon_s: document.getElementById('s-schl-lon').value, tambon: document.getElementById('s-tambon').value, amphoe: document.getElementById('s-amphoe').value, province: document.getElementById('s-prov').value, remarks: document.getElementById('s-remark').value, hx_glasses: document.getElementById('hx-g').checked, hx_injury: document.getElementById('hx-i').checked, hx_red_eye: document.getElementById('hx-r').checked, hx_headache: document.getElementById('hx-h').checked, hx_amblyopia: document.getElementById('hx-a').checked, hx_family: document.getElementById('hx-f').checked, va_r_naked: document.getElementById('vr-n').value, va_l_naked: document.getElementById('vl-n').value, va_r_glasses: document.getElementById('vr-g').value, va_l_glasses: document.getElementById('vl-g').value, ph_r: document.getElementById('vr-p').value, ph_l: document.getElementById('vl-p').value, va_naked_OU: document.getElementById('vou-naked').value, va_glasses_OU: document.getElementById('vou-glasses').value, cover_test: getRad('ex-cov'), hirschberg: getRad('ex-hir'), color_vision: getRad('ex-col'), stereopsis: getRad('ex-ste'), diagnosis: document.getElementById('s-diag').value, referral: document.getElementById('s-ref').value, treatment: document.getElementById('s-treat').value,
+  nationality: document.getElementById('s-nat') ? document.getElementById('s-nat').value : 'ไทย'};
   btn.disabled = true; btn.innerHTML = '<span class="sp"></span> กำลังประมวลผล...';
   
   if (_editMode) { 
@@ -2210,6 +2855,7 @@ function editRow(cid) {
             
             // เพิ่มการดึงค่าสิทธิการรักษา
             document.getElementById('s-treat').value = d.treatment || '';
+            if(document.getElementById('s-nat')) document.getElementById('s-nat').value = d.nationality || 'ไทย';
 
             document.getElementById('hx-g').checked = (d.hx_glasses == '1' || d.hx_glasses === 1); document.getElementById('hx-i').checked = (d.hx_injury == '1' || d.hx_injury === 1); document.getElementById('hx-r').checked = (d.hx_red_eye == '1' || d.hx_red_eye === 1); document.getElementById('hx-h').checked = (d.hx_headache == '1' || d.hx_headache === 1); document.getElementById('hx-a').checked = (d.hx_amblyopia == '1' || d.hx_amblyopia === 1); document.getElementById('hx-f').checked = (d.hx_family == '1' || d.hx_family === 1);
             document.getElementById('vr-n').value = d.va_r_naked; document.getElementById('vl-n').value = d.va_l_naked; document.getElementById('vr-g').value = d.va_r_glasses; document.getElementById('vl-g').value = d.va_l_glasses; document.getElementById('vr-p').value = d.ph_r; document.getElementById('vl-p').value = d.ph_l; document.getElementById('vou-naked').value = d.va_naked_OU || ''; document.getElementById('vou-glasses').value = d.va_glasses_OU || '';
@@ -2597,23 +3243,6 @@ function printSingleBeh(cid) {
             setTimeout(function(){ window.print(); printArea.innerHTML = ''; }, 500);
         }
     }).getPrintData([cid]);
-}
-
-// จุดแก้ไข 5: เพิ่มปุ่มพิมพ์ในตาราง Dashboard พฤติกรรม
-function renderBehTable(rows) {
-  var tb = document.getElementById('behTblBody');
-  if (!rows.length) { tb.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:20px;color:var(--muted2)">ไม่มีข้อมูล</td></tr>'; return; }
-  var h = '';
-  rows.forEach(function(r, i) {
-    var rcl = r.risk_level === 'high' ? 'beh-risk-h' : (r.risk_level === 'medium' ? 'beh-risk-m' : 'beh-risk-l');
-    var rt = r.risk_level === 'high' ? 'สูง' : (r.risk_level === 'medium' ? 'กลาง' : 'น้อย');
-    h += '<tr><td>'+(i+1)+'</td><td>'+e_(r.cid)+'</td><td>'+e_(r.name)+'</td><td>'+e_(r.school_class)+'</td><td>'+e_(r.hosp_name)+'</td>' +
-         '<td style="text-align:center;">'+r.hours_wk.toFixed(1)+'</td><td style="text-align:center;">'+r.hours_we.toFixed(1)+'</td>' +
-         '<td>'+e_(r.distance)+'</td><td>'+e_(r.rest)+'</td><td style="font-size:10px;">'+e_(r.symptoms)+'</td>' +
-         '<td style="text-align:center;"><span class="'+rcl+'">'+rt+' ('+r.risk_score+')</span></td>' +
-         '<td style="text-align:center;"><button class="btn-act" style="color:var(--teal);border-color:#99f6e4;" onclick="printSingleBeh(\''+r.cid+'\')" title="พิมพ์แบบฟอร์ม">🖨️</button></td></tr>';
-  });
-  tb.innerHTML = h;
 }
 
 function exportWord(htmlContent, filename) { var preHtml = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Export Document</title><style>body { font-family: 'TH Sarabun PSK', 'Sarabun', sans-serif; } .pb-always { page-break-after: always; mso-special-character: line-break; }</style></head><body>"; var postHtml = "</body></html>"; var fixedHtml = htmlContent.replace(/<div class="pb-always"[^>]*><\/div>/g, "<br clear=all style='mso-special-character:line-break;page-break-before:always'>"); var html = preHtml + fixedHtml + postHtml; var blob = new Blob(['\ufeff', html], { type: 'application/msword' }); var url = URL.createObjectURL(blob); var downloadLink = document.createElement("a"); downloadLink.href = url; downloadLink.download = filename; document.body.appendChild(downloadLink); downloadLink.click(); document.body.removeChild(downloadLink); }
@@ -3525,73 +4154,6 @@ function testLine() {
   }).testLineMsg();
 }
 
-// ฟังก์ชันสำหรับดึงข้อมูลคัดกรองทั้งหมดมาเปิดดู (เมื่อคลิกแถวในตาราง)
-function viewScreeningFullDetails(cid) {
-  var data = G.allRows.find(function(r) { return r.cid === cid; });
-  if (!data) { toast("ไม่พบข้อมูล", "err"); return; }
-  
-  var content = document.getElementById('fullviewContent');
-  var sexText = data.sex === '1' ? 'ชาย' : (data.sex === '2' ? 'หญิง' : 'ไม่ระบุ');
-  
-  var html = '';
-  // บล็อกข้อมูลทั่วไป
-  html += '<div class="fs"><div class="fs-t" style="color:var(--primary); font-weight:bold; border-color:var(--accent);">👤 ข้อมูลทั่วไปของผู้รับการตรวจ</div>' +
-          '<table style="width:100%; font-size:12px; margin-bottom:5px;">' +
-          '<tr><td style="width:120px; font-weight:600; color:var(--muted);">เลขบัตรประชาชน:</td><td><b>' + e_(data.cid) + '</b></td></tr>' +
-          '<tr><td style="font-weight:600; color:var(--muted);">ชื่อ-นามสกุล:</td><td>' + e_(data.pname) + e_(data.fname) + ' ' + e_(data.lname) + '</td></tr>' +
-          '<tr><td style="font-weight:600; color:var(--muted);">วันเกิด:</td><td>' + e_(data.birthday) + ' (' + e_(data.age_years) + ' ปี) | <b>เพศ:</b> ' + sexText + '</td></tr>' +
-          '<tr><td style="font-weight:600; color:var(--muted);">ระดับชั้น:</td><td>' + e_(data.level_edu) + (data.room ? ' ห้อง ' + e_(data.room) : '') + ' (ชั้นเรียน: ' + e_(data.school_class) + ')</td></tr>' +
-          '<tr><td style="font-weight:600; color:var(--muted);">โรงเรียน:</td><td>' + e_(data.school_name) + ' (รหัส: ' + e_(data.school_code) + ')</td></tr>' +
-          '<tr><td style="font-weight:600; color:var(--muted);">ที่อยู่:</td><td>บ้านเลขที่ ' + e_(data.address) + ' หมู่ที่ ' + e_(data.moo) + ' ต.' + e_(data.tambon) + ' อ.' + e_(data.amphoe) + ' จ.' + e_(data.province) + ' (รหัสปกครอง aid: ' + e_(data.aid) + ')</td></tr>' +
-          '<tr><td style="font-weight:600; color:var(--muted);">สิทธิการรักษา:</td><td><span style="background:#f1f5f9; padding:2px 6px; border-radius:4px;">' + e_(data.treatment || '—') + '</span></td></tr>' +
-          '</table></div>';
-          
-  // บล็อกประวัติสุขภาพตา
-  html += '<div class="fs"><div class="fs-t" style="color:var(--primary); font-weight:bold; border-color:var(--accent);">📋 ประวัติสุขภาพตา</div>' +
-          '<div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; font-size:11.5px;">' +
-          '<div>• เคยสวมแว่น/เลนส์: <b>' + data.hx_glasses + '</b></div>' +
-          '<div>• เคยผ่าตัด/บาดเจ็บตา: <b>' + data.hx_injury + '</b></div>' +
-          '<div>• มีอาการตาแดงเรื้อรัง: <b>' + data.hx_red_eye + '</b></div>' +
-          '<div>• ปวดหัวบ่อยครั้ง: <b>' + data.hx_headache + '</b></div>' +
-          '<div>• ตาเหล่/ตาขี้เกียจ: <b>' + data.hx_amblyopia + '</b></div>' +
-          '<div>• ครอบครัวสวมแว่น: <b>' + data.hx_family + '</b></div>' +
-          '</div></div>';
-
-  // บล็อกผลตรวจสายตา VA ทั้งหมด
-  html += '<div class="fs"><div class="fs-t" style="color:var(--primary); font-weight:bold; border-color:var(--accent);">👁️ ผลการตรวจสายตา (หน่วยวัด: ' + e_(data.unit) + ')</div>' +
-          '<table class="va-tbl" style="margin-top:4px; font-size:11.5px;">' +
-          '<thead><tr><th>การทดสอบ</th><th>ขวา (OD)</th><th>ซ้าย (OS)</th><th>สองตา (OU)</th></tr></thead>' +
-          '<tbody>' +
-          '<tr><td style="font-weight:600;">ไม่ใส่แว่น</td><td style="text-align:center;">' + e_(data.va_r_naked || '—') + '</td><td style="text-align:center;">' + e_(data.va_l_naked || '—') + '</td><td style="text-align:center;">' + e_(data.va_naked_OU || '—') + '</td></tr>' +
-          '<tr><td style="font-weight:600;">ใส่แว่น / เลนส์</td><td style="text-align:center;">' + e_(data.va_r_glasses || '—') + '</td><td style="text-align:center;">' + e_(data.va_l_glasses || '—') + '</td><td style="text-align:center;">' + e_(data.va_glasses_OU || '—') + '</td></tr>' +
-          '<tr><td style="font-weight:600;">Pin Hole Test</td><td style="text-align:center;">' + e_(data.ph_r || '—') + '</td><td style="text-align:center;">' + e_(data.ph_l || '—') + '</td><td style="text-align:center; background:#f1f5f9; color:gray;">N/A</td></tr>' +
-          '</tbody></table></div>';
-
-  // ภาวะตาเหล่และการวินิจฉัย
-  html += '<div class="fs"><div class="fs-t" style="color:var(--primary); font-weight:bold; border-color:var(--accent);">🩺 ผลการตรวจทางคลินิก & วินิจฉัยสรุป</div>' +
-          '<table style="width:100%; font-size:12px; margin-bottom:5px;">' +
-          '<tr><td style="width:110px; font-weight:600; color:var(--muted);">Cover Test:</td><td>' + e_(data.cover_test) + '</td>' +
-          '<td style="width:110px; font-weight:600; color:var(--muted);">Hirschberg:</td><td>' + e_(data.hirschberg) + '</td></tr>' +
-          '<tr><td style="font-weight:600; color:var(--muted);">Color Vision:</td><td>' + e_(data.color_vision) + '</td>' +
-          '<td style="font-weight:600; color:var(--muted);">Stereopsis:</td><td>' + e_(data.stereopsis) + '</td></tr>' +
-          '<tr><td colspan="4" style="padding-top:6px; border-top:1px dashed #e2e8f0;">' +
-          '<div style="margin-bottom:3px;"><b>ผลวินิจฉัย (Diagnosis):</b> <span style="color:var(--red); font-weight:bold;">' + e_(data.diagnosis) + '</span></div>' +
-          '<div><b>การส่งต่อ (Referral):</b> <span style="color:#ea580c; font-weight:bold;">' + e_(data.referral) + '</span></div>' +
-          '</td></tr>' +
-          '</table></div>';
-
-  // ข้อมูลผู้บันทึก & หมายเหตุ
-  html += '<div class="fs"><div class="fs-t" style="color:var(--primary); font-weight:bold; border-color:var(--accent);">📝 ข้อมูลการบันทึกเอกสาร</div>' +
-          '<div style="font-size:12px;">' +
-          '<div><b>วันที่ทำการตรวจ:</b> ' + e_(data.screen_date) + '</div>' +
-          '<div><b>ผู้ตรวจ/ผู้บันทึก:</b> ' + e_(data.examiner) + ' (' + e_(data.position || '—') + ') <b>รหัส รพ.สต.:</b> ' + e_(data.hospcode) + '</div>' +
-          '<div style="margin-top:4px; padding:4px 8px; background:#fff7ed; border:1px solid #ffedd5; border-radius:4px; color:#c2410c;"><b>หมายเหตุเพิ่มเติม:</b> ' + (data.remarks || 'ไม่มีข้อมูลบันทึกเพิ่มเติม') + '</div>' +
-          '</div></div>';
-
-  content.innerHTML = html;
-  openPanel('fullview'); // เรียกเปิด Panel หน้านี้ขึ้นมา
-}
-
 // ฟังก์ชันสำหรับรีโหลดหน้าเว็บใหม่ทั้งหมดแบบล้างแคช (เสมือนการกด Ctrl + Shift + R)
 function hardReload() {
   toast('🔄 กำลังล้างแคชและโหลดข้อมูลใหม่ทั้งหมด...', 'inf');
@@ -3657,6 +4219,21 @@ function toggleAllChk(source) {
         checkboxes[i].checked = source.checked;
       }
     }
+
+    function toggleMobileSidebar() {
+  document.querySelector('.sidebar').classList.toggle('mobile-open');
+}
+// ปิด sidebar เมื่อคลิกที่ filter
+document.addEventListener('click', function(e) {
+  if (window.innerWidth > 768) return;
+  var sb = document.querySelector('.sidebar');
+  if (!sb.classList.contains('mobile-open')) return;
+  // ตรวจสอบว่าไม่ได้คลิกโดนปุ่มเมนู (รวมถึง element ลูกของปุ่ม)
+  if (!sb.contains(e.target) && !e.target.closest('#btnMobileMenu')) {
+    sb.classList.remove('mobile-open');
+  }
+});
+
 </script>
 </body>
 </html>
