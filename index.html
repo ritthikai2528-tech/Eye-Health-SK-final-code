@@ -25,34 +25,6 @@
   --shadow-md:0 4px 6px rgba(0,0,0,.07),0 2px 4px rgba(0,0,0,.05);
   --r:8px; --rl:12px;
 }
-/* Touch device optimization */
-@media (hover: none) and (pointer: coarse) {
-  button, .btn-act, .badge, .kpi, .custom-btn, .btn-form { 
-    -webkit-tap-highlight-color: rgba(59,130,246,0.15);
-    touch-action: manipulation;
-  }
-  .btn-hdr, .btn-form, .btn-p, .btn-sec { min-height: 36px; }
-  .fsel, .fg input, .fg select { min-height: 36px; }
-  .row-chk, input[type="checkbox"], input[type="radio"] { 
-    min-width: 18px; min-height: 18px; 
-  }
-  .kpi:hover { transform: none; }
-  /* Prevent text selection on UI elements */
-  .hdr, .sidebar, .kpi-row, .btn-form { 
-    user-select: none; -webkit-user-select: none; 
-  }
-  /* Smoother scrolling */
-  .content, .tbl-wrap, .pb, .sum-tbl-wrap { 
-    -webkit-overflow-scrolling: touch; 
-  }
-}
-
-/* viewport meta enhancement */
-input, select, textarea { font-size: 16px !important; }
-@media (min-width: 769px) {
-  input, select, textarea { font-size: 12px !important; }
-  .fg input, .fg select, .fg textarea { font-size: 12px !important; }
-}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;font-family:'Sarabun',sans-serif;font-size:14px;color:var(--text);background:var(--bg);overflow:hidden}
 button{cursor:pointer;font-family:inherit} input,select,textarea{font-family:inherit}
@@ -209,158 +181,17 @@ button{cursor:pointer;font-family:inherit} input,select,textarea{font-family:inh
   .print-logo-wrap { text-align:center; margin-bottom:6px; }
   .print-logo-wrap img { height:55px; object-fit:contain; }
 }
-/* ========== TABLET (iPad, 769px - 1024px) ========== */
-@media (min-width: 769px) and (max-width: 1024px) {
-  .sidebar { width: 130px; padding: 8px 6px; }
-  .kpi-row { grid-template-columns: repeat(5, 1fr); gap: 4px; padding: 6px 8px; }
-  .kpi { padding: 6px 4px; }
-  .kpi-v { font-size: 18px; }
-  .kpi-lbl, .kpi-sub { font-size: 9px; }
-  .charts-row { grid-template-columns: 1fr 1fr !important; }
-  #mapCard, #videoCard { height: 350px !important; }
-  .chart-card { padding: 8px; }
-  .dtbl { font-size: 10px; }
-  .dtbl th { font-size: 9.5px; padding: 4px 6px; }
-  #extraDashCharts { grid-template-columns: repeat(2, 1fr) !important; }
-  .sat-tbl, .va-tbl, .ex-tbl, .beh-tbl { font-size: 10.5px; }
-  .panel { width: 90vw; right: -100vw; }
-  .panel.open { right: 0; }
-  .beh-panel.open { right: 5vw !important; }
-}
-
-/* ========== MOBILE (≤ 768px) ========== */
 @media (max-width: 768px) {
-  html, body { overflow: auto; height: auto; }
-  #app { height: auto; min-height: 100vh; }
-  
-  /* Header compact */
-  .hdr { padding: 6px 8px; flex-wrap: wrap; gap: 4px; }
-  .hdr-logo { width: 32px; height: 32px; font-size: 16px; }
-  .sys-name { font-size: 11.5px; }
-  .org-name { font-size: 9px; }
-  .date-txt { display: none; }
-  .btn-hdr { padding: 4px 7px; font-size: 10px; }
-  .btn-hdr-manual span, .btn-hdr-refresh { display: none; }
-  .chip-user { font-size: 10px; padding: 3px 7px; }
-  
-  /* KPI horizontal scroll */
-  .kpi-row { 
-    display: flex; flex-wrap: nowrap; overflow-x: auto; 
-    gap: 6px; padding: 6px 8px; scroll-snap-type: x mandatory;
-  }
-  .kpi { 
-    flex: 0 0 110px; scroll-snap-align: start; padding: 6px 4px;
-  }
-  .kpi-v { font-size: 16px; }
-  .kpi-lbl { font-size: 9px; }
-  
-  /* Sidebar → top drawer */
-  .main { flex-direction: column; }
-  .sidebar { 
-    width: 100%; max-height: none; padding: 8px;
-    border-right: none; border-bottom: 1px solid var(--border);
-    display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
-  }
-  .sb-title { grid-column: span 2; }
-  .fl { font-size: 9px; }
-  .fsel { font-size: 11px; padding: 5px; }
-  .btn-clr { grid-column: span 2; margin-top: 4px; }
-  .add-sec { grid-column: span 2; }
-  .btn-form { font-size: 10.5px; padding: 5px; }
-  
-  /* Content */
-  .content { overflow: visible; }
-  .charts-row { 
-    grid-template-columns: 1fr !important; 
-    padding: 4px 6px; gap: 6px;
-  }
-  .chart-card { 
-    margin: 0 !important; padding: 6px 8px; 
-    height: auto !important; min-height: 200px;
-  }
-  #mapCard, #videoCard { height: 280px !important; }
-  #videoPlaylist { height: 80px !important; padding-top: 8px !important; }
-  .chart-wrap { height: 180px !important; }
-  
-  /* Charts ที่ scroll แนวนอน */
-  #hospChartContainer, #schoolChartContainer { 
-    min-width: 100% !important; 
-  }
-  .chart-card .chart-wrap[style*="overflow-x"] { 
-    height: 220px !important; 
-  }
-  
-  /* Tables */
-  .sum-tbl-wrap { max-height: 180px; margin: 4px 6px; }
-  .sum-tbl { font-size: 10px; }
-  .sum-tbl th, .sum-tbl td { padding: 4px 5px; }
-  .dtbl { font-size: 9.5px; }
-  .dtbl th, .dtbl td { padding: 3px 5px; }
-  
-  /* Extra dashboard charts */
-  #extraDashCharts { grid-template-columns: 1fr 1fr !important; }
-  
-  /* Panels full-width */
-  .panel { width: 100vw; right: -100vw; }
-  .panel.open, .beh-panel.open { right: 0 !important; }
-  .pb { padding: 10px 12px; }
-  .ph { padding: 10px 12px; }
-  .ph-t { font-size: 13px; }
-  .fr, .fr3, .fr4 { grid-template-columns: 1fr !important; gap: 6px; }
-  .fg label { font-size: 10px; }
-  .fg input, .fg select, .fg textarea { font-size: 13px; padding: 8px 10px; }
-  
-  /* Modals */
-  .mbox, .del-box { width: 92% !important; padding: 18px 14px; }
-  .m-ttl { font-size: 16px; }
-  
-  /* Beh/Fup panels */
-  .beh-filter { grid-template-columns: 1fr 1fr !important; }
-  .beh-kpi { grid-template-columns: repeat(2, 1fr) !important; }
-  .beh-grid.beh-row-2, .beh-grid.beh-row-3, .beh-grid.beh-row-2-1 { 
-    grid-template-columns: 1fr !important; 
-  }
-  
-  /* Link grid */
-  .link-grid { padding: 6px; gap: 5px; }
-  .custom-btn { font-size: 11px; padding: 6px 10px; }
-  .custom-btn img { width: 18px; height: 18px; }
-  
-  /* Image modal */
-  #imgModal { padding: 10px; }
-  #imgModal img { max-width: 95vw; max-height: 75vh; }
-  
-  /* Print area แสดงผลทุกตอน */
-  .pb-always { page-break-after: always; }
-  #btnMobileMenu { display: inline-block !important; }
-  .sidebar { 
-    position: fixed; top: 50px; left: -100%; bottom: 0; 
-    width: 80vw; max-width: 280px; z-index: 100; 
-    transition: left 0.3s; background: #fff; 
-    box-shadow: 4px 0 12px rgba(0,0,0,0.15);
-    overflow-y: auto; max-height: calc(100vh - 50px);
-    display: flex; flex-direction: column;
-    grid-template-columns: none;
-  }
-  .sidebar.mobile-open { left: 0; }
-  .sb-title { grid-column: auto; }
-  .btn-clr, .add-sec { grid-column: auto; }
-}
-
-/* ========== ULTRA SMALL (≤ 380px) iPhone SE ========== */
-@media (max-width: 380px) {
-  .sys-name { font-size: 10.5px; }
-  .btn-hdr { padding: 3px 5px; font-size: 9px; }
-  .kpi { flex: 0 0 100px; }
-  .sidebar { grid-template-columns: 1fr; }
-  .sb-title, .btn-clr, .add-sec { grid-column: span 1; }
-  #extraDashCharts { grid-template-columns: 1fr !important; }
-}
-
-/* iPad Pro landscape - force normal layout */
-@media (min-width: 1025px) and (max-width: 1366px) and (orientation: landscape) {
-  .sidebar { width: 140px; }
-  #mapCard, #videoCard { height: 380px !important; }
+  .main { flex-direction: column; overflow-y: auto; }
+  .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border); max-height: 250px; flex-shrink: 0; }
+  .kpi-row { grid-template-columns: repeat(3, 1fr); overflow-x: auto; flex-wrap: wrap; }
+  .charts-row { grid-template-columns: 1fr !important; display: flex; flex-direction: column; }
+  .chart-card { width: 100%; min-width: 100% !important; margin: 0 0 10px 0 !important; }
+  .panel { width: 100%; right: -100%; }
+  .panel.open { right: 0; }
+  .mbox, .del-box { width: 95% !important; padding: 20px 15px; }
+  .sys-name { font-size: 13px; }
+  .date-txt, .btn-hdr { font-size: 10px; padding: 4px 8px; }
 }
 
 /* === Behavior Dashboard === */
@@ -403,14 +234,13 @@ button{cursor:pointer;font-family:inherit} input,select,textarea{font-family:inh
 <body>
 <div id="app">
 <header class="hdr">
-  <button class="btn-hdr btn-hdr-menu" id="btnMobileMenu" onclick="toggleMobileSidebar()" style="display:none; background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.3); color:#fff; padding:5px 10px; font-size:14px;">☰</button>
   <div class="hdr-logo" id="logoWrap">👁</div>
   <div class="hdr-text"><div class="sys-name" id="sysName">โครงการเด็กไทยสายตาดี</div><div class="org-name" id="orgName">องค์การบริหารส่วนจังหวัดสมุทรสาคร</div></div>
   <div class="hdr-right">
     <div class="date-txt" id="dateTxt"></div>
-    <button class="btn-hdr btn-hdr-manual" onclick="openPanel('manual')">📖 <span>คู่มือ</span></button>
-    <button class="btn-hdr btn-hdr-refresh" onclick="hardReload()" title="ล้างแคชและโหลดระบบใหม่">🔄 <span>โหลดใหม่</span></button>
-    <div id="authArea"><button class="btn-hdr btn-hdr-login" onclick="openLogin()">🔐 <span>เข้าสู่ระบบ</span></button></div>
+    <button class="btn-hdr btn-hdr-manual" onclick="openPanel('manual')">📖 คู่มือ</button>
+    <button class="btn-hdr btn-hdr-refresh" onclick="hardReload()" title="ล้างแคชและโหลดระบบใหม่ทั้งหมด">🔄 โหลดใหม่ (Clear Cache)</button>
+    <div id="authArea"><button class="btn-hdr btn-hdr-login" onclick="openLogin()">🔐 เข้าสู่ระบบ</button></div>
   </div>
 </header>
 
@@ -483,11 +313,11 @@ button{cursor:pointer;font-family:inherit} input,select,textarea{font-family:inh
     </div>
 
     <div class="charts-row" style="grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 7px; padding-bottom: 0; border: none;">
-      <div class="chart-card" id="mapCard" style="margin: 0; display: flex; flex-direction: column; height: clamp(280px, 50vh, 420px); min-width: 0;">
+      <div class="chart-card" id="mapCard" style="margin: 0; display: flex; flex-direction: column; height: 420px; min-width: 0;">
           <div class="chart-ttl">🗺️ แผนที่แสดงพิกัด รพ.สต. (สีเขียว) และโรงเรียน (สีน้ำเงิน)</div>
           <div id="mainMap" style="flex: 1; width: 100%; border-radius: 6px; z-index: 1;"></div>
       </div>
-      <div class="chart-card" id="videoCard" style="margin: 0; display: flex; flex-direction: column; height: clamp(280px, 50vh, 420px); min-width: 0;">
+      <div class="chart-card" id="videoCard" style="margin: 0; display: flex; flex-direction: column; height: 420px; min-width: 0;">
           <div class="chart-ttl">📺 วิดีโอสื่อให้ความรู้โครงการ <span style="font-weight:400;color:var(--muted2);font-size:9.5px;margin-left:auto;">— เลือกวิดีโอด้านล่างเพื่อเล่น</span></div>
           <div class="chart-wrap" id="videoWrap" style="flex: 1; display: flex; align-items: center; justify-content: center; background: #f8faff; border-radius: 6px; overflow: hidden; min-height: 0;">
               <span style="color:var(--muted2)">กำลังโหลดวิดีโอ...</span>
@@ -561,28 +391,28 @@ button{cursor:pointer;font-family:inherit} input,select,textarea{font-family:inh
             <div id="schoolChartContainer" style="height: 100%; width: 100%;"><canvas id="schoolChart"></canvas></div>
         </div>
     </div>
-    <div class="charts-row" style="grid-template-columns: repeat(5, 1fr);" id="extraDashCharts">
+    <div class="charts-row" style="grid-template-columns: repeat(4, 1fr);" id="extraDashCharts">
   <div class="chart-card">
-    <div class="chart-ttl">👁️ ระดับความรุนแรง</div>
+    <div class="chart-ttl">👁️ ระดับความรุนแรง (Severity)</div>
     <div class="chart-wrap" style="height:200px;"><canvas id="diagSeverityDashChart"></canvas></div>
   </div>
-  <div class="chart-card">
-    <div class="chart-ttl">💳 สิทธิการรักษา</div>
-    <div class="chart-wrap" style="height:200px;"><canvas id="treatDashChart"></canvas></div>
-  </div>
-  <div class="chart-card">
-    <div class="chart-ttl">📱 ความเสี่ยงพฤติกรรม</div>
-    <div class="chart-wrap" style="height:200px;"><canvas id="behRiskDashChart"></canvas></div>
-  </div>
-  <div class="chart-card">
-    <div class="chart-ttl">👓 ติดตามแว่นตา</div>
-    <div class="chart-wrap" style="height:200px;"><canvas id="fupStatusDashChart"></canvas></div>
-  </div>
-  <div class="chart-card">
-    <div class="chart-ttl">🌏 สัญชาติ <span style="font-weight:400;color:var(--muted2);font-size:9px;margin-left:auto;">— กดแท่งเพื่อกรอง</span></div>
-    <div class="chart-wrap" style="height:200px;"><canvas id="natDashChart"></canvas></div>
-  </div>
-</div>
+      <div class="chart-card">
+        <div class="chart-ttl">💳 สัดส่วนสิทธิการรักษา <span style="font-weight:400;color:var(--muted2);font-size:9.5px;margin-left:auto;">— กดเพื่อดูรายละเอียด</span></div>
+        <div class="chart-wrap" style="height:200px;"><canvas id="treatDashChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-ttl">📱 ความเสี่ยงพฤติกรรมหน้าจอ</div>
+        <div class="chart-wrap" style="height:200px;"><canvas id="behRiskDashChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-ttl">👓 การติดตามแว่นตา (ความถี่การใส่)</div>
+        <div class="chart-wrap" style="height:200px;"><canvas id="fupStatusDashChart"></canvas></div>
+      </div>
+    </div>
+      <div class="chart-card">
+        <div class="chart-ttl">🌏 สัดส่วนสัญชาติ</div>
+        <div class="chart-wrap" style="height:200px;"><canvas id="natDashChart"></canvas></div>
+    </div>
 
     <div class="tbl-sec" id="indvTableSec" style="display:none">
       <div class="tbl-ctrl"><input class="srch" id="srchBox" placeholder="🔍 ค้นหาชื่อ / เลขบัตร / รพ.สต. / โรงเรียน ..." oninput="applyFilters()"><button class="btn-exp btn-print-doc" onclick="openPrintModal()">🖨 พิมพ์แบบฟอร์ม</button><button class="btn-exp" onclick="doExportCSV()">📥 Export CSV</button></div>
@@ -1254,65 +1084,43 @@ function _sleep(ms) {
   return new Promise(r => setTimeout(r, ms + jitter));
 }
 
+// ─── Core: ยิง API พร้อมระบบ Retry อัตโนมัติ ───
 async function _callApiWithRetry(action, payloadData) {
   let lastError = null;
-  let lastBody = null;
   
   for (let attempt = 1; attempt <= CONFIG.MAX_RETRY; attempt++) {
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
-      
       const response = await fetch(CONFIG.GAS_API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action: action, data: payloadData }),
-        signal: controller.signal,
-        redirect: 'follow'
+        body: JSON.stringify({ action: action, data: payloadData })
       });
-      clearTimeout(timeoutId);
       
-      if (!response.ok) {
-        lastBody = await response.text().catch(()=>'');
-        throw new Error('HTTP ' + response.status + (lastBody ? ' — ' + lastBody.substring(0,100) : ''));
-      }
+      if (!response.ok) throw new Error('HTTP ' + response.status);
       
-      const rawText = await response.text();
-      let result;
-      try { 
-        result = JSON.parse(rawText); 
-      } catch(e) {
-        // GAS อาจส่ง HTML error page กลับมาแทน JSON
-        if(rawText.indexOf('<HTML') > -1 || rawText.indexOf('<html') > -1) {
-          throw new Error('GAS ส่ง HTML กลับมา (อาจ deploy ไม่ถูก หรือ URL หมดอายุ)');
-        }
-        throw new Error('คำตอบจากเซิร์ฟเวอร์ไม่ใช่ JSON: ' + rawText.substring(0,80));
-      }
+      const result = await response.json();
       
+      // 🔍 ตรวจว่า Backend คืน Lock Error หรือไม่
       const isBusy = result && result.ok === false && result.msg && 
                      (result.msg.indexOf('ระบบกำลังประมวลผล') > -1 || 
                       result.msg.indexOf('ระบบกำลังยุ่ง') > -1 ||
                       result.msg.indexOf('ระบบประมวลผลอยู่') > -1);
       
+      // ถ้าระบบยุ่ง + เป็น write action + ยังไม่ครบ retry → ลองใหม่
       if (isBusy && WRITE_ACTIONS.has(action) && attempt < CONFIG.MAX_RETRY) {
         const waitMs = CONFIG.RETRY_BASE_MS * attempt;
         _polyfillToast('⏳ ระบบกำลังยุ่ง กำลังลองใหม่ (' + (attempt + 1) + '/' + CONFIG.MAX_RETRY + ')...', 'inf');
         await _sleep(waitMs);
         continue;
       }
+      
+      // ✅ สำเร็จ หรือเป็น error อื่นที่ไม่ใช่ Lock → คืนผลลัพธ์
       return result;
       
     } catch (err) {
       lastError = err;
-      console.error('[API attempt ' + attempt + '] ' + action + ':', err.message);
-      
-      // AbortError = timeout, NetworkError = no connection
-      const isRetryable = WRITE_ACTIONS.has(action) || 
-                          err.name === 'AbortError' || 
-                          err.message.indexOf('NetworkError') > -1 ||
-                          err.message.indexOf('Failed to fetch') > -1;
-      
-      if (isRetryable && attempt < CONFIG.MAX_RETRY) {
+      // Network error → retry เฉพาะ write action เท่านั้น
+      if (WRITE_ACTIONS.has(action) && attempt < CONFIG.MAX_RETRY) {
         const waitMs = CONFIG.RETRY_BASE_MS * attempt;
         _polyfillToast('📡 การเชื่อมต่อขัดข้อง กำลังลองใหม่ (' + (attempt + 1) + '/' + CONFIG.MAX_RETRY + ')...', 'inf');
         await _sleep(waitMs);
@@ -1431,6 +1239,36 @@ function makeChartToggle(stateKey) {
   };
 }
 
+// 🔧 Helper สำหรับ toggle highlight บนกราฟ doughnut/pie ทุกตัว
+function makeChartToggle(stateKey) {
+  return function(evt, elements) {
+    var chart = this;
+    var ds = chart.data.datasets[0];
+    
+    if (!chart._origColors) chart._origColors = ds.backgroundColor.slice();
+    var orig = chart._origColors;
+    
+    if (!elements.length) {
+      ds.backgroundColor = orig.slice();
+      G_extraClickIdx[stateKey] = null;
+      chart.update();
+      return;
+    }
+    
+    var idx = elements[0].index;
+    if (G_extraClickIdx[stateKey] === idx) {
+      ds.backgroundColor = orig.slice();
+      G_extraClickIdx[stateKey] = null;
+    } else {
+      G_extraClickIdx[stateKey] = idx;
+      ds.backgroundColor = orig.map(function(c, i) {
+        return i === idx ? c : c + '33';
+      });
+    }
+    chart.update();
+  };
+}
+
 function renderExtraDashCharts(extraStats) {
   if(!extraStats) return;
   
@@ -1516,71 +1354,27 @@ function renderExtraDashCharts(extraStats) {
       });
   }
 
-  // ─── 5. สัญชาติ — Horizontal Bar Interactive ───────────
+  // ─── 5. สัดส่วนสัญชาติ (Nationality) ─────────────────────
   if(extraStats.natTally) {
-      var nKeys = Object.keys(extraStats.natTally).sort(function(a,b){ 
-        return extraStats.natTally[b]-extraStats.natTally[a]; 
-      });
+      var nKeys = Object.keys(extraStats.natTally).sort(function(a,b){ return extraStats.natTally[b]-extraStats.natTally[a]; });
       var nVals = nKeys.map(function(k){ return extraStats.natTally[k]; });
-      var nTotal = nVals.reduce(function(a,b){return a+b;}, 0) || 1;
-      var nColors = ['#3b82f6','#10b981','#f59e0b','#ec4899','#8b5cf6','#64748b','#ef4444'];
-      
       if(window.G_natInst) window.G_natInst.destroy();
-      var can = document.getElementById('natDashChart');
-      if(!can) return;
       
-      window.G_natInst = new Chart(can.getContext('2d'), {
-        type: 'bar',
-        data: { 
-          labels: nKeys, 
-          datasets:[{ 
-            data: nVals, 
-            backgroundColor: nKeys.map(function(_,i){ return nColors[i%nColors.length]; }),
-            borderRadius: 4,
-            barThickness: 'flex',
-            maxBarThickness: 28
-          }] 
-        },
-        options: { 
-          indexAxis: 'y',
-          responsive: true,
-          maintainAspectRatio: false,
-          onClick: function(evt, elements) {
-            if (!elements.length) return;
-            var nat = nKeys[elements[0].index];
-            // กรองตารางตามสัญชาติ (ใช้ srchBox เพราะไม่มี filter เฉพาะ)
-            var sb = document.getElementById('srchBox');
-            if (sb.value === nat) { sb.value = ''; } else { sb.value = nat; }
-            applyFilters();
-          },
-          plugins: { 
-            legend: { display: false },
-            datalabels: { 
-              color: '#fff', anchor: 'center', align: 'center',
-              font: { weight: 'bold', size: 11, family: 'Sarabun' }, 
-              textStrokeColor: 'rgba(0,0,0,0.5)', textStrokeWidth: 2,
-              formatter: function(v) { 
-                if (v === 0) return '';
-                var pct = Math.round(v/nTotal*100);
-                return v + ' (' + pct + '%)'; 
-              }
-            },
-            tooltip: {
-              callbacks: {
-                label: function(ctx) {
-                  var pct = Math.round(ctx.raw/nTotal*100);
-                  return ctx.raw + ' คน (' + pct + '%)';
-                }
-              }
-            }
-          },
-          scales: {
-            x: { beginAtZero: true, ticks: { font:{family:'Sarabun', size:10} } },
-            y: { ticks: { font:{family:'Sarabun', size:10, weight:'bold'} } }
-          }
-        }, 
-        plugins: [ChartDataLabels]
-      });
+      var can = document.getElementById('natDashChart');
+      if(can) {
+          window.G_natInst = new Chart(can.getContext('2d'), {
+            type: 'doughnut',
+            data: { labels: nKeys, datasets:[{ data: nVals, backgroundColor: ['#3b82f6','#10b981','#f59e0b','#ec4899','#64748b'] }] },
+            options: { 
+              maintainAspectRatio: false, 
+              onClick: makeChartToggle('nat'), // ให้สามารถกด Filter ได้แบบกราฟอื่น
+              plugins: { 
+                legend: { display: true, position: 'right', labels:{ font:{family:'Sarabun', size: 10} } },
+                datalabels: { color: '#fff', font: { weight: 'bold', size: 10 }, formatter: function(v) { return v>0?v:''; } }
+              } 
+            }, plugins: [ChartDataLabels]
+          });
+      }
   }
 } // <- ปิดฟังก์ชัน renderExtraDashCharts ตรงนี้ที่เดียวครับ
 
@@ -2541,7 +2335,7 @@ function renderBarChart() {
   // ขยายความกว้างกล่อง เพื่อไม่ให้กราฟ 4 แท่งเบียดกัน (แท่งละ 50px รวม 200px ต่อ 1 รพ.สต.)
   var hospContainer = document.getElementById('hospChartContainer');
   if(hospContainer) {
-      var calcWidthHosp = hLabels.length * 100; 
+      var calcWidthHosp = hLabels.length * 200; 
       if (calcWidthHosp < hospContainer.parentElement.clientWidth) calcWidthHosp = hospContainer.parentElement.clientWidth;
       hospContainer.style.width = calcWidthHosp + 'px';
   }
@@ -2562,13 +2356,11 @@ function renderBarChart() {
         x: { 
           stacked: false, 
           ticks: { 
-          font: { family: 'Sarabun', size: 8.5 },
-          maxRotation: 90, minRotation: 60,
-          autoSkip: false, callback: function(val) {
-          var label = this.getLabelForValue(val);
-          return label.length > 14 ? label.substring(0,13) + '…' : label;
-        }
-      }, 
+            font: { family: 'Sarabun', size: 9 }, // แก้ไขตรงนี้: ลดขนาดจาก 11 เป็น 9 เพื่อให้ชื่อแสดงครบ
+            maxRotation: 45, 
+            minRotation: 45 
+          } 
+        }, 
         y: { stacked: false, beginAtZero: true } 
       } 
     }, plugins: [ChartDataLabels] 
@@ -2590,7 +2382,7 @@ function renderBarChart() {
   // ขยายความกว้างกล่อง เพื่อไม่ให้กราฟเบียด (200px ต่อ 1 โรงเรียน)
   var schoolContainer = document.getElementById('schoolChartContainer');
   if(schoolContainer) {
-      var calcWidthSchool = sLabels.length * 100; 
+      var calcWidthSchool = sLabels.length * 200; 
       if (calcWidthSchool < schoolContainer.parentElement.clientWidth) calcWidthSchool = schoolContainer.parentElement.clientWidth;
       schoolContainer.style.width = calcWidthSchool + 'px';
   }
@@ -2610,12 +2402,10 @@ function renderBarChart() {
         x: { 
           stacked: false, 
           ticks: { 
-          font: { family: 'Sarabun', size: 8.5 },
-          maxRotation: 90, minRotation: 60,
-          autoSkip: false, callback: function(val) {
-          var label = this.getLabelForValue(val);
-          return label.length > 14 ? label.substring(0,13) + '…' : label;
-          }
+            font: { family: 'Sarabun', size: 9 }, // แก้ไขตรงนี้: ลดขนาดจาก 11 เป็น 9 เพื่อให้ชื่อแสดงครบ
+            maxRotation: 45, 
+            minRotation: 45 
+          } 
         }, 
         y: { stacked: false, beginAtZero: true } 
       } 
@@ -4219,21 +4009,6 @@ function toggleAllChk(source) {
         checkboxes[i].checked = source.checked;
       }
     }
-
-    function toggleMobileSidebar() {
-  document.querySelector('.sidebar').classList.toggle('mobile-open');
-}
-// ปิด sidebar เมื่อคลิกที่ filter
-document.addEventListener('click', function(e) {
-  if (window.innerWidth > 768) return;
-  var sb = document.querySelector('.sidebar');
-  if (!sb.classList.contains('mobile-open')) return;
-  // ตรวจสอบว่าไม่ได้คลิกโดนปุ่มเมนู (รวมถึง element ลูกของปุ่ม)
-  if (!sb.contains(e.target) && !e.target.closest('#btnMobileMenu')) {
-    sb.classList.remove('mobile-open');
-  }
-});
-
 </script>
 </body>
 </html>
