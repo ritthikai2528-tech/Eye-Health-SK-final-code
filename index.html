@@ -391,28 +391,28 @@ button{cursor:pointer;font-family:inherit} input,select,textarea{font-family:inh
             <div id="schoolChartContainer" style="height: 100%; width: 100%;"><canvas id="schoolChart"></canvas></div>
         </div>
     </div>
-    <div class="charts-row" style="grid-template-columns: repeat(4, 1fr);" id="extraDashCharts">
-  <div class="chart-card">
-    <div class="chart-ttl">👁️ ระดับความรุนแรง (Severity)</div>
-    <div class="chart-wrap" style="height:200px;"><canvas id="diagSeverityDashChart"></canvas></div>
-  </div>
+    <div class="charts-row" style="grid-template-columns: repeat(5, 1fr);" id="extraDashCharts">
       <div class="chart-card">
-        <div class="chart-ttl">💳 สัดส่วนสิทธิการรักษา <span style="font-weight:400;color:var(--muted2);font-size:9.5px;margin-left:auto;">— กดเพื่อดูรายละเอียด</span></div>
+        <div class="chart-ttl">👁️ ระดับความรุนแรง</div>
+        <div class="chart-wrap" style="height:200px;"><canvas id="diagSeverityDashChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-ttl">💳 สิทธิการรักษา</div>
         <div class="chart-wrap" style="height:200px;"><canvas id="treatDashChart"></canvas></div>
       </div>
       <div class="chart-card">
-        <div class="chart-ttl">📱 ความเสี่ยงพฤติกรรมหน้าจอ</div>
+        <div class="chart-ttl">📱 ความเสี่ยงพฤติกรรม</div>
         <div class="chart-wrap" style="height:200px;"><canvas id="behRiskDashChart"></canvas></div>
       </div>
       <div class="chart-card">
-        <div class="chart-ttl">👓 การติดตามแว่นตา (ความถี่การใส่)</div>
+        <div class="chart-ttl">👓 ติดตามแว่นตา</div>
         <div class="chart-wrap" style="height:200px;"><canvas id="fupStatusDashChart"></canvas></div>
       </div>
-    </div>
       <div class="chart-card">
         <div class="chart-ttl">🌏 สัญชาติ <span style="font-weight:400;color:var(--muted2);font-size:9px;margin-left:auto;">— กดแท่งเพื่อกรอง</span></div>
         <div class="chart-wrap" style="height:200px;"><canvas id="natDashChart"></canvas></div>
       </div>
+    </div>
 
     <div class="tbl-sec" id="indvTableSec" style="display:none">
       <div class="tbl-ctrl"><input class="srch" id="srchBox" placeholder="🔍 ค้นหาชื่อ / เลขบัตร / รพ.สต. / โรงเรียน ..." oninput="applyFilters()"><button class="btn-exp btn-print-doc" onclick="openPrintModal()">🖨 พิมพ์แบบฟอร์ม</button><button class="btn-exp" onclick="doExportCSV()">📥 Export CSV</button></div>
