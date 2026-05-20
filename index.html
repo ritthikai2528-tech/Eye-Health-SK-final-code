@@ -2139,7 +2139,26 @@ function fillSchoolCoords() {
   if(found) { document.getElementById('s-schl-lat').value = found.lat; document.getElementById('s-schl-lon').value = found.lon; }
 }
 
-function getGeo(latId, lonId) { if (navigator.geolocation) { navigator.geolocation.getCurrentPosition(function(position) { document.getElementById(latId).value = position.coords.latitude; document.getElementById(lonId).value = position.coords.longitude; }); } else { toast("บราว์เซอร์ของคุณไม่รองรับการระบุพิกัด", "err"); } }
+function getGeo(latId, lonId) { 
+  if (navigator.geolocation) { 
+    toast("กำลังค้นหาพิกัด...", "inf");
+    navigator.geolocation.getCurrentPosition(
+      function(position) { 
+        document.getElementById(latId).value = position.coords.latitude; 
+        document.getElementById(lonId).value = position.coords.longitude; 
+        toast("ดึงพิกัดสำเร็จ", "ok");
+      },
+      function(error) {
+        var msg = "ไม่สามารถดึงพิกัดได้";
+        if (error.code === 1) msg = "ผู้ใช้ไม่อนุญาตให้เข้าถึงตำแหน่ง (Permission Denied)";
+        toast(msg, "err");
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    ); 
+  } else { 
+    toast("บราวเซอร์ของคุณไม่รองรับการระบุพิกัด", "err"); 
+  } 
+}
 function onAmpChange() { var amp = document.getElementById('fAmp').value; var hSel = document.getElementById('fHosp'); hSel.innerHTML = '<option value="">ทั้งหมด</option>'; G.hospList.filter(function(h) { return !amp || h.amphoe === amp; }).forEach(function(h) { hSel.innerHTML += '<option value="' + h.hospcode + '">' + h.hospcode + ' ' + h.name + '</option>'; }); applyFilters(); }
 
 function updateAuthUI() {
@@ -2642,7 +2661,24 @@ function openLogin() { document.getElementById('lgErr').textContent = ''; docume
 function closeLogin() { document.getElementById('loginMov').classList.remove('open'); }
 function doLogin() { var u = document.getElementById('lgUser').value.trim(); var p = document.getElementById('lgPass').value.trim(); if (!u || !p) { document.getElementById('lgErr').textContent = 'กรุณากรอกข้อมูล'; return; } var btn = document.getElementById('btnLgn'); btn.disabled = true; btn.innerHTML = '<span class="sp"></span> กำลังตรวจสอบ...'; google.script.run.withSuccessHandler(function(r) { btn.disabled = false; btn.innerHTML = '🔐 เข้าสู่ระบบ'; var d = JSON.parse(r); if (d.ok) { G.session = { loggedIn:true, user:d.data.user, role:d.data.role, hospcode:d.data.hospcode }; closeLogin(); updateAuthUI(); toast('เข้าสู่ระบบสำเร็จ', 'ok'); forceRefresh(); } else { document.getElementById('lgErr').textContent = d.msg; } }).login(u, p); }
 function doLogout() { google.script.run.withSuccessHandler(function() { G.session = {loggedIn:false,user:'',role:'',hospcode:''}; updateAuthUI(); loadDashboard({}); toast('ออกจากระบบแล้ว', 'ok'); }).logout(); }
-function calcAge() { var bdStr = document.getElementById('s-bd').value; if (!bdStr) return; var parts = bdStr.split('/'); if(parts.length===3) { var y = parseInt(parts[2], 10); if(y > 2400) y -= 543; var dt = new Date(y, parseInt(parts[1])-1, parseInt(parts[0])); document.getElementById('s-age').value = Math.floor((new Date()-dt)/(365.25*24*3600*1000)); } }
+function calcAge() {
+  var bdStr = document.getElementById('s-bd').value; 
+  if (!bdStr) return; 
+  var parts = bdStr.split('/'); 
+  if(parts.length === 3) { 
+    var y = parseInt(parts[2], 10); 
+    if(y > 2400) y -= 543; 
+    var dt = new Date(y, parseInt(parts[1]) - 1, parseInt(parts[0])); 
+    var today = new Date();
+    var age = today.getFullYear() - dt.getFullYear();
+    var m = today.getMonth() - dt.getMonth();
+    // ถ้ายอมยังไม่ถึงเดือนเกิด หรือถึงเดือนเกิดแล้วแต่วันที่ยังไม่ถึง ให้ลบอายุออก 1 ปี
+    if (m < 0 || (m === 0 && today.getDate() < dt.getDate())) {
+        age--;
+    }
+    document.getElementById('s-age').value = age > 0 ? age : 0;
+  } 
+}
 function onCidInput(cid) { if (!_editMode && cid.length === 13 && G.allRows.find(function(r){ return r.cid===cid; })) toast('⚠ CID นี้มีในระบบแล้ว (โปรดใช้เมนู ✏️ แก้ไขข้อมูล)','inf'); }
 function getRad(name) { var els = document.querySelectorAll('input[name="'+name+'"]'); for (var i=0;i<els.length;i++){ if(els[i].checked) return els[i].value; } return ''; }
 function setRad(name, val) { var els = document.querySelectorAll('input[name="'+name+'"]'); for(var i=0;i<els.length;i++){ if(els[i].value===val) els[i].checked=true; } }
@@ -2887,7 +2923,7 @@ function buildFollowupTemplate(d) {
   html += '<div style="font-weight:bold; background:#f0f0f0; padding:4px;">ส่วนที่ 1 : ข้อมูลทั่วไป</div>';
   // --- เปลี่ยนเป็นเส้นประ ---
   html += '<div style="line-height:1.9; padding:6px 10px;">';
-  html += 'ชื่อ-สกุล <span style="border-bottom:1px dotted #000; display:inline-block; min-width:300px; padding:0 4px;">'+(sInfo.student_name||'')+'</span> ';
+  html += 'ชื่อ-สกุล <span style="border-bottom:1px dotted #000; display:inline-block; min-width:300px; padding:0 4px;">'+e_(sInfo.student_name||'')+'</span> ';
   html += 'อายุ <span style="border-bottom:1px dotted #000; display:inline-block; min-width:50px; padding:0 4px; text-align:center;">'+(sInfo.age_years||'')+'</span> ปี<br>';
   html += 'โรงเรียน <span style="border-bottom:1px dotted #000; display:inline-block; min-width:300px; padding:0 4px;">'+(sInfo.school_name||'')+'</span> ';
   html += 'ชั้น <span style="border-bottom:1px dotted #000; display:inline-block; min-width:80px; padding:0 4px; text-align:center;">'+(sInfo.school_class||'')+'</span> ';
