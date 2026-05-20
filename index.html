@@ -391,7 +391,7 @@ button{cursor:pointer;font-family:inherit} input,select,textarea{font-family:inh
             <div id="schoolChartContainer" style="height: 100%; width: 100%;"><canvas id="schoolChart"></canvas></div>
         </div>
     </div>
-    <div class="charts-row" style="grid-template-columns: repeat(5, 1fr);" id="extraDashCharts">
+    <div class="charts-row" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));" id="extraDashCharts">
       <div class="chart-card">
         <div class="chart-ttl">👁️ ระดับความรุนแรง</div>
         <div class="chart-wrap" style="height:200px;"><canvas id="diagSeverityDashChart"></canvas></div>
@@ -1385,11 +1385,12 @@ function renderExtraDashCharts(extraStats) {
           }] 
         },
         options: { 
-          indexAxis: 'y',
-          responsive: true,
-          maintainAspectRatio: false,
-          layout: { padding: { right: 30, left: 4, top: 4, bottom: 4 } },
-          onClick: function(evt, elements) {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      // 1. เพิ่ม padding ขวาให้กว้างขึ้นเป็น 70 ตัวเลขจะได้ไม่โดนบัง
+      layout: { padding: { right: 70, left: 4, top: 4, bottom: 4 } }, 
+      onClick: function(evt, elements) {
             var chart = this;
             var ds = chart.data.datasets[0];
             if (!chart._origColors) chart._origColors = origNatColors.slice();
@@ -1446,19 +1447,20 @@ function renderExtraDashCharts(extraStats) {
               }
             }
           },
-          scales: {
-            x: { 
-              beginAtZero: true, 
-              grace: '15%',
-              ticks: { font:{family:'Sarabun', size:10}, color:'#64748b' },
-              grid: { color: '#f1f5f9' }
-            },
-            y: { 
-              ticks: { font:{family:'Sarabun', size:11, weight:'bold'}, color:'#334155' },
-              grid: { display: false }
-            }
-          }
-        }, 
+      scales: {
+        x: { 
+          beginAtZero: true, 
+          // 2. ปรับ grace เป็น 40% เพื่อเผื่อที่ว่างด้านขวาของปลายแท่งกราฟ
+          grace: '40%', 
+          ticks: { font:{family:'Sarabun', size:10}, color:'#64748b' },
+          grid: { color: '#f1f5f9' }
+        },
+        y: { 
+          ticks: { font:{family:'Sarabun', size:11, weight:'bold'}, color:'#334155' },
+          grid: { display: false }
+        }
+      }
+    }, 
         plugins: [ChartDataLabels]
       });
   }
