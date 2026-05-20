@@ -410,9 +410,9 @@ button{cursor:pointer;font-family:inherit} input,select,textarea{font-family:inh
       </div>
     </div>
       <div class="chart-card">
-        <div class="chart-ttl">🌏 สัดส่วนสัญชาติ</div>
+        <div class="chart-ttl">🌏 สัญชาติ <span style="font-weight:400;color:var(--muted2);font-size:9px;margin-left:auto;">— กดแท่งเพื่อกรอง</span></div>
         <div class="chart-wrap" style="height:200px;"><canvas id="natDashChart"></canvas></div>
-    </div>
+      </div>
 
     <div class="tbl-sec" id="indvTableSec" style="display:none">
       <div class="tbl-ctrl"><input class="srch" id="srchBox" placeholder="🔍 ค้นหาชื่อ / เลขบัตร / รพ.สต. / โรงเรียน ..." oninput="applyFilters()"><button class="btn-exp btn-print-doc" onclick="openPrintModal()">🖨 พิมพ์แบบฟอร์ม</button><button class="btn-exp" onclick="doExportCSV()">📥 Export CSV</button></div>
@@ -1356,25 +1356,112 @@ function renderExtraDashCharts(extraStats) {
 
   // ─── 5. สัดส่วนสัญชาติ (Nationality) ─────────────────────
   if(extraStats.natTally) {
-      var nKeys = Object.keys(extraStats.natTally).sort(function(a,b){ return extraStats.natTally[b]-extraStats.natTally[a]; });
+      var nKeys = Object.keys(extraStats.natTally).sort(function(a,b){ 
+        return extraStats.natTally[b]-extraStats.natTally[a]; 
+      });
       var nVals = nKeys.map(function(k){ return extraStats.natTally[k]; });
-      if(window.G_natInst) window.G_natInst.destroy();
+      var nTotal = nVals.reduce(function(a,b){return a+b;}, 0) || 1;
+      var nColors = ['#3b82f6','#10b981','#f59e0b','#ec4899','#8b5cf6','#64748b','#ef4444'];
       
+      if(window.G_natInst) window.G_natInst.destroy();
       var can = document.getElementById('natDashChart');
-      if(can) {
-          window.G_natInst = new Chart(can.getContext('2d'), {
-            type: 'doughnut',
-            data: { labels: nKeys, datasets:[{ data: nVals, backgroundColor: ['#3b82f6','#10b981','#f59e0b','#ec4899','#64748b'] }] },
-            options: { 
-              maintainAspectRatio: false, 
-              onClick: makeChartToggle('nat'), // ให้สามารถกด Filter ได้แบบกราฟอื่น
-              plugins: { 
-                legend: { display: true, position: 'right', labels:{ font:{family:'Sarabun', size: 10} } },
-                datalabels: { color: '#fff', font: { weight: 'bold', size: 10 }, formatter: function(v) { return v>0?v:''; } }
-              } 
-            }, plugins: [ChartDataLabels]
-          });
-      }
+      if(!can) return;
+      
+      // เก็บสีเดิมไว้ใช้สลับ
+      var origNatColors = nKeys.map(function(_,i){ return nColors[i%nColors.length]; });
+      
+      window.G_natInst = new Chart(can.getContext('2d'), {
+        type: 'bar',
+        data: { 
+          labels: nKeys, 
+          datasets:[{ 
+            data: nVals, 
+            backgroundColor: origNatColors.slice(),
+            borderRadius: 6,
+            barThickness: nKeys.length === 1 ? 36 : 'flex',
+            maxBarThickness: 32,
+            categoryPercentage: 0.7,
+            barPercentage: 0.85
+          }] 
+        },
+        options: { 
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          layout: { padding: { right: 30, left: 4, top: 4, bottom: 4 } },
+          onClick: function(evt, elements) {
+            var chart = this;
+            var ds = chart.data.datasets[0];
+            if (!chart._origColors) chart._origColors = origNatColors.slice();
+            
+            // กดที่ว่าง → คืนค่า
+            if (!elements.length) {
+              ds.backgroundColor = chart._origColors.slice();
+              G_extraClickIdx.nat = null;
+              var sb = document.getElementById('srchBox');
+              if(sb) { sb.value = ''; applyFilters(); }
+              chart.update();
+              return;
+            }
+            
+            var idx = elements[0].index;
+            var nat = nKeys[idx];
+            var sb = document.getElementById('srchBox');
+            
+            // กดซ้ำแท่งเดิม → คืนค่า
+            if (G_extraClickIdx.nat === idx) {
+              ds.backgroundColor = chart._origColors.slice();
+              G_extraClickIdx.nat = null;
+              if(sb) { sb.value = ''; applyFilters(); }
+            } else {
+              // กดแท่งใหม่ → กรอง + highlight
+              G_extraClickIdx.nat = idx;
+              ds.backgroundColor = chart._origColors.map(function(c, i) {
+                return i === idx ? c : c + '33';
+              });
+              if(sb) { sb.value = nat; applyFilters(); }
+            }
+            chart.update();
+          },
+          plugins: { 
+            legend: { display: false },
+            datalabels: { 
+              color: '#1e293b', 
+              anchor: 'end', 
+              align: 'right',
+              offset: 6,
+              font: { weight: 'bold', size: 12, family: 'Sarabun' }, 
+              formatter: function(v) { 
+                if (v === 0) return '';
+                var pct = Math.round(v/nTotal*100);
+                return v + ' คน (' + pct + '%)'; 
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: function(ctx) {
+                  var pct = Math.round(ctx.raw/nTotal*100);
+                  return ctx.raw + ' คน (' + pct + '%)';
+                }
+              }
+            }
+          },
+          scales: {
+            x: { 
+              beginAtZero: true, 
+              grace: '15%',
+              ticks: { font:{family:'Sarabun', size:10}, color:'#64748b' },
+              grid: { color: '#f1f5f9' }
+            },
+            y: { 
+              ticks: { font:{family:'Sarabun', size:11, weight:'bold'}, color:'#334155' },
+              grid: { display: false }
+            }
+          }
+        }, 
+        plugins: [ChartDataLabels]
+      });
+  }
   }
 } // <- ปิดฟังก์ชัน renderExtraDashCharts ตรงนี้ที่เดียวครับ
 
