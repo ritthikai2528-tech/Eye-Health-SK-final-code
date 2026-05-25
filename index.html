@@ -456,6 +456,75 @@ button{cursor:pointer;font-family:inherit} input,select,textarea{font-family:inh
   body.print-onepage .op-page-wrap { background: #fff !important; padding: 0 !important; }
 }
 
+/* =========================================
+   📱 RESPONSIVE DESIGN (Mobile, Tablet, iPad)
+========================================= */
+
+/* 1️⃣ สำหรับ Tablet & iPad (กว้างไม่เกิน 1024px) */
+@media screen and (max-width: 1024px) {
+    /* ปลดล็อกความกว้าง One Page Dashboard ให้พอดีจอ */
+    .op-page { width: 100% !important; min-width: 0 !important; height: auto !important; }
+    .op-charts-row, .op-tables-row { grid-template-columns: repeat(2, 1fr) !important; }
+    .op-kpi-row { grid-template-columns: repeat(3, 1fr) !important; }
+    .op-bottom-row { grid-template-columns: 1fr !important; }
+    .op-header { grid-template-columns: 70px 1fr !important; }
+    .op-header .op-date { grid-column: span 2; text-align: left !important; padding-top: 5px; }
+    
+    /* Dashboard พฤติกรรม & ติดตามแว่น */
+    .beh-filter, .beh-kpi { grid-template-columns: repeat(3, 1fr) !important; }
+}
+
+/* 2️⃣ สำหรับ Mobile (กว้างไม่เกิน 768px) */
+@media screen and (max-width: 768px) {
+    /* ปรับ Layout หลัก และ Sidebar */
+    .main { flex-direction: column; overflow-y: auto; }
+    .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border); max-height: 280px; flex-shrink: 0; }
+    
+    /* ปรับ Header ให้อนุญาตให้ปุ่มตกลงมาบรรทัดใหม่ได้ */
+    .hdr { flex-wrap: wrap; height: auto; padding: 10px; }
+    .hdr-right { width: 100%; justify-content: flex-start; margin-top: 8px; overflow-x: auto; padding-bottom: 5px; }
+    #marquee-container { width: 100%; margin: 5px 0; flex: none; }
+    .sys-name { font-size: 13px; }
+    .date-txt, .btn-hdr { font-size: 10px; padding: 4px 8px; }
+
+    /* ปรับกล่อง KPI และ Charts หน้าแรก */
+    .kpi-row { grid-template-columns: repeat(2, 1fr) !important; overflow-x: hidden; }
+    .charts-row { grid-template-columns: 1fr !important; display: flex; flex-direction: column; }
+    .chart-card { width: 100%; min-width: 0 !important; margin: 0 0 10px 0 !important; }
+
+    /* ปรับแบบฟอร์มกรอกข้อมูล (จากหลายคอลัมน์เป็นคอลัมน์เดียว) */
+    .fr, .fr3, .fr4 { grid-template-columns: 1fr !important; }
+    .radio-box-container { grid-template-columns: 1fr !important; }
+    
+    /* ปรับ Slide Panel ด้านขวาให้เต็มจอ 100% */
+    .panel { width: 100% !important; right: -100% !important; }
+    .panel.open { right: 0 !important; }
+    .beh-panel { width: 100% !important; max-width: 100% !important; }
+    .op-panel { width: 100% !important; max-width: 100% !important; }
+
+    /* ปรับ Popup / Modals ไม่ให้ล้นจอ */
+    .mbox, .del-box { width: 95% !important; max-width: 95vw !important; padding: 20px 15px; }
+
+    /* ปรับ One Page Dashboard (Mobile) ให้เรียงเป็นแถวเดียว */
+    .op-kpi-row { grid-template-columns: repeat(2, 1fr) !important; }
+    .op-charts-row, .op-tables-row { grid-template-columns: 1fr !important; }
+    .op-imgs-grid { grid-template-columns: repeat(3, 1fr) !important; }
+    .op-controls { flex-direction: column; align-items: stretch; }
+    .op-controls select, .op-controls button, .op-controls .op-clear-btn { width: 100%; margin-bottom: 5px; margin-left: 0 !important; }
+
+    /* ปรับ Behavior & Followup Dashboard (Mobile) */
+    .beh-filter { grid-template-columns: 1fr !important; }
+    .beh-kpi { grid-template-columns: repeat(2, 1fr) !important; }
+    .beh-row-2, .beh-row-3, .beh-row-2-1 { grid-template-columns: 1fr !important; }
+}
+
+/* 3️⃣ สำหรับมือถือจอเล็กมาก (กว้างไม่เกิน 480px) */
+@media screen and (max-width: 480px) {
+    .op-kpi-row { grid-template-columns: 1fr !important; }
+    .kpi-row { grid-template-columns: 1fr !important; }
+    .beh-kpi { grid-template-columns: 1fr !important; }
+}
+
 </style>
 </head>
 <body>
