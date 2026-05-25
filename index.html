@@ -5390,7 +5390,7 @@ function openOnePagePanel() {
   
   // Apply logo
   if (G.settings && G.settings.logo_id) {
-    document.getElementById('op-logo').innerHTML = '<img src="https://drive.google.com/thumbnail?id='+G.settings.logo_id+'&sz=w200" crossorigin="anonymous">';
+    document.getElementById('op-logo').innerHTML = '<img src="https://drive.google.com/thumbnail?id='+G.settings.logo_id+'&sz=w200" alt="Logo">';
   }
   
   buildOnePageFilters();
@@ -5693,18 +5693,60 @@ function renderOPAmphoeBar(m) {
   var labels = Object.keys(ampGroup).sort();
   var values = labels.map(function(a){ return Math.round(ampGroup[a].abnormal/(ampGroup[a].total||1)*100); });
   var colors = values.map(function(v){ if(v>30) return '#dc2626'; if(v>25) return '#ea580c'; if(v>20) return '#ca8a04'; return '#16A34A'; });
+  
   OP.charts.amp = new Chart(ctx, {
     type: 'bar',
-    data: { labels: labels, datasets: [{ data: values, backgroundColor: colors, borderRadius: 4 }] },
-    options: { responsive: true, maintainAspectRatio: false, animation: false,
-      plugins: { legend: { display: false },
-                 datalabels: { color:'#fff', anchor:'center', align:'center',
-                               font:{weight:'bold',size:10,family:'Sarabun'}, textStrokeColor:'rgba(0,0,0,0.5)', textStrokeWidth:2,
-                               formatter: function(v) { return v + '%'; } } },
-      scales: { x: { ticks: { font:{size:9,family:'Sarabun',weight:'bold'}, maxRotation:30, minRotation:30 } },
-                y: { beginAtZero: true, max: 100, ticks: { font:{size:9}, callback: function(v){return v+'%';} } } }
-    }, plugins: [ChartDataLabels]
+    data: { 
+      labels: labels, 
+      datasets: [{ 
+        data: values, 
+        backgroundColor: colors, 
+        borderRadius: 4,
+        maxBarThickness: 50,
+        barPercentage: 0.6,
+        categoryPercentage: 0.7
+      }] 
+    },
+    options: { 
+      responsive: true, 
+      maintainAspectRatio: false, 
+      animation: false,
+      layout: { padding: { top: 15, right: 8, left: 4, bottom: 4 } },
+      plugins: { 
+        legend: { display: false },
+        datalabels: { 
+          color:'#1e293b',
+          anchor:'end', 
+          align:'top',
+          offset: 2,
+          font:{weight:'bold',size:10,family:'Sarabun'},
+          formatter: function(v) { return v + '%'; } 
+        } 
+      },
+      scales: { 
+        x: { 
+          ticks: { 
+            font:{size:9,family:'Sarabun',weight:'bold'}, 
+            maxRotation: labels.length > 4 ? 30 : 0,
+            minRotation: labels.length > 4 ? 30 : 0,
+            autoSkip: false
+          },
+          grid: { display: false }
+        }, 
+        y: { 
+          beginAtZero: true, 
+          max: 100, 
+          ticks: { 
+            font:{size:9}, 
+            stepSize: 25,
+            callback: function(v){return v+'%';} 
+          } 
+        } 
+      }
+    }, 
+    plugins: [ChartDataLabels]
   });
+  
   if (labels.length > 0) {
     var maxIdx = values.indexOf(Math.max.apply(null, values));
     document.getElementById('op-amp-summary').textContent = 'อ.' + labels[maxIdx] + ' พบผิดปกติสูงสุด ' + values[maxIdx] + '%';
@@ -5817,7 +5859,7 @@ function buildOPImages() {
     var src = url;
     var match = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
     if (match && match[1]) src = 'https://drive.google.com/thumbnail?id='+match[1]+'&sz=w400';
-    html += '<img class="op-img-thumb" src="'+src+'" crossorigin="anonymous" onerror="this.outerHTML=\'<div class=op-img-thumb-placeholder>🖼</div>\'">';
+    html += '<img class="op-img-thumb" src="'+src+'" onerror="this.outerHTML=\'<div class=op-img-thumb-placeholder>🖼</div>\'">';
   });
   for (var i = imgs.length; i < 5; i++) html += '<div class="op-img-thumb-placeholder">🖼</div>';
   document.getElementById('op-imgs').innerHTML = html;
