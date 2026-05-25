@@ -5702,7 +5702,7 @@ function renderOPAmphoeBar(m) {
         data: values, 
         backgroundColor: colors, 
         borderRadius: 4,
-        maxBarThickness: 50,
+        maxBarThickness: 40, // 🛠️ ปรับลดขนาดแท่งกราฟสูงสุด ป้องกันกราฟอ้วนล้นกรอบกรณีมีอำเภอเดียว
         barPercentage: 0.6,
         categoryPercentage: 0.7
       }] 
@@ -5711,7 +5711,8 @@ function renderOPAmphoeBar(m) {
       responsive: true, 
       maintainAspectRatio: false, 
       animation: false,
-      layout: { padding: { top: 15, right: 8, left: 4, bottom: 4 } },
+      // 🛠️ แก้ไข: ปล่อยขอบซ้าย-ขวาให้ว่าง เพื่อให้ระบบคำนวณพื้นที่ตัวหนังสืออัตโนมัติ
+      layout: { padding: { top: 20, bottom: 5 } },
       plugins: { 
         legend: { display: false },
         datalabels: { 
@@ -5917,19 +5918,57 @@ function printOnePage() {
   }, 300);
 }
 
-function exportOnePageAsImage() {
+async function exportOnePageAsImage() {
   if (OP.isExporting) { toast('กำลังประมวลผลอยู่ กรุณารอ', 'inf'); return; }
   OP.isExporting = true;
-  toast('⏳ กำลังโหลด library...', 'inf');
+  
+  var target = document.getElementById('op-print-area');
+  if (!target) { toast('ไม่พบพื้นที่ส่งออก', 'err'); OP.isExporting = false; return; }
+
+  toast('⏳ กำลังดึงข้อมูลรูปภาพ (Proxy)... เพื่อป้องกันจอดำ', 'inf');
+
+  // 1. แปลงรูปภาพทั้งหมดเป็น Base64
+  var images = target.querySelectorAll('img');
+  for (var i = 0; i < images.length; i++) {
+    var img = images[i];
+    var url = img.src;
+    
+    // ข้ามถ้ารูปเป็น base64 หรือไม่ใช่ http อยู่แล้ว
+    if (!url || url.startsWith('data:')) continue;
+
+    try {
+      await new Promise(function(resolve) {
+        google.script.run
+          .withSuccessHandler(function(r) {
+            try {
+              var res = JSON.parse(r);
+              if (res.ok && res.data && res.data.base64) {
+                img.dataset.origSrc = url; // เก็บ URL เดิมไว้คืนค่าทีหลัง
+                img.src = res.data.base64; // ใส่ Base64 ลงไปแทนที่
+              }
+            } catch(e) {}
+            resolve();
+          })
+          .withFailureHandler(function() { resolve(); }) // ถ้ารูปไหน error ก็ให้ทำงานต่อ
+          .getProxyImage({ url: url });
+      });
+    } catch(e) { console.error('Proxy Error', e); }
+  }
+
+  // 2. เรียกใช้ html2canvas ตามปกติ
+  toast('⏳ กำลังโหลด Library สร้างภาพ...', 'inf');
   loadHtml2Canvas(function() {
     if (!window.html2canvas) { OP.isExporting = false; return; }
-    var target = document.getElementById('op-print-area');
-    if (!target) { toast('ไม่พบพื้นที่ส่งออก', 'err'); OP.isExporting = false; return; }
     toast('⏳ กำลังสร้างภาพ ความละเอียดสูง (2x)... อาจใช้เวลา 5-10 วินาที', 'inf');
+    
     setTimeout(function() {
       html2canvas(target, {
-        scale: 2, useCORS: true, allowTaint: false,
-        backgroundColor: '#ffffff', logging: false, imageTimeout: 15000
+        scale: 2, 
+        useCORS: true, 
+        allowTaint: false,
+        backgroundColor: '#ffffff', 
+        logging: false, 
+        imageTimeout: 15000
       }).then(function(canvas) {
         try {
           canvas.toBlob(function(blob) {
@@ -5950,12 +5989,21 @@ function exportOnePageAsImage() {
           document.body.appendChild(a); a.click(); document.body.removeChild(a);
           toast('✅ ส่งออกไฟล์ PNG สำเร็จ', 'ok');
         }
+        
+        // 3. คืนค่า URL รูปภาพกลับเป็นเหมือนเดิม (เพื่อไม่ให้หน้าเว็บหนักเกินไป)
+        for (var j = 0; j < images.length; j++) {
+          if (images[j].dataset.origSrc) {
+            images[j].src = images[j].dataset.origSrc;
+            delete images[j].dataset.origSrc;
+          }
+        }
         OP.isExporting = false;
+
       }).catch(function(err) {
         OP.isExporting = false;
-        toast('❌ Export ไม่สำเร็จ: ' + (err.message || 'อาจติดปัญหา CORS ของรูปภาพ'), 'err');
+        toast('❌ Export ไม่สำเร็จ: ' + (err.message || 'อาจติดปัญหาเซิร์ฟเวอร์'), 'err');
       });
-    }, 300);
+    }, 800); // ดีเลย์รอให้ Browser วาดรูป Base64 ลงจอให้เรียบร้อยก่อนแคปภาพ
   });
 }
 
