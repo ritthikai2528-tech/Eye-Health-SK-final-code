@@ -267,6 +267,188 @@ button{cursor:pointer;font-family:inherit} input,select,textarea{font-family:inh
 .radio-box:hover { border-color: var(--accent); background: #f0f4ff; }
 .radio-box input[type="radio"] { margin-top: 3px; accent-color: var(--accent); }
 .radio-box span { font-size: 11.5px; line-height: 1.3; }
+/* =========================================================
+   📄 ONE PAGE EXECUTIVE DASHBOARD (A4 Landscape) v1.0
+========================================================= */
+.op-panel { width: 96vw !important; max-width: 1500px !important; right: -100% !important; }
+.op-panel.open { right: 2vw !important; }
+
+.op-controls {
+  display: flex; align-items: center; gap: 8px; padding: 10px 14px;
+  background: #eef2ff; border-bottom: 1px solid #c7d4f0;
+  flex-shrink: 0; flex-wrap: wrap;
+}
+.op-controls select {
+  padding: 5px 8px; border: 1px solid #c7d4f0; border-radius: 5px;
+  font-size: 12px; background: #fff; font-family: inherit; min-width: 130px;
+}
+.op-controls .op-clear-btn {
+  padding: 5px 12px; background: #fff; border: 1px solid var(--border);
+  border-radius: 5px; font-size: 12px; cursor: pointer; font-family: inherit;
+}
+.op-controls .op-clear-btn:hover { background: #f1f5f9; }
+.op-controls .op-print-btn,
+.op-controls .op-export-btn {
+  padding: 6px 14px; color: #fff; border: none; border-radius: 6px;
+  font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit;
+}
+.op-controls .op-print-btn { background: var(--accent); margin-left: auto; }
+.op-controls .op-print-btn:hover { background: var(--accent-d); }
+.op-controls .op-export-btn { background: #16A34A; }
+.op-controls .op-export-btn:hover { background: #15803d; }
+
+/* The A4 landscape page itself */
+.op-page-wrap { padding: 14px; background: #f1f5f9; min-height: calc(100vh - 130px); display: flex; justify-content: center; align-items: flex-start; overflow: auto; }
+.op-page {
+  width: 1123px;  /* 297mm @ 96dpi */
+  padding: 14px 16px; background: #fff;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+  border-radius: 4px; display: flex; flex-direction: column; gap: 8px;
+  font-family: 'Sarabun', sans-serif; font-size: 11px; color: #1e293b;
+  position: relative; flex-shrink: 0;
+}
+
+/* Header */
+.op-header {
+  display: grid; grid-template-columns: 70px 1fr 160px;
+  align-items: center; gap: 14px;
+  padding-bottom: 8px; border-bottom: 3px solid var(--primary);
+}
+.op-header .op-logo {
+  width: 60px; height: 60px; border-radius: 8px; background: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 30px; color: #fff; overflow: hidden;
+}
+.op-header .op-logo img { width: 100%; height: 100%; object-fit: cover; }
+.op-header .op-title { text-align: center; }
+.op-header .op-title h1 { font-size: 22px; font-weight: 800; color: var(--primary); margin-bottom: 2px; }
+.op-header .op-title h2 { font-size: 13px; font-weight: 600; color: var(--muted); }
+.op-header .op-title h2 span { color: var(--accent); font-weight: 700; }
+.op-header .op-date { text-align: right; font-size: 11px; color: var(--muted); line-height: 1.4; }
+.op-header .op-date b { color: var(--primary); font-size: 12px; }
+
+/* KPI 6 boxes */
+.op-kpi-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 7px; }
+.op-kpi {
+  background: #fff; border-radius: 8px; padding: 7px 6px;
+  text-align: center; border: 1.5px solid var(--border);
+  border-top: 4px solid var(--accent);
+  display: flex; flex-direction: column; align-items: center; gap: 1px;
+}
+.op-kpi .op-kpi-ico { font-size: 22px; line-height: 1; }
+.op-kpi .op-kpi-lbl { font-size: 10px; font-weight: 600; color: var(--muted); }
+.op-kpi .op-kpi-val { font-size: 22px; font-weight: 800; line-height: 1.1; margin: 1px 0; }
+.op-kpi .op-kpi-sub { font-size: 9px; color: var(--muted2); }
+.op-kpi-1 { border-top-color: #3b82f6; } .op-kpi-1 .op-kpi-val { color: #2563eb; }
+.op-kpi-2 { border-top-color: #dc2626; } .op-kpi-2 .op-kpi-val { color: #dc2626; }
+.op-kpi-3 { border-top-color: #ea580c; } .op-kpi-3 .op-kpi-val { color: #ea580c; }
+.op-kpi-4 { border-top-color: #16A34A; } .op-kpi-4 .op-kpi-val { color: #16A34A; }
+.op-kpi-5 { border-top-color: #7c3aed; } .op-kpi-5 .op-kpi-val { color: #7c3aed; }
+.op-kpi-6 { border-top-color: #d97706; } .op-kpi-6 .op-kpi-val { color: #d97706; }
+
+/* 4 Charts row */
+.op-charts-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
+.op-chart-card {
+  background: #fff; border: 1px solid var(--border); border-radius: 8px;
+  padding: 6px 8px; display: flex; flex-direction: column;
+}
+.op-chart-card .op-chart-ttl {
+  font-size: 11.5px; font-weight: 700; color: var(--primary);
+  margin-bottom: 3px; text-align: center;
+}
+.op-chart-card .op-chart-wrap { position: relative; height: 145px; }
+.op-chart-card .op-chart-summary {
+  text-align: center; background: #eef2ff; border-radius: 4px;
+  padding: 3px 4px; margin-top: 4px; font-size: 9.5px;
+  font-weight: 600; color: var(--primary);
+}
+
+/* 4 Tables row */
+.op-tables-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
+.op-tbl-card {
+  background: #fff; border: 1px solid var(--border); border-radius: 8px;
+  padding: 6px 8px; display: flex; flex-direction: column;
+}
+.op-tbl-card .op-tbl-ttl {
+  font-size: 11px; font-weight: 700; color: var(--primary);
+  margin-bottom: 4px; background: #eef2ff;
+  padding: 4px 6px; border-radius: 4px; text-align: center;
+}
+.op-mini-tbl { width: 100%; border-collapse: collapse; font-size: 10px; }
+.op-mini-tbl th {
+  background: #f8fafc; padding: 3px 4px; text-align: left;
+  font-weight: 700; color: var(--muted); border-bottom: 1px solid #e2e8f0;
+}
+.op-mini-tbl td { padding: 3px 4px; border-bottom: 1px solid #f1f5f9; }
+.op-mini-tbl tr:last-child td { border-bottom: none; }
+
+/* Progress bars (followup) */
+.op-progress-row { margin-bottom: 5px; }
+.op-progress-lbl { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 2px; }
+.op-progress-bar { height: 9px; background: #f1f5f9; border-radius: 5px; overflow: hidden; }
+.op-progress-fill { height: 100%; border-radius: 5px; }
+
+/* Bottom: Images + Insights */
+.op-bottom-row { display: grid; grid-template-columns: 3fr 2fr; gap: 7px; }
+.op-imgs-card {
+  background: #fff; border: 1px solid var(--border); border-radius: 8px;
+  padding: 6px 8px; display: flex; flex-direction: column;
+}
+.op-imgs-card .op-imgs-ttl { font-size: 11px; font-weight: 700; color: var(--primary); margin-bottom: 4px; }
+.op-imgs-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; flex: 1; }
+.op-img-thumb {
+  width: 100%; height: 80px; object-fit: cover; border-radius: 4px;
+  background: #f1f5f9; border: 1px solid #e2e8f0;
+}
+.op-img-thumb-placeholder {
+  width: 100%; height: 80px; background: #f8fafc;
+  border: 1px dashed #cbd5e1; border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; color: #cbd5e1;
+}
+.op-insight-card {
+  background: linear-gradient(135deg, #dbeafe, #ede9fe);
+  border: 1.5px solid #93c5fd; border-radius: 8px;
+  padding: 8px 10px; display: flex; flex-direction: column;
+}
+.op-insight-ttl {
+  font-size: 12px; font-weight: 800; color: var(--primary);
+  text-align: center; margin-bottom: 5px;
+}
+.op-insight-item {
+  display: flex; gap: 6px; align-items: flex-start;
+  font-size: 10.5px; line-height: 1.35; margin-bottom: 4px;
+  padding: 4px 6px; background: rgba(255,255,255,0.65); border-radius: 5px;
+}
+.op-insight-ico { font-size: 14px; flex-shrink: 0; }
+
+/* Footer */
+.op-footer {
+  background: var(--primary); color: #fff; border-radius: 6px;
+  padding: 6px 12px; font-size: 11px;
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  align-items: center; gap: 8px;
+}
+.op-footer .op-foot-left { text-align: left; font-weight: 700; }
+.op-footer .op-foot-mid { text-align: center; font-size: 10px; }
+.op-footer .op-foot-right { text-align: right; font-size: 9.5px; opacity: 0.9; }
+
+/* Print One-Page (A4 Landscape) — override existing portrait print */
+@media print {
+  body.print-onepage #printArea { display: none !important; }
+  body.print-onepage * { visibility: hidden !important; }
+  body.print-onepage #op-print-area,
+  body.print-onepage #op-print-area * { visibility: visible !important; }
+  body.print-onepage #op-print-area {
+    position: absolute !important; left: 0 !important; top: 0 !important;
+    margin: 0 !important; box-shadow: none !important;
+    border-radius: 0 !important;
+    width: 287mm !important; padding: 4mm 5mm !important;
+    background: #fff !important;
+  }
+  body.print-onepage .op-page-wrap { background: #fff !important; padding: 0 !important; }
+}
+
 </style>
 </head>
 <body>
@@ -335,6 +517,7 @@ button{cursor:pointer;font-family:inherit} input,select,textarea{font-family:inh
   <button class="btn-form bf-post" id="btnPost" onclick="openPanel('post')">📝 Post-test</button>
   <button class="btn-form bf-loc" id="btnLoc" onclick="openEditHosp('')" style="display:none">📍พิกัด/ภาพผลงาน</button>
   <button class="btn-form bf-conv" id="btnConv" onclick="openPanel('conv')" style="display:none">🛠 แปลง & นำเข้าไฟล์</button>
+  <button class="btn-form" style="background:#1E3A5F; margin-top:10px;" id="btnOnePage" onclick="openOnePagePanel()">📄 One Page Dashboard</button>
   <button class="btn-form bf-loc" style="background:#dc2626; margin-top:10px; display:none;" id="btnVidMgr" onclick="openVideoMgrPanel()">📺จัดการลิสต์วิดีโอ</button>
 <button class="btn-form bf-loc" style="background:#6366f1; margin-top:4px; display:none;" id="btnLinkMgr" onclick="openLinkMgr()">🔗 จัดการปุ่มลิ้งก์</button>
 <button class="btn-form bf-loc" style="background:#059669; margin-top:4px; display:none;" id="btnLineMgr" onclick="openLineMgr()">💬 ตั้งค่า LINE API</button>
@@ -513,6 +696,116 @@ button{cursor:pointer;font-family:inherit} input,select,textarea{font-family:inh
 
   </div>
 </div>
+<!-- ========== ONE PAGE DASHBOARD PANEL ========== -->
+<div class="ov" id="ov-onepage" onclick="closePanel('onepage')"></div>
+<div class="panel op-panel" id="panel-onepage">
+  <div class="ph" style="background:#1E3A5F">
+    <span class="ph-t">📄 One Page Executive Dashboard — สรุปผลโครงการเด็กไทยสายตาดี</span>
+    <button class="ph-x" onclick="closePanel('onepage')">✕</button>
+  </div>
+  
+  <div class="op-controls op-no-print">
+    <span style="font-size:12px;font-weight:600;color:var(--primary);">🔍 ตัวกรอง:</span>
+    <select id="op-f-amphoe" onchange="onOPAmpChange()"><option value="">อำเภอ ทั้งหมด</option></select>
+    <select id="op-f-tambon" onchange="onOPTambonChange()"><option value="">ตำบล ทั้งหมด</option></select>
+    <select id="op-f-hospcode" onchange="onOPHcChange()"><option value="">รพ.สต. ทั้งหมด</option></select>
+    <select id="op-f-school" onchange="onOPSchoolChange()"><option value="">โรงเรียน ทั้งหมด</option></select>
+    <button class="op-clear-btn" onclick="clearOPFilters()">✕ ล้าง</button>
+    <button class="op-print-btn" onclick="printOnePage()">🖨 พิมพ์ PDF</button>
+    <button class="op-export-btn" onclick="exportOnePageAsImage()">📥 Export PNG</button>
+  </div>
+  
+  <div class="op-page-wrap">
+    <div class="op-page" id="op-print-area">
+      <!-- Header -->
+      <div class="op-header">
+        <div class="op-logo" id="op-logo">👁</div>
+        <div class="op-title">
+          <h1>Dashboard โครงการเด็กไทยสายตาดี</h1>
+          <h2>สรุปผลการดำเนินงานคัดกรองสายตานักเรียน <span id="op-scope">(ภาพรวมจังหวัดสมุทรสาคร)</span></h2>
+        </div>
+        <div class="op-date">
+          <b id="op-date">—</b><br>
+          <span>องค์การบริหารส่วนจังหวัดสมุทรสาคร</span>
+        </div>
+      </div>
+      
+      <!-- KPI -->
+      <div class="op-kpi-row">
+        <div class="op-kpi op-kpi-1"><div class="op-kpi-ico">👦</div><div class="op-kpi-lbl">นักเรียนที่คัดกรองทั้งหมด</div><div class="op-kpi-val" id="op-k1">—</div><div class="op-kpi-sub">คน</div></div>
+        <div class="op-kpi op-kpi-2"><div class="op-kpi-ico">👁️</div><div class="op-kpi-lbl">พบความผิดปกติทางสายตา</div><div class="op-kpi-val" id="op-k2">—</div><div class="op-kpi-sub" id="op-k2-sub">—</div></div>
+        <div class="op-kpi op-kpi-3"><div class="op-kpi-ico">🏥</div><div class="op-kpi-lbl">ส่งต่อจักษุแพทย์/ตัดแว่น</div><div class="op-kpi-val" id="op-k3">—</div><div class="op-kpi-sub" id="op-k3-sub">—</div></div>
+        <div class="op-kpi op-kpi-4"><div class="op-kpi-ico">✅</div><div class="op-kpi-lbl">สายตาปกติ</div><div class="op-kpi-val" id="op-k4">—</div><div class="op-kpi-sub" id="op-k4-sub">—</div></div>
+        <div class="op-kpi op-kpi-5"><div class="op-kpi-ico">📱</div><div class="op-kpi-lbl">ใช้หน้าจอ &gt; 4 ชม./วัน</div><div class="op-kpi-val" id="op-k5">—</div><div class="op-kpi-sub" id="op-k5-sub">—</div></div>
+        <div class="op-kpi op-kpi-6"><div class="op-kpi-ico">😊</div><div class="op-kpi-lbl">ความพึงพอใจเฉลี่ย</div><div class="op-kpi-val" id="op-k6">—</div><div class="op-kpi-sub">จาก 5.00</div></div>
+      </div>
+      
+      <!-- 4 Charts -->
+      <div class="op-charts-row">
+        <div class="op-chart-card">
+          <div class="op-chart-ttl">🥧 ผลการคัดกรองสายตา</div>
+          <div class="op-chart-wrap"><canvas id="op-pie-chart"></canvas></div>
+          <div class="op-chart-summary" id="op-pie-summary">—</div>
+        </div>
+        <div class="op-chart-card">
+          <div class="op-chart-ttl">📊 พฤติกรรมการใช้หน้าจอที่เสี่ยง</div>
+          <div class="op-chart-wrap"><canvas id="op-beh-chart"></canvas></div>
+          <div class="op-chart-summary" id="op-beh-summary">—</div>
+        </div>
+        <div class="op-chart-card">
+          <div class="op-chart-ttl">📈 ผลประเมินความรู้ (Pre-Post)</div>
+          <div class="op-chart-wrap"><canvas id="op-prepost-chart"></canvas></div>
+          <div class="op-chart-summary" id="op-prepost-summary">—</div>
+        </div>
+        <div class="op-chart-card">
+          <div class="op-chart-ttl">🗺️ % ผิดปกติ รายอำเภอ</div>
+          <div class="op-chart-wrap"><canvas id="op-amp-chart"></canvas></div>
+          <div class="op-chart-summary" id="op-amp-summary">—</div>
+        </div>
+      </div>
+      
+      <!-- 4 Tables -->
+      <div class="op-tables-row">
+        <div class="op-tbl-card">
+          <div class="op-tbl-ttl">TOP 5 โรงเรียน (พบผิดปกติมากที่สุด)</div>
+          <div id="op-top-schools"></div>
+        </div>
+        <div class="op-tbl-card">
+          <div class="op-tbl-ttl">TOP 5 รพ.สต. (ผลงานคัดกรอง)</div>
+          <div id="op-top-hosps"></div>
+        </div>
+        <div class="op-tbl-card">
+          <div class="op-tbl-ttl">จำแนกรายชั้นเรียน</div>
+          <div id="op-class"></div>
+        </div>
+        <div class="op-tbl-card">
+          <div class="op-tbl-ttl">ติดตามผลหลังได้รับแว่น</div>
+          <div id="op-fup" style="padding-top:6px;"></div>
+        </div>
+      </div>
+      
+      <!-- Images + Insights -->
+      <div class="op-bottom-row">
+        <div class="op-imgs-card">
+          <div class="op-imgs-ttl">📸 ภาพกิจกรรมการดำเนินงาน (จากภาพผลงานของ รพ.สต.)</div>
+          <div class="op-imgs-grid" id="op-imgs"></div>
+        </div>
+        <div class="op-insight-card">
+          <div class="op-insight-ttl">💡 INSIGHT สำคัญ</div>
+          <div id="op-insight"></div>
+        </div>
+      </div>
+      
+      <!-- Footer -->
+      <div class="op-footer">
+        <div class="op-foot-left">"เด็กไทยสายตาดี เรียนรู้ดี มีคุณภาพชีวิตที่ดี"</div>
+        <div class="op-foot-mid">📞 กองสาธารณสุข อบจ.สมุทรสาคร</div>
+        <div class="op-foot-right">developer by NRit_SongHong</div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="ov" id="ov-fullview" onclick="closePanel('fullview')"></div>
 <div class="panel" id="panel-fullview">
   <div class="ph" style="background:var(--primary)">
@@ -5064,6 +5357,564 @@ function updateVaDropdowns() {
 
     // สั่งประเมินผลอัตโนมัติซ้ำอีกครั้ง (หากมี) เพื่ออัปเดตการวินิจฉัย
     if (typeof autoDiagnose === 'function') autoDiagnose();
+}
+// ============================================================
+// 📄 ONE PAGE EXECUTIVE DASHBOARD v1.0
+// ============================================================
+var OP = {
+  charts: {},
+  filters: { amphoe:'', tambon:'', hospcode:'', school:'' },
+  behData: null,
+  fupData: null,
+  isExporting: false
+};
+
+function loadHtml2Canvas(cb) {
+  if (window.html2canvas) { cb(); return; }
+  var s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+  s.onload = cb;
+  s.onerror = function() { toast('โหลด html2canvas ไม่สำเร็จ', 'err'); OP.isExporting = false; };
+  document.head.appendChild(s);
+}
+
+function openOnePagePanel() {
+  if (!G.session.loggedIn) { toast('กรุณาเข้าสู่ระบบก่อนใช้เมนูนี้', 'err'); return; }
+  OP.filters = { amphoe:'', tambon:'', hospcode:'', school:'' };
+  
+  // Apply session restriction for non-admin
+  if (G.session.role === 'user' && G.session.hospcode !== 'all') {
+    var hc = G.hospList.find(function(h){ return h.hospcode === G.session.hospcode; });
+    if (hc) { OP.filters.amphoe = hc.amphoe || ''; OP.filters.hospcode = G.session.hospcode; }
+  }
+  
+  // Apply logo
+  if (G.settings && G.settings.logo_id) {
+    document.getElementById('op-logo').innerHTML = '<img src="https://drive.google.com/thumbnail?id='+G.settings.logo_id+'&sz=w200" crossorigin="anonymous">';
+  }
+  
+  buildOnePageFilters();
+  openPanel('onepage');
+  loadOnePageData();
+}
+
+function buildOnePageFilters() {
+  var amps = []; 
+  G.hospList.forEach(function(h){ if(h.amphoe && amps.indexOf(h.amphoe) === -1) amps.push(h.amphoe); });
+  amps.sort();
+  var html = '<option value="">อำเภอ ทั้งหมด</option>';
+  amps.forEach(function(a){ html += '<option value="'+e_(a)+'">'+e_(a)+'</option>'; });
+  document.getElementById('op-f-amphoe').innerHTML = html;
+  document.getElementById('op-f-amphoe').value = OP.filters.amphoe;
+  
+  if (G.session.role === 'user' && G.session.hospcode !== 'all') {
+    document.getElementById('op-f-amphoe').disabled = true;
+  } else {
+    document.getElementById('op-f-amphoe').disabled = false;
+  }
+  
+  rebuildTambonOptions();
+}
+
+function rebuildTambonOptions() {
+  var amp = document.getElementById('op-f-amphoe').value;
+  var tambons = [];
+  G.hospList.forEach(function(h){
+    if ((!amp || h.amphoe === amp) && h.tambon && tambons.indexOf(h.tambon) === -1) tambons.push(h.tambon);
+  });
+  tambons.sort();
+  var html = '<option value="">ตำบล ทั้งหมด</option>';
+  tambons.forEach(function(t){ html += '<option value="'+e_(t)+'">'+e_(t)+'</option>'; });
+  document.getElementById('op-f-tambon').innerHTML = html;
+  rebuildHcOptions();
+}
+
+function rebuildHcOptions() {
+  var amp = document.getElementById('op-f-amphoe').value;
+  var tam = document.getElementById('op-f-tambon').value;
+  var html = '<option value="">รพ.สต. ทั้งหมด</option>';
+  G.hospList.forEach(function(h){
+    if (amp && h.amphoe !== amp) return;
+    if (tam && h.tambon !== tam) return;
+    html += '<option value="'+h.hospcode+'">'+h.hospcode+' '+e_(h.name)+'</option>';
+  });
+  document.getElementById('op-f-hospcode').innerHTML = html;
+  if (G.session.role === 'user' && G.session.hospcode !== 'all') {
+    document.getElementById('op-f-hospcode').value = G.session.hospcode;
+    document.getElementById('op-f-hospcode').disabled = true;
+  } else {
+    document.getElementById('op-f-hospcode').disabled = false;
+  }
+  rebuildSchoolOptions();
+}
+
+function rebuildSchoolOptions() {
+  var amp = document.getElementById('op-f-amphoe').value;
+  var tam = document.getElementById('op-f-tambon').value;
+  var hc = document.getElementById('op-f-hospcode').value;
+  var validHcs = {};
+  G.hospList.forEach(function(h){
+    if (amp && h.amphoe !== amp) return;
+    if (tam && h.tambon !== tam) return;
+    if (hc && h.hospcode !== hc) return;
+    validHcs[h.hospcode] = true;
+  });
+  var schoolSet = {};
+  G.allRows.forEach(function(r){ if (validHcs[r.hospcode] && r.school_name) schoolSet[r.school_name] = true; });
+  var schools = Object.keys(schoolSet).sort();
+  var html = '<option value="">โรงเรียน ทั้งหมด</option>';
+  schools.forEach(function(s){ html += '<option value="'+e_(s)+'">'+e_(s)+'</option>'; });
+  document.getElementById('op-f-school').innerHTML = html;
+}
+
+function onOPAmpChange()    { OP.filters.amphoe   = document.getElementById('op-f-amphoe').value;   OP.filters.tambon=''; OP.filters.hospcode=''; OP.filters.school=''; rebuildTambonOptions(); loadOnePageData(); }
+function onOPTambonChange() { OP.filters.tambon   = document.getElementById('op-f-tambon').value;   OP.filters.hospcode=''; OP.filters.school=''; rebuildHcOptions(); loadOnePageData(); }
+function onOPHcChange()     { OP.filters.hospcode = document.getElementById('op-f-hospcode').value; OP.filters.school=''; rebuildSchoolOptions(); loadOnePageData(); }
+function onOPSchoolChange() { OP.filters.school   = document.getElementById('op-f-school').value;   loadOnePageData(); }
+
+function clearOPFilters() {
+  if (G.session.role !== 'admin' && G.session.hospcode !== 'all') {
+    toast('ผู้ใช้ทั่วไปไม่สามารถยกเลิกตัวกรอง รพ.สต. ได้', 'inf');
+    OP.filters.tambon=''; OP.filters.school='';
+    document.getElementById('op-f-tambon').value = '';
+    document.getElementById('op-f-school').value = '';
+    loadOnePageData();
+    return;
+  }
+  document.getElementById('op-f-amphoe').value = '';
+  OP.filters = { amphoe:'', tambon:'', hospcode:'', school:'' };
+  rebuildTambonOptions();
+  loadOnePageData();
+}
+
+function loadOnePageData() {
+  toast('⏳ กำลังโหลดข้อมูลสรุป...', 'inf');
+  var params = { amphoe: OP.filters.amphoe, hospcode: OP.filters.hospcode, school: OP.filters.school };
+  var loaded = 0;
+  function checkDone() { loaded++; if (loaded === 2) renderOnePage(); }
+  
+  google.script.run.withSuccessHandler(function(r){
+    try { var res = JSON.parse(r); OP.behData = res.ok ? res.data : null; } catch(e) { OP.behData = null; }
+    checkDone();
+  }).withFailureHandler(function(){ OP.behData = null; checkDone(); }).getBehaviorDashboard(params);
+  
+  google.script.run.withSuccessHandler(function(r){
+    try { var res = JSON.parse(r); OP.fupData = res.ok ? res.data : null; } catch(e) { OP.fupData = null; }
+    checkDone();
+  }).withFailureHandler(function(){ OP.fupData = null; checkDone(); }).getFollowupDashboard(params);
+}
+
+function filterOnePageRows() {
+  var f = OP.filters;
+  return G.allRows.filter(function(r){
+    if (f.amphoe   && r.amphoe      !== f.amphoe)   return false;
+    if (f.tambon   && r.tambon      !== f.tambon)   return false;
+    if (f.hospcode && r.hospcode    !== f.hospcode) return false;
+    if (f.school   && r.school_name !== f.school)   return false;
+    return true;
+  });
+}
+
+function calcOPMetrics() {
+  var rows = filterOnePageRows();
+  var k = { total:0, normal:0, abnormal:0, referred:0, glasses:0, satSum:0, satCnt:0, preSum:0, preCnt:0, postSum:0, postCnt:0, gainSum:0, gainCnt:0 };
+  rows.forEach(function(r){
+    k.total++;
+    if (r.status === 'normal')        k.normal++;
+    else if (r.status === 'abnormal') k.abnormal++;
+    else if (r.status === 'referred') k.referred++;
+    else if (r.status === 'glasses')  k.glasses++;
+    if (r.sat !== null) { k.satSum += r.sat; k.satCnt++; }
+    if (r.pre !== null && r.post !== null) {
+      k.preSum += r.pre; k.preCnt++;
+      k.postSum += r.post; k.postCnt++;
+      k.gainSum += r.gain; k.gainCnt++;
+    }
+  });
+  var t = k.total || 1;
+  k.satAvg  = k.satCnt  > 0 ? Math.round(k.satSum  / k.satCnt  * 100) / 100 : null;
+  k.preAvg  = k.preCnt  > 0 ? Math.round(k.preSum  / k.preCnt  * 10) / 10 : null;
+  k.postAvg = k.postCnt > 0 ? Math.round(k.postSum / k.postCnt * 10) / 10 : null;
+  k.gainAvg = k.gainCnt > 0 ? Math.round(k.gainSum / k.gainCnt) : null;
+  k.abnormalTotal = k.abnormal + k.referred + k.glasses;
+  k.referTotal    = k.referred + k.glasses;
+  k.normalPct   = Math.round(k.normal        / t * 100);
+  k.abnormalPct = Math.round(k.abnormalTotal / t * 100);
+  k.referPct    = Math.round(k.referTotal    / t * 100);
+  k.heavyUsePct = (OP.behData && OP.behData.kpi) ? OP.behData.kpi.heavyUsePct : 0;
+  k.heavyUseCnt = OP.behData ? Math.round((OP.behData.kpi.total || 0) * k.heavyUsePct / 100) : 0;
+  k.rows = rows;
+  return k;
+}
+
+function renderOnePage() {
+  var m = calcOPMetrics();
+  destroyOPCharts();
+  
+  // Date
+  var d = new Date();
+  var mn = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  document.getElementById('op-date').textContent = 'ข้อมูล ณ ' + d.getDate() + ' ' + mn[d.getMonth()] + ' ' + (d.getFullYear()+543);
+  
+  // Scope
+  var scope = [];
+  if (OP.filters.amphoe)   scope.push('อ.' + OP.filters.amphoe);
+  if (OP.filters.tambon)   scope.push('ต.' + OP.filters.tambon);
+  if (OP.filters.hospcode) { var h = G.hospList.find(function(x){return x.hospcode === OP.filters.hospcode;}); if (h) scope.push(h.name); }
+  if (OP.filters.school)   scope.push(OP.filters.school);
+  document.getElementById('op-scope').textContent = scope.length ? '(' + scope.join(' • ') + ')' : '(ภาพรวมจังหวัดสมุทรสาคร)';
+  
+  // KPI
+  document.getElementById('op-k1').textContent = m.total.toLocaleString();
+  document.getElementById('op-k2').textContent = m.abnormalTotal.toLocaleString();
+  document.getElementById('op-k2-sub').textContent = m.abnormalPct + '% ของทั้งหมด';
+  document.getElementById('op-k3').textContent = m.referTotal.toLocaleString();
+  document.getElementById('op-k3-sub').textContent = m.referPct + '% ของทั้งหมด';
+  document.getElementById('op-k4').textContent = m.normal.toLocaleString();
+  document.getElementById('op-k4-sub').textContent = m.normalPct + '% ของทั้งหมด';
+  document.getElementById('op-k5').textContent = m.heavyUseCnt.toLocaleString();
+  document.getElementById('op-k5-sub').textContent = m.heavyUsePct + '% มีพฤติกรรมเสี่ยง';
+  document.getElementById('op-k6').textContent = m.satAvg !== null ? m.satAvg.toFixed(2) : '—';
+  
+  renderOPPie(m);
+  renderOPBehavior(m);
+  renderOPPrePost(m);
+  renderOPAmphoeBar(m);
+  buildOPTopSchools(m);
+  buildOPTopHosps(m);
+  buildOPClassBreakdown(m);
+  buildOPFollowup(m);
+  buildOPImages();
+  buildOPInsights(m);
+}
+
+function destroyOPCharts() {
+  Object.keys(OP.charts).forEach(function(k){ if (OP.charts[k]) { try { OP.charts[k].destroy(); } catch(e){} OP.charts[k] = null; } });
+}
+
+function renderOPPie(m) {
+  var ctx = document.getElementById('op-pie-chart').getContext('2d');
+  OP.charts.pie = new Chart(ctx, {
+    type: 'doughnut',
+    data: { labels: ['ปกติ','ผิดปกติ','ส่งต่อ','ตัดแว่น'],
+            datasets: [{ data: [m.normal, m.abnormal, m.referred, m.glasses],
+                         backgroundColor: ['#16A34A','#ca8a04','#ea580c','#dc2626'], borderWidth: 0 }] },
+    options: { responsive: true, maintainAspectRatio: false, animation: false,
+      plugins: { legend: { position: 'bottom', labels: { font:{size:9,family:'Sarabun'}, boxWidth: 8, padding: 3 } },
+                 datalabels: { color:'#fff', font:{weight:'bold',size:10,family:'Sarabun'}, textStrokeColor:'rgba(0,0,0,0.5)', textStrokeWidth:2,
+                               formatter: function(v) { return v > 0 ? Math.round(v/(m.total||1)*100)+'%' : ''; } } }
+    }, plugins: [ChartDataLabels]
+  });
+  document.getElementById('op-pie-summary').textContent = 'พบภาวะผิดปกติ ' + m.abnormalTotal + ' คน คิดเป็น ' + m.abnormalPct + '%';
+}
+
+function renderOPBehavior(m) {
+  var ctx = document.getElementById('op-beh-chart').getContext('2d');
+  var data = OP.behData;
+  if (!data || data.kpi.total === 0) {
+    OP.charts.beh = new Chart(ctx, {
+      type: 'bar',
+      data: { labels: ['ไม่มีข้อมูล'], datasets: [{ data: [0], backgroundColor: '#cbd5e1' }] },
+      options: { responsive: true, maintainAspectRatio: false, animation: false,
+                 plugins: { legend: { display: false }, datalabels: { display: false } } }
+    });
+    document.getElementById('op-beh-summary').textContent = 'ยังไม่มีข้อมูลแบบสอบถามพฤติกรรม';
+    return;
+  }
+  var t = data.kpi.total || 1;
+  var heavy = data.kpi.heavyUsePct;
+  var noRest = (data.rest && (data.rest['ไม่ค่อยพัก']||0)) ? Math.round(((data.rest['ไม่ค่อยพัก']||0) + (data.rest['พักบ้างบางครั้ง']||0))/t*100) : 0;
+  var closeView = (data.distance && data.distance['ใกล้กว่า 1 ฟุต']) ? Math.round(data.distance['ใกล้กว่า 1 ฟุต']/t*100) : 0;
+  var eveUse = 0;
+  if (data.timeSlots && data.timeSlots.we_eve) {
+    var distEve = data.timeSlots.we_eve.dist || {};
+    var heavyEve = (distEve['2-3 ชม.']||0) + (distEve['3-4 ชม.']||0) + (distEve['มากกว่า 4 ชม.']||0);
+    eveUse = Math.round(heavyEve/t*100);
+  }
+  var noBlue = (data.blue && data.blue['ไม่มีการใช้']) ? Math.round(data.blue['ไม่มีการใช้']/t*100) : 0;
+  var labels = ['ใช้จอก่อนนอน','ใช้จอ >4 ชม.','ไม่ค่อยพัก','ระยะใกล้เกิน','ไม่ใส่แว่นกรองฟ้า'];
+  var values = [eveUse, heavy, noRest, closeView, noBlue];
+  OP.charts.beh = new Chart(ctx, {
+    type: 'bar',
+    data: { labels: labels, datasets: [{ data: values, backgroundColor: ['#dc2626','#ea580c','#d97706','#ca8a04','#7c3aed'], borderRadius: 4 }] },
+    options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, animation: false,
+      plugins: { legend: { display: false },
+                 datalabels: { color: '#fff', anchor:'center', align:'center',
+                               font:{weight:'bold',size:10,family:'Sarabun'}, textStrokeColor:'rgba(0,0,0,0.5)', textStrokeWidth:2,
+                               formatter: function(v) { return v + '%'; } } },
+      scales: { x: { beginAtZero: true, max: 100, ticks: { font:{size:9,family:'Sarabun'}, callback: function(v){return v+'%';} } },
+                y: { ticks: { font:{size:9,family:'Sarabun',weight:'bold'} } } }
+    }, plugins: [ChartDataLabels]
+  });
+  var maxIdx = values.indexOf(Math.max.apply(null, values));
+  document.getElementById('op-beh-summary').textContent = 'พฤติกรรมเสี่ยงหลัก: ' + labels[maxIdx] + ' (' + values[maxIdx] + '%)';
+}
+
+function renderOPPrePost(m) {
+  var ctx = document.getElementById('op-prepost-chart').getContext('2d');
+  if (m.preAvg === null || m.postAvg === null) {
+    OP.charts.prepost = new Chart(ctx, {
+      type: 'bar',
+      data: { labels: ['ไม่มีข้อมูล'], datasets: [{ data: [0], backgroundColor: '#cbd5e1' }] },
+      options: { responsive: true, maintainAspectRatio: false, animation: false, plugins: { legend: { display: false }, datalabels: { display: false } } }
+    });
+    document.getElementById('op-prepost-summary').textContent = 'ยังไม่มีข้อมูล Pre/Post Test';
+    return;
+  }
+  var prePct = Math.round(m.preAvg/10*100);
+  var postPct = Math.round(m.postAvg/10*100);
+  OP.charts.prepost = new Chart(ctx, {
+    type: 'bar',
+    data: { labels: ['ก่อนอบรม','หลังอบรม'],
+            datasets: [{ data: [prePct, postPct], backgroundColor: ['#94a3b8','#16A34A'], borderRadius: 6 }] },
+    options: { responsive: true, maintainAspectRatio: false, animation: false,
+      plugins: { legend: { display: false },
+                 datalabels: { color:'#fff', anchor:'center', align:'center',
+                               font:{weight:'bold',size:14,family:'Sarabun'},
+                               textStrokeColor:'rgba(0,0,0,0.5)', textStrokeWidth:2,
+                               formatter: function(v) { return v + '%'; } } },
+      scales: { x: { ticks: { font:{size:10,family:'Sarabun',weight:'bold'} } },
+                y: { beginAtZero: true, max: 100, display: false } }
+    }, plugins: [ChartDataLabels]
+  });
+  var gain = postPct - prePct;
+  document.getElementById('op-prepost-summary').textContent = 'ความรู้เพิ่มขึ้น ' + (gain>0?'+':'') + gain + '% หลังอบรม';
+}
+
+function renderOPAmphoeBar(m) {
+  var ctx = document.getElementById('op-amp-chart').getContext('2d');
+  var ampGroup = {};
+  m.rows.forEach(function(r){
+    var a = r.amphoe || 'ไม่ระบุ';
+    if (!ampGroup[a]) ampGroup[a] = { total:0, abnormal:0 };
+    ampGroup[a].total++;
+    if (r.status !== 'normal') ampGroup[a].abnormal++;
+  });
+  var labels = Object.keys(ampGroup).sort();
+  var values = labels.map(function(a){ return Math.round(ampGroup[a].abnormal/(ampGroup[a].total||1)*100); });
+  var colors = values.map(function(v){ if(v>30) return '#dc2626'; if(v>25) return '#ea580c'; if(v>20) return '#ca8a04'; return '#16A34A'; });
+  OP.charts.amp = new Chart(ctx, {
+    type: 'bar',
+    data: { labels: labels, datasets: [{ data: values, backgroundColor: colors, borderRadius: 4 }] },
+    options: { responsive: true, maintainAspectRatio: false, animation: false,
+      plugins: { legend: { display: false },
+                 datalabels: { color:'#fff', anchor:'center', align:'center',
+                               font:{weight:'bold',size:10,family:'Sarabun'}, textStrokeColor:'rgba(0,0,0,0.5)', textStrokeWidth:2,
+                               formatter: function(v) { return v + '%'; } } },
+      scales: { x: { ticks: { font:{size:9,family:'Sarabun',weight:'bold'}, maxRotation:30, minRotation:30 } },
+                y: { beginAtZero: true, max: 100, ticks: { font:{size:9}, callback: function(v){return v+'%';} } } }
+    }, plugins: [ChartDataLabels]
+  });
+  if (labels.length > 0) {
+    var maxIdx = values.indexOf(Math.max.apply(null, values));
+    document.getElementById('op-amp-summary').textContent = 'อ.' + labels[maxIdx] + ' พบผิดปกติสูงสุด ' + values[maxIdx] + '%';
+  } else {
+    document.getElementById('op-amp-summary').textContent = '—';
+  }
+}
+
+function buildOPTopSchools(m) {
+  var grp = {};
+  m.rows.forEach(function(r){
+    var s = r.school_name || 'ไม่ระบุ';
+    if (!grp[s]) grp[s] = { total:0, abnormal:0 };
+    grp[s].total++; if (r.status !== 'normal') grp[s].abnormal++;
+  });
+  var top = Object.keys(grp).map(function(s){ return { name:s, total:grp[s].total, abnormal:grp[s].abnormal, pct:Math.round(grp[s].abnormal/(grp[s].total||1)*100) }; })
+    .filter(function(x){ return x.total > 0; })
+    .sort(function(a,b){ return b.abnormal - a.abnormal; }).slice(0,5);
+  var html = '<table class="op-mini-tbl"><thead><tr><th style="width:16px;">#</th><th>โรงเรียน</th><th style="text-align:center;">คัด</th><th style="text-align:center;">ผิด</th><th style="text-align:center;">%</th></tr></thead><tbody>';
+  if (top.length === 0) html += '<tr><td colspan="5" style="text-align:center;color:#94a3b8;padding:8px;">ไม่มีข้อมูล</td></tr>';
+  else top.forEach(function(s,i){
+    var name = s.name.length > 16 ? s.name.substring(0,14)+'..' : s.name;
+    html += '<tr><td>'+(i+1)+'</td><td title="'+e_(s.name)+'">'+e_(name)+'</td><td style="text-align:center;">'+s.total+'</td><td style="text-align:center;color:#dc2626;font-weight:600;">'+s.abnormal+'</td><td style="text-align:center;font-weight:600;color:'+(s.pct>30?'#dc2626':'#1e293b')+'">'+s.pct+'%</td></tr>';
+  });
+  html += '</tbody></table>';
+  document.getElementById('op-top-schools').innerHTML = html;
+}
+
+function buildOPTopHosps(m) {
+  var grp = {};
+  m.rows.forEach(function(r){
+    var h = r.hospcode || 'ไม่ระบุ';
+    if (!grp[h]) grp[h] = { name:r.hosp_name||h, total:0, abnormal:0 };
+    grp[h].total++; if (r.status !== 'normal') grp[h].abnormal++;
+  });
+  var top = Object.keys(grp).map(function(h){ return { hc:h, name:grp[h].name, total:grp[h].total, abnormal:grp[h].abnormal, pct:Math.round(grp[h].abnormal/(grp[h].total||1)*100) }; })
+    .filter(function(x){ return x.total > 0; })
+    .sort(function(a,b){ return b.total - a.total; }).slice(0,5);
+  var html = '<table class="op-mini-tbl"><thead><tr><th style="width:16px;">#</th><th>รพ.สต.</th><th style="text-align:center;">คัด</th><th style="text-align:center;">ผิด</th><th style="text-align:center;">%</th></tr></thead><tbody>';
+  if (top.length === 0) html += '<tr><td colspan="5" style="text-align:center;color:#94a3b8;padding:8px;">ไม่มีข้อมูล</td></tr>';
+  else top.forEach(function(h,i){
+    var name = h.name.length > 15 ? h.name.substring(0,13)+'..' : h.name;
+    html += '<tr><td>'+(i+1)+'</td><td title="'+e_(h.name)+'">'+e_(name)+'</td><td style="text-align:center;">'+h.total+'</td><td style="text-align:center;color:#dc2626;font-weight:600;">'+h.abnormal+'</td><td style="text-align:center;font-weight:600;">'+h.pct+'%</td></tr>';
+  });
+  html += '</tbody></table>';
+  document.getElementById('op-top-hosps').innerHTML = html;
+}
+
+function buildOPClassBreakdown(m) {
+  var ranges = { 'อนุบาล':0, 'ป.1-ป.3':0, 'ป.4-ป.6':0, 'ม.1-ม.3':0, 'ม.4-ม.6':0 };
+  var totals = { 'อนุบาล':0, 'ป.1-ป.3':0, 'ป.4-ป.6':0, 'ม.1-ม.3':0, 'ม.4-ม.6':0 };
+  m.rows.forEach(function(r){
+    var lev = String(r.level_edu || r.school_class || '').trim();
+    var key = null;
+    if (lev.indexOf('อ.') === 0 || lev.indexOf('อนุบาล') > -1 || lev.indexOf('ก่อน') > -1) key = 'อนุบาล';
+    else if (/ป\.[1-3]/.test(lev)) key = 'ป.1-ป.3';
+    else if (/ป\.[4-6]/.test(lev)) key = 'ป.4-ป.6';
+    else if (/ม\.[1-3]/.test(lev)) key = 'ม.1-ม.3';
+    else if (/ม\.[4-6]/.test(lev)) key = 'ม.4-ม.6';
+    if (key) { totals[key]++; if (r.status !== 'normal') ranges[key]++; }
+  });
+  var html = '<table class="op-mini-tbl"><thead><tr><th>ชั้นเรียน</th><th style="text-align:center;">คัด</th><th style="text-align:center;">ผิด</th><th style="text-align:center;">%</th></tr></thead><tbody>';
+  var hasData = false;
+  Object.keys(totals).forEach(function(k){
+    if (totals[k] === 0) return;
+    hasData = true;
+    var pct = Math.round(ranges[k]/totals[k]*100);
+    var hi = pct > 30 ? 'color:#dc2626;font-weight:700;' : '';
+    html += '<tr><td style="'+hi+'">'+k+'</td><td style="text-align:center;">'+totals[k]+'</td><td style="text-align:center;color:#dc2626;font-weight:600;">'+ranges[k]+'</td><td style="text-align:center;font-weight:600;'+hi+'">'+pct+'%</td></tr>';
+  });
+  if (!hasData) html += '<tr><td colspan="4" style="text-align:center;color:#94a3b8;padding:8px;">ไม่มีข้อมูล</td></tr>';
+  html += '</tbody></table>';
+  document.getElementById('op-class').innerHTML = html;
+}
+
+function buildOPFollowup(m) {
+  var d = OP.fupData;
+  if (!d || !d.kpi || d.kpi.total === 0) {
+    document.getElementById('op-fup').innerHTML = '<div style="text-align:center;color:#94a3b8;padding:16px;font-size:10.5px;">ยังไม่มีข้อมูลติดตามผล<br><span style="font-size:9.5px;">(รอเก็บข้อมูลหลังรับแว่น)</span></div>';
+    return;
+  }
+  var items = [
+    { lbl:'👓 ใส่แว่นสม่ำเสมอ',     pct: d.kpi.dailyWearPct,  color:'#16A34A' },
+    { lbl:'✨ สภาพแว่นดี',          pct: d.kpi.goodCondPct,   color:'#0d9488' },
+    { lbl:'📚 มองกระดานดีขึ้น',     pct: d.qolImpPct.board,   color:'#3b82f6' },
+    { lbl:'🎯 สมาธิเรียนดีขึ้น',    pct: d.qolImpPct.focus,   color:'#8b5cf6' },
+    { lbl:'💆 อาการปวดตาลดลง',     pct: d.qolImpPct.headache,color:'#ec4899' }
+  ];
+  var html = '';
+  items.forEach(function(it){
+    html += '<div class="op-progress-row"><div class="op-progress-lbl"><span style="font-weight:600;color:#1e293b;">'+it.lbl+'</span><span style="font-weight:700;color:'+it.color+';">'+it.pct+'%</span></div><div class="op-progress-bar"><div class="op-progress-fill" style="width:'+it.pct+'%;background:'+it.color+';"></div></div></div>';
+  });
+  document.getElementById('op-fup').innerHTML = html;
+}
+
+function buildOPImages() {
+  var imgs = []; var seen = {};
+  G.hospSummaryData.forEach(function(h){
+    if (OP.filters.amphoe && h.amphoe !== OP.filters.amphoe) return;
+    if (OP.filters.hospcode && h.hospcode !== OP.filters.hospcode) return;
+    if (!h.pics) return;
+    var urls = String(h.pics).split('\n').map(function(u){return u.trim();}).filter(Boolean);
+    urls.forEach(function(u){ if (!seen[u] && imgs.length < 40) { imgs.push(u); seen[u] = true; } });
+  });
+  imgs.sort(function(){ return Math.random() - 0.5; });
+  imgs = imgs.slice(0, 5);
+  
+  var html = '';
+  imgs.forEach(function(url){
+    var src = url;
+    var match = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
+    if (match && match[1]) src = 'https://drive.google.com/thumbnail?id='+match[1]+'&sz=w400';
+    html += '<img class="op-img-thumb" src="'+src+'" crossorigin="anonymous" onerror="this.outerHTML=\'<div class=op-img-thumb-placeholder>🖼</div>\'">';
+  });
+  for (var i = imgs.length; i < 5; i++) html += '<div class="op-img-thumb-placeholder">🖼</div>';
+  document.getElementById('op-imgs').innerHTML = html;
+}
+
+function buildOPInsights(m) {
+  var insights = [];
+  // 1: dominant class
+  var levTotals = { 'ป.1-ป.3':0, 'ป.4-ป.6':0, 'ม.1-ม.3':0, 'ม.4-ม.6':0 };
+  var levAb = { 'ป.1-ป.3':0, 'ป.4-ป.6':0, 'ม.1-ม.3':0, 'ม.4-ม.6':0 };
+  m.rows.forEach(function(r){
+    var lev = String(r.level_edu||'').trim();
+    var key = null;
+    if (/ป\.[1-3]/.test(lev)) key = 'ป.1-ป.3';
+    else if (/ป\.[4-6]/.test(lev)) key = 'ป.4-ป.6';
+    else if (/ม\.[1-3]/.test(lev)) key = 'ม.1-ม.3';
+    else if (/ม\.[4-6]/.test(lev)) key = 'ม.4-ม.6';
+    if (key) { levTotals[key]++; if (r.status !== 'normal') levAb[key]++; }
+  });
+  var maxClass = null, maxPct = 0;
+  Object.keys(levTotals).forEach(function(k){
+    if (levTotals[k] > 0) { var pct = levAb[k]/levTotals[k]*100; if (pct > maxPct) { maxPct = pct; maxClass = k; } }
+  });
+  if (maxClass) insights.push({ ico:'👁️', text:'พบภาวะผิดปกติทางสายตา <b>'+m.abnormalPct+'%</b> โดยพบสูงสุดในนักเรียนชั้น <b>'+maxClass+'</b> ('+Math.round(maxPct)+'%)' });
+  else insights.push({ ico:'👁️', text:'พบภาวะผิดปกติทางสายตา <b>'+m.abnormalPct+'%</b> ของผู้รับการคัดกรอง' });
+  
+  // 2: behavior
+  if (OP.behData && OP.behData.kpi.total > 0) insights.push({ ico:'📱', text:'พฤติกรรมเสี่ยงหลัก คือ <b>ใช้หน้าจอเกิน 4 ชม./วัน</b> คิดเป็น <b>'+OP.behData.kpi.heavyUsePct+'%</b>' });
+  else insights.push({ ico:'📱', text:'ยังไม่มีข้อมูลแบบสอบถามพฤติกรรม' });
+  
+  // 3: pre/post
+  if (m.preAvg !== null && m.postAvg !== null) insights.push({ ico:'📈', text:'หลังการอบรม ความรู้ของนักเรียนเพิ่มขึ้น <b>'+m.gainAvg+'%</b> (Pre '+m.preAvg.toFixed(1)+' → Post '+m.postAvg.toFixed(1)+')' });
+  else insights.push({ ico:'📈', text:'ยังไม่มีข้อมูล Pre-Post Test' });
+  
+  // 4: followup
+  if (OP.fupData && OP.fupData.kpi.total > 0) insights.push({ ico:'👓', text:'นักเรียนที่ได้รับแว่นใส่สม่ำเสมอ <b>'+OP.fupData.kpi.dailyWearPct+'%</b> มีสมาธิเรียนดีขึ้น <b>'+OP.fupData.qolImpPct.focus+'%</b>' });
+  else insights.push({ ico:'👓', text:'ยังไม่มีข้อมูลติดตามผลหลังรับแว่น' });
+  
+  var html = '';
+  insights.slice(0,4).forEach(function(ins){ html += '<div class="op-insight-item"><span class="op-insight-ico">'+ins.ico+'</span><span>'+ins.text+'</span></div>'; });
+  document.getElementById('op-insight').innerHTML = html;
+}
+
+function printOnePage() {
+  document.body.classList.add('print-onepage');
+  var styleEl = document.getElementById('op-print-style');
+  if (!styleEl) { styleEl = document.createElement('style'); styleEl.id = 'op-print-style'; document.head.appendChild(styleEl); }
+  styleEl.innerHTML = '@media print { @page { size: A4 landscape !important; margin: 5mm !important; } }';
+  setTimeout(function() {
+    window.print();
+    setTimeout(function() {
+      document.body.classList.remove('print-onepage');
+      if (styleEl) styleEl.innerHTML = '';
+    }, 1000);
+  }, 300);
+}
+
+function exportOnePageAsImage() {
+  if (OP.isExporting) { toast('กำลังประมวลผลอยู่ กรุณารอ', 'inf'); return; }
+  OP.isExporting = true;
+  toast('⏳ กำลังโหลด library...', 'inf');
+  loadHtml2Canvas(function() {
+    if (!window.html2canvas) { OP.isExporting = false; return; }
+    var target = document.getElementById('op-print-area');
+    if (!target) { toast('ไม่พบพื้นที่ส่งออก', 'err'); OP.isExporting = false; return; }
+    toast('⏳ กำลังสร้างภาพ ความละเอียดสูง (2x)... อาจใช้เวลา 5-10 วินาที', 'inf');
+    setTimeout(function() {
+      html2canvas(target, {
+        scale: 2, useCORS: true, allowTaint: false,
+        backgroundColor: '#ffffff', logging: false, imageTimeout: 15000
+      }).then(function(canvas) {
+        try {
+          canvas.toBlob(function(blob) {
+            if (!blob) throw new Error('toBlob returned null');
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            var ts = new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
+            a.href = url; a.download = 'EyeHealth_OnePage_' + ts + '.png';
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            toast('✅ ส่งออกไฟล์ PNG สำเร็จ', 'ok');
+          }, 'image/png', 1.0);
+        } catch(err) {
+          var dataUrl = canvas.toDataURL('image/png', 1.0);
+          var a = document.createElement('a');
+          var ts = new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
+          a.href = dataUrl; a.download = 'EyeHealth_OnePage_' + ts + '.png';
+          document.body.appendChild(a); a.click(); document.body.removeChild(a);
+          toast('✅ ส่งออกไฟล์ PNG สำเร็จ', 'ok');
+        }
+        OP.isExporting = false;
+      }).catch(function(err) {
+        OP.isExporting = false;
+        toast('❌ Export ไม่สำเร็จ: ' + (err.message || 'อาจติดปัญหา CORS ของรูปภาพ'), 'err');
+      });
+    }, 300);
+  });
 }
 
 </script>
