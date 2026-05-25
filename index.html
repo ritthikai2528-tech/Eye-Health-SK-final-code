@@ -442,10 +442,25 @@ button{cursor:pointer;font-family:inherit} input,select,textarea{font-family:inh
 
 /* Print One-Page (A4 Landscape) — override existing portrait print */
 @media print {
+  /* 🛠️ ปลดล็อกการซ่อนขอบของหน้าเว็บ เพื่อให้ Print มองเห็นทั้งหมด */
+  html, body { overflow: visible !important; height: auto !important; } 
+  
   body.print-onepage #printArea { display: none !important; }
   body.print-onepage * { visibility: hidden !important; }
+  
+  /* 🛠️ บังคับให้พาเนล One Page แสดงผล (แก้ปัญหาโดน display:none จากคำสั่งพิมพ์ปกติ) */
+  body.print-onepage .panel.op-panel,
+  body.print-onepage .op-page-wrap {
+    display: block !important;
+    position: absolute !important; left: 0 !important; top: 0 !important;
+    width: 100% !important; height: auto !important;
+    background: #fff !important; box-shadow: none !important; padding: 0 !important;
+    overflow: visible !important;
+  }
+  
   body.print-onepage #op-print-area,
   body.print-onepage #op-print-area * { visibility: visible !important; }
+  
   body.print-onepage #op-print-area {
     position: absolute !important; left: 0 !important; top: 0 !important;
     margin: 0 !important; box-shadow: none !important;
@@ -453,7 +468,6 @@ button{cursor:pointer;font-family:inherit} input,select,textarea{font-family:inh
     width: 287mm !important; padding: 4mm 5mm !important;
     background: #fff !important;
   }
-  body.print-onepage .op-page-wrap { background: #fff !important; padding: 0 !important; }
 }
 
 /* =========================================
