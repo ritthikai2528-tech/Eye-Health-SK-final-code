@@ -347,16 +347,22 @@ button{cursor:pointer;font-family:inherit} input,select,textarea{font-family:inh
 .op-kpi-6 { border-top-color: #d97706; } .op-kpi-6 .op-kpi-val { color: #d97706; }
 
 /* 4 Charts row */
+/* 4 Charts row */
 .op-charts-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
 .op-chart-card {
   background: #fff; border: 1px solid var(--border); border-radius: 8px;
   padding: 6px 8px; display: flex; flex-direction: column;
+  min-width: 0; /* 🛠️ เพิ่มบรรทัดนี้: บังคับไม่ให้กล่องขยายทะลุ Grid */
 }
 .op-chart-card .op-chart-ttl {
   font-size: 11.5px; font-weight: 700; color: var(--primary);
   margin-bottom: 3px; text-align: center;
 }
-.op-chart-card .op-chart-wrap { position: relative; height: 145px; }
+.op-chart-card .op-chart-wrap { 
+  position: relative; 
+  height: 145px; 
+  width: 100%; /* 🛠️ เพิ่มบรรทัดนี้: บังคับให้กราฟพอดีกล่องเป๊ะๆ */
+}
 .op-chart-card .op-chart-summary {
   text-align: center; background: #eef2ff; border-radius: 4px;
   padding: 3px 4px; margin-top: 4px; font-size: 9.5px;
@@ -368,6 +374,7 @@ button{cursor:pointer;font-family:inherit} input,select,textarea{font-family:inh
 .op-tbl-card {
   background: #fff; border: 1px solid var(--border); border-radius: 8px;
   padding: 6px 8px; display: flex; flex-direction: column;
+  min-width: 0; /* 🛠️ เพิ่มบรรทัดนี้ป้องกันตารางล้นกรอบ */
 }
 .op-tbl-card .op-tbl-ttl {
   font-size: 11px; font-weight: 700; color: var(--primary);
